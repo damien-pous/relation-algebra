@@ -1,0 +1,413 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="content-language" content="en">
+<meta name="author" content="Damien Pous">
+<meta name="keywords" content="Coq proof assistant; Relation algebra; Kleene algebra; Kleene algebra with tests; KAT; regular expressions; finite automata; decision procedure; matrices; matrix; binary relations">
+<style type="text/css">
+<!--
+#toc {
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color:#DDF;
+  padding:10px;
+}
+#toc ul li { list-style: none; margin: 0px; padding: 0px }
+#toc a { text-decoration:none }
+#contents { margin-left:13%; margin-right:5% }
+-->
+</style>
+
+<title>Relation Algebra and KAT in Coq</title>
+</head>
+
+<body>
+
+<div id="toc">
+  <a href="#desc">Description</a><br>
+  <a href="#apps">Applications</a><br>
+  <a href="#download">Download</a><br>
+  <a href="#relw">Related papers</a><br>
+  <a href="#doc">Documentation</a><br>
+  &nbsp;&nbsp;. <a href="#doc:tac">tactics</a><br>
+  &nbsp;&nbsp;. <a href="#doc:list">modules</a><br>
+  &nbsp;&nbsp;. <a href="#doc:deps">dependencies</a><br>
+  <a href="#notes">Notes</a><br>
+  <a href="#ack">Acknowledgements</a>
+</div>
+
+<div id="contents">
+  
+<p align="right"><a href="http://perso.ens-lyon.fr/damien.pous/">Damien Pous' home page</a></p>
+<h1 id="desc">Relation Algebra and KAT in Coq</h1>
+
+<table>
+  <tr>
+    <td>
+      <p>
+      This Coq development is a modular library about relation algebra:
+      those algebras admitting heterogeneous binary relations as a model,
+      ranging from partially ordered monoid to residuated Kleene allegories
+      and Kleene algebra with tests (KAT). </p>
+      
+      <p> This library presents this large family of algebraic theories in a
+      modular way; it includes several high-level reflexive
+      tactics:</p> <ul>
+	<li> <code>kat</code>, which decides the (in)equational theory of KAT;
+	<li> <code>hkat</code>, which decides the Hoare (in)equational theory of KAT 
+	(i.e., KAT with Hoare hypotheses);
+	<li> <code>ka</code>, which decides the (in)equational theory of KA;
+	<li> <code>ra</code>, a normalisation based partial decision procedure for Relation 
+	algebra;
+	<li> <code>ra_normalise</code>, the underlying normalisation tactic.
+      </ul>
+    </td>
+    <td>
+      &nbsp;&nbsp;<img src="ra.png" alt="the cloud of relation algebra fragments">
+    </td>
+    </tr>
+</table>
+
+<p>
+The tactic for Kleene algebra with tests is obtained by reflection,
+using a simple bisimulation-based algorithm working on the appropriate
+automaton of partial derivatives, for the generalised regular
+expressions corresponding to KAT.
+
+Combined with a formalisation of KA completeness, and then of KAT
+completeness on top of it, this provides entirely axiom-free decision
+procedures for all models of these theories (including relations,
+languages, traces, min-max and max-plus algebras, etc...). </p>
+
+<p>
+Algebraic structures are generalised in a categorical way: composition
+is typed like in categories, allowing us to reach "heterogeneous"
+models like rectangular matrices or heterogeneous binary relations,
+where most operations are partial. We exploit untyping theorems to
+avoid polluting decision algorithms with these additional typing
+constraints.
+</p>
+
+<h2 id="apps"> Applications </h2>
+<p>
+We give a few examples of applications of this library to program
+verification: </p>
+<ul>
+<li> a formalisation of a paper by Dexter Kozen and Maria-Cristina Patron. 
+  showing how to certify compiler optimisations using KAT.
+<li> a formalisation of the IMP programming language, followed by some
+  simple program equivalences that become straightforward to prove
+  using our tactics.
+<li> a formalisation of Hoare logic rules for partial correctness in the
+  above language: all rules except the assignation one are proved by a
+  single call to the <code>hkat</code> tactic.
+</ul>
+
+<h2 id="download">Download</h2>
+
+This library is distributed under the terms of the GNU Lesser General
+Public License version 3.
+<ul>
+  <li> First release (2012 december 16th):
+  <a href="http://perso.ens-lyon.fr/damien.pous/ra/RelationAlgebra-1.0.tar.bz2">
+  RelationAlgebra-1.0.tar.gz</a>.
+</ul>
+
+<h2 id="relw">Related papers or talks</h2>
+
+<ul>
+  <li> A beta version of this library was presented at <a
+  href="http://www.cl.cam.ac.uk/conference/ramics13/">RAMiCS</a>, September 2012: <a href="http://www.cl.cam.ac.uk/conference/ramics13/pous.pdf">slides</a>.
+  <li> The generalisation to typed structures, and the untyping
+  theorems are explained in details in <br>
+  <a href="http://perso.ens-lyon.fr/damien.pous/utas">
+  Untyping Typed Algebras and Colouring Cyclic Linear Logic</a>.
+  D. Pous, <em>Logical Methods in Computer Science</em>, 2012.<br>
+  <li> A description of ATBR, the ancestor of this library (see the <a
+  href="#notes">notes</a> below) appeared in<br>
+  <a href="http://www.lmcs-online.org/ojs/viewarticle.php?id=934&amp;layout=abstract"><em>
+  Deciding Kleene Algebras in Coq</em></a>.
+  T. Braibant and D. Pous, <em>Logical Methods in Computer Science</em>,
+  2012.<br><br>
+  <li> We closely follow the work of Dexter Kozen for KA and KAT
+  completeness proofs:
+  <ul>
+    <li> 
+    <a href="http://www.cs.cornell.edu/~kozen/papers/ka.pdf">
+    A completeness theorem for Kleene algebras and the algebra of
+    regular events</a>.
+    D. Kozen. <em>Information and Computation</em>, 110(2):366-390, May 1994.
+    <li> 
+    <a href="http://www.cs.cornell.edu/~kozen/papers/gs.pdf">
+    Kleene algebra with tests: Completeness and
+    decidability</a>.
+    D. Kozen and F. Smith.
+    In Proc. <em>CSL'96</em>, vol. 1258 of LNCS, pages 244-259, 1996.
+    Springer-Verlag.
+  </ul>
+  
+  <li> Our decision algorithm for KAT is probably folklore: its uses
+  the obvious generalisation of the partial derivatives automaton to
+  KAT regular expressions, together with a standard on-the-fly bisimulation
+  algorithm. See the following papers for the coalgebraic treatment of
+  KA and KAT:
+  <ul>
+    <li> <a
+    href="http://www.cwi.nl/~janr/papers/files-of-papers/1998_CONCUR_automata_and_coinduction.pdf">
+    Automata and coinduction (an exercise in coalgebra)</a>. 
+    J. Rutten. In Proc <em>CONCUR '98</em>, LNCS 1466, Springer, 1998, pp. 194-218.
+    <li> <a href="http://www.cs.cornell.edu/~kozen/papers/ChenPucella.pdf">
+    On the coalgebraic theory of Kleene algebra with tests</a>. 
+    D. Kozen.
+    Technical Report, Computing and Information Science, Cornell University, March 2008.
+  </ul>
+</ul>
+
+<h2 id="doc">Documentation</h2>
+
+<h3 id="doc:tac">Provided tactics</h3>
+<ul>
+  <li> Decision tactics:
+  <ul>
+    <li> <code>ka</code>: equational theory of Kleene algebra;
+    <li> <code>kat</code>: equational theory of Kleene algebra with tests;
+    <li> <code>hkat</code>: Hoare theory of Kleene algebra with tests:
+    it exploits hypotheses of the shape <code>p==0</code>,
+    <code>[a]==[b]</code>, <code>[a]*p == p*[a]</code>, <code>[a]*p ==
+    [p]</code>, <code>[a]*p == [p]</code>, and all similar ones.
+    <li> <code>lattice</code>: solves lattice (in)equations, using
+    focused proof search (modular tactic: it works from preorders to
+    bounded distributed lattices).
+  </ul>
+  <li> Incomplete decision tactics:
+  <ul>
+    <li> <code>ra</code>: tries to solve relation algebra (in)equations, by
+    normalisation and comparison. This tactic is modular: it applies
+    to all algebraic theories present in the library. 
+    <li> <code>hlattice</code>: tries to solve the Horn theory of lattices
+    (modular tactic)
+  </ul>
+  <li> Normalisation tactics:
+  <ul>
+    <li> <code>ra_normalise</code>: normalise the current goal (modular tactic);
+    <li> <code>ra_simpl</code>: normalise the current goal, without
+    distributing composition over unions (modular tactic).
+  </ul>
+  <li> Rewriting tactics:
+  <ul>
+    <li> <code>mrewrite</code>: rewriting modulo associativity of
+    composition (ad-hoc tactic);
+    <li> the library can easily be interfaced with <code>AAC_tactics</code>,
+    to obtain more powerful AC rewriting tools (see the
+    <code>rewriting</code>) module).
+  </ul>  
+  <li> Other tactics:
+  <ul>
+    <li> <code>lattice.dual</code>: prove goals by lattice duality;
+    <li> <code>monoid.dual</code>: prove goals by categorical duality;
+    <li> <code>neg_switch</code>: revert a goal to exploit the Boolean
+    negation involution;
+    <li> <code>cnv_switch</code>: revert a goal to exploit the
+    converse involution.
+  </ul>  
+</ul>
+
+<h3 id="doc:list">Succinct description of each module</h3>
+
+<p>Each module is documented; links below point to the coqdoc generated
+documentation; see <a href="#doc:deps">below for dependencies</a>.
+The coqdoc table of contents is <a href="html/toc.html">here</a>.</p>
+
+<ul>
+  <li>Utilities
+  <ul>
+    <li> <code><a href="html/RelationAlgebra.common.html">common</a></code>: basic tactics and definitions used
+    throughout the library
+    <li> <code><a href="html/RelationAlgebra.comparisons.html">comparisons</a></code>: types with decidable equality
+    and ternary comparison function
+    <li> <code><a href="html/RelationAlgebra.positives.html">positives</a></code>: simple facts about binary positive numbers
+    <li> <code><a href="html/RelationAlgebra.ordinal.html">ordinal</a></code>: finite ordinals, finite sets of
+    finite ordinals
+    <li> <code><a href="html/RelationAlgebra.pair.html">pair</a></code>: encoding pairs of ordinals as ordinals
+    <li> <code><a href="html/RelationAlgebra.powerfix.html">powerfix</a></code>: simple pseudo-fixpoint iterator
+    <li> <code><a href="html/RelationAlgebra.lset.html">lset</a></code>: sup-semilattice of finite sets represented as lists
+  </ul>
+  <li>Algebraic hierarchy
+  <ul>
+    <li> <code><a href="html/RelationAlgebra.level.html">level</a></code>: bitmasks allowing us to refer to an
+    arbitrary point in the hierarchy
+    <li> <code><a href="html/RelationAlgebra.lattice.html">lattice</a></code>: ``flat'' structures, from preorders
+    to Boolean lattices
+    <li> <code><a href="html/RelationAlgebra.monoid.html">monoid</a></code>: typed structures, from partially
+    ordered monoids to residuated Kleene lattices
+    <li> <code><a href="html/RelationAlgebra.kat.html">kat</a></code>: Kleene algebra with tests
+    <li> <code><a href="html/RelationAlgebra.kleene.html">kleene</a></code>: Basic facts about Kleene algebra
+    <li> <code><a href="html/RelationAlgebra.factors.html">factors</a></code>: Basic facts about residuated structures
+  </ul>
+  <li>Models
+  <ul>
+    <li> <code><a href="html/RelationAlgebra.prop.html">prop</a></code>: distributed lattice of Prop-ositions
+    <li> <code><a href="html/RelationAlgebra.boolean.html">boolean</a></code>: Boolean trivial lattice, extended
+    to a monoid.
+    <li> <code><a href="html/RelationAlgebra.rel.html">rel</a></code>: heterogeneous binary relations
+    <li> <code><a href="html/RelationAlgebra.lang.html">lang</a></code>: word languages (untyped)
+    <li> <code><a href="html/RelationAlgebra.traces.html">traces</a></code>: trace languages (typed and untyped)
+    <li> <code><a href="html/RelationAlgebra.glang.html">glang</a></code>: guarded string languages (typed and untyped)
+  </ul>
+  <li>Free models
+  <ul>
+    <li> <code><a href="html/RelationAlgebra.lsyntax.html">lsyntax</a></code>: free lattice (Boolean expressions)
+    <li> <code><a href="html/RelationAlgebra.syntax.html">syntax</a></code>: free relation algebra
+    <li> <code><a href="html/RelationAlgebra.regex.html">regex</a></code>: regular expressions (untyped)
+    <li> <code><a href="html/RelationAlgebra.gregex.html">gregex</a></code>: generalised regular expressions
+    (typed - for KAT completeness)
+    <li> <code><a href="html/RelationAlgebra.ugregex.html">ugregex</a></code>: untyped generalised regular
+    expressions (for KAT decision procedure)
+    <li> <code><a href="html/RelationAlgebra.kat_reification.html">kat_reification</a></code>: tools and definitions for
+    KAT reification
+  </ul>
+  <li>Relation algebra tools
+  <ul>
+    <li> <code><a href="html/RelationAlgebra.normalisation.html">normalisation</a></code>: normalisation and
+    semi-decision tactics for relation algebra
+    <li> <code><a href="html/RelationAlgebra.rewriting.html">rewriting</a></code>: rewriting modulo associativity of
+    composition ; bridge with AAC_tactics (disabled by default)
+  </ul>
+  <li>Linear algebra
+  <ul>
+    <li> <code><a href="html/RelationAlgebra.sups.html">sups</a></code>: finite suprema/infima (a la bigop from
+    ssreflect)
+    <li> <code><a href="html/RelationAlgebra.sums.html">sums</a></code>: finite sums
+    <li> <code><a href="html/RelationAlgebra.matrix.html">matrix</a></code>: matrices over all structures
+    supporting this construction
+    <li> <code><a href="html/RelationAlgebra.matrix_ext.html">matrix_ext</a></code>: additional operations and
+    properties about matrices
+    <li> <code><a href="html/RelationAlgebra.rmx.html">rmx</a></code>: matrices of regular expressions
+    <li> <code><a href="html/RelationAlgebra.bmx.html">bmx</a></code>: matrices of Booleans
+  </ul>
+  <li>Untyping theorems
+  <ul>
+    <li> <code><a href="html/RelationAlgebra.untyping.html">untyping</a></code>: untyping theorem for structures
+    below Kleene algebra with converse
+    <li> <code><a href="html/RelationAlgebra.kat_untyping.html">kat_untyping</a></code>: untyping theorem for guarded
+    string languages (and thus, KAT)
+  </ul>
+  <li>Automata
+  <ul>
+    <li> <code><a href="html/RelationAlgebra.dfa.html">dfa</a></code>: deterministic finite state automata,
+    decidability of language inclusion
+    <li> <code><a href="html/RelationAlgebra.nfa.html">nfa</a></code>: matricial non-deterministic finite
+    state automata, formal evaluation into regular expressions
+    <li> <code><a href="html/RelationAlgebra.ugregex_dec.html">ugregex_dec</a></code>: decision of guarded string
+    language equivalence of generalised regular expressions, using
+    partial derivatives
+  </ul>
+  <li>Completeness
+  <ul>
+    <li> <code><a href="html/RelationAlgebra.ka_completeness.html">ka_completeness</a></code>: (untyped) completeness of Kleene algebra 
+    <li> <code><a href="html/RelationAlgebra.kat_completeness.html">kat_completeness</a></code>: (typed) completeness of Kleene
+    algebra with tests
+    <li> <code><a href="html/RelationAlgebra.kat_tac.html">kat_tac</a></code>: decision tactics for KA and KAT,
+    elimination of Hoare hypotheses to get <code>hkat</code>
+  </ul>
+  <li>Applications to program verification
+  <ul>
+    <li> <code><a href="html/RelationAlgebra.compiler_opts.html">compiler_opts</a></code>: verification of compiler
+    optimisations in KAT
+    <li> <code><a href="html/RelationAlgebra.imp.html">imp</a></code>: formalisation of the IMP programming
+    language, proving program equivalence using KAT, embedding of
+    Hoare logic for partial correctness
+  </ul>
+</ul>
+  
+
+<h3 id="doc:deps">Modules dependencies</h3>
+
+<div align="center"><img src="deps.jpg" alt="RA modules dependencies" usemap="#RelationAlgebra"/></div>
+
+<map id="RelationAlgebra" name="RelationAlgebra">
+<area shape="poly" id="node1" href="html/RelationAlgebra.atoms.html" title="atoms" alt="" coords="615,413,614,408,611,404,605,401,598,399,590,399,582,399,575,401,569,404,566,408,564,413,566,417,569,421,575,424,582,426,590,427,598,426,605,424,611,421,614,417"/>
+<area shape="poly" id="node2" href="html/RelationAlgebra.boolean.html" title="boolean" alt="" coords="531,469,530,465,525,461,518,458,509,456,500,455,490,456,481,458,474,461,470,465,468,469,470,473,474,477,481,481,490,483,500,483,509,483,518,481,525,477,530,473"/>
+<area shape="poly" id="node4" href="html/RelationAlgebra.lsyntax.html" title="lsyntax" alt="" coords="634,469,633,465,629,461,622,458,614,456,605,455,596,456,587,458,581,461,577,465,575,469,577,473,581,477,587,481,596,483,605,483,614,483,622,481,629,477,633,473"/>
+<area shape="poly" id="node10" href="html/RelationAlgebra.monoid.html" title="monoid" alt="" coords="411,582,409,578,404,574,397,571,389,569,379,568,369,569,360,571,353,574,349,578,347,582,349,586,353,590,360,594,369,596,379,596,389,596,397,594,404,590,409,586"/>
+<area shape="poly" id="node12" href="html/RelationAlgebra.prop.html" title="prop" alt="" coords="504,582,503,578,500,574,495,571,489,569,482,568,475,569,468,571,464,574,460,578,459,582,460,586,464,590,468,594,475,596,482,596,489,596,495,594,500,590,503,586"/>
+<area shape="poly" id="node14" href="html/RelationAlgebra.sups.html" title="sups" alt="" coords="618,526,617,521,614,517,610,514,604,512,597,511,590,512,584,514,580,517,577,521,576,526,577,530,580,534,584,537,590,539,597,540,604,539,610,537,614,534,617,530"/>
+<area shape="poly" id="node26" href="html/RelationAlgebra.positives.html" title="positives" alt="" coords="642,582,641,578,636,574,629,571,619,569,609,568,598,569,589,571,582,574,577,578,575,582,577,586,582,590,589,594,598,596,609,596,619,596,629,594,636,590,641,586"/>
+<area shape="poly" id="node6" href="html/RelationAlgebra.bmx.html" title="bmx" alt="" coords="438,356,437,352,434,348,429,345,423,343,416,342,409,343,403,345,398,348,395,352,394,356,395,361,398,364,403,368,409,370,416,370,423,370,429,368,434,364,437,361"/>
+<area shape="poly" id="node8" href="html/RelationAlgebra.matrix.html" title="matrix" alt="" coords="284,413,283,408,279,404,273,401,265,399,257,399,248,399,240,401,234,404,230,408,229,413,230,417,234,421,240,424,248,426,257,427,265,426,273,424,279,421,283,417"/>
+<area shape="poly" id="node85" href="html/RelationAlgebra.normalisation.html" title="normalisation" alt="" coords="152,469,150,465,143,461,132,458,119,456,104,455,89,456,75,458,64,461,57,465,55,469,57,473,64,477,75,481,89,483,104,483,119,483,132,481,143,477,150,473"/>
+<area shape="poly" id="node87" href="html/RelationAlgebra.sums.html" title="sums" alt="" coords="368,469,367,465,363,461,358,458,352,456,344,455,337,456,331,458,325,461,322,465,321,469,322,473,325,477,331,481,337,483,344,483,352,483,358,481,363,477,367,473"/>
+<area shape="poly" id="node76" href="html/RelationAlgebra.lattice.html" title="lattice" alt="" coords="507,639,506,634,502,630,497,627,490,625,482,624,474,625,467,627,461,630,457,634,456,639,457,643,461,647,467,650,474,652,482,653,490,652,497,650,502,647,506,643"/>
+<area shape="poly" id="node24" href="html/RelationAlgebra.ordinal.html" title="ordinal" alt="" coords="716,582,715,578,710,574,704,571,696,569,686,568,677,569,669,571,662,574,658,578,657,582,658,586,662,590,669,594,677,596,686,596,696,596,704,594,710,590,715,586"/>
+<area shape="poly" id="node80" href="html/RelationAlgebra.lset.html" title="lset" alt="" coords="561,582,560,578,557,574,552,571,546,569,540,568,533,569,527,571,523,574,520,578,519,582,520,586,523,590,527,594,533,596,540,596,546,596,552,594,557,590,560,586"/>
+<area shape="poly" id="node16" href="html/RelationAlgebra.common.html" title="common" alt="" coords="516,752,515,747,510,743,502,740,492,738,482,737,471,738,461,740,454,743,449,747,447,752,449,756,454,760,461,763,471,765,482,766,492,765,502,763,510,760,515,756"/>
+<area shape="poly" id="node17" href="html/RelationAlgebra.comparisons.html" title="comparisons" alt="" coords="654,639,652,634,645,630,635,627,623,625,609,624,595,625,582,627,572,630,566,634,563,639,566,643,572,647,582,650,595,652,609,653,623,652,635,650,645,647,652,643"/>
+<area shape="poly" id="node18" href="html/RelationAlgebra.compiler_opts.html" title="compiler_opts" alt="" coords="170,17,167,13,160,9,149,6,135,4,119,3,104,4,90,6,78,9,71,13,69,17,71,22,78,26,90,29,104,31,119,31,135,31,149,29,160,26,167,22"/>
+<area shape="poly" id="node19" href="html/RelationAlgebra.kat_tac.html" title="kat_tac" alt="" coords="277,74,276,69,271,65,265,62,257,60,248,60,239,60,231,62,224,65,220,69,219,74,220,78,224,82,231,85,239,87,248,88,257,87,265,85,271,82,276,78"/>
+<area shape="poly" id="node21" href="html/RelationAlgebra.rewriting.html" title="rewriting" alt="" coords="106,130,104,126,99,122,91,119,81,117,70,116,59,117,49,119,41,122,35,126,34,130,35,135,41,139,49,142,59,144,70,144,81,144,91,142,99,139,104,135"/>
+<area shape="poly" id="node53" href="html/RelationAlgebra.kat_completeness.html" title="kat_completeness" alt="" coords="462,130,459,126,451,122,437,119,421,117,402,116,384,117,367,119,354,122,346,126,343,130,346,135,354,139,367,142,384,144,402,144,421,144,437,142,451,139,459,135"/>
+<area shape="poly" id="node59" href="html/RelationAlgebra.kat_reification.html" title="kat_reification" alt="" coords="706,300,704,295,697,291,685,288,671,286,656,286,640,286,626,288,615,291,608,295,605,300,608,304,615,308,626,311,640,313,656,314,671,313,685,311,697,308,704,304"/>
+<area shape="poly" id="node65" href="html/RelationAlgebra.kat_untyping.html" title="kat_untyping" alt="" coords="562,300,559,295,553,291,542,288,529,286,514,286,499,286,486,288,475,291,468,295,466,300,468,304,475,308,486,311,499,313,514,314,529,313,542,311,553,308,559,304"/>
+<area shape="poly" id="node67" href="html/RelationAlgebra.ugregex_dec.html" title="ugregex_dec" alt="" coords="339,300,337,295,330,291,320,288,307,286,293,286,278,286,265,288,255,291,248,295,246,300,248,304,255,308,265,311,278,313,293,314,307,313,320,311,330,308,337,304"/>
+<area shape="poly" id="node23" href="html/RelationAlgebra.denum.html" title="denum" alt="" coords="765,526,764,521,760,517,753,514,745,512,737,511,728,512,720,514,714,517,709,521,708,526,709,530,714,534,720,537,728,539,737,540,745,539,753,537,760,534,764,530"/>
+<area shape="poly" id="node28" href="html/RelationAlgebra.dfa.html" title="dfa" alt="" coords="452,300,451,295,448,291,443,288,437,286,431,286,424,286,418,288,414,291,411,295,409,300,411,304,414,308,418,311,424,313,431,314,437,313,443,311,448,308,451,304"/>
+<area shape="poly" id="node30" href="html/RelationAlgebra.pair.html" title="pair" alt="" coords="574,356,573,352,570,348,566,345,560,343,553,342,547,343,541,345,536,348,533,352,532,356,533,361,536,364,541,368,547,370,553,370,560,370,566,368,570,364,573,361"/>
+<area shape="poly" id="node32" href="html/RelationAlgebra.factors.html" title="factors" alt="" coords="222,469,220,465,216,461,210,458,202,456,194,455,185,456,177,458,171,461,167,465,166,469,167,473,171,477,177,481,185,483,194,483,202,483,210,481,216,477,220,473"/>
+<area shape="poly" id="node33" href="html/RelationAlgebra.kleene.html" title="kleene" alt="" coords="283,526,281,521,278,517,272,514,264,512,256,511,247,512,240,514,234,517,230,521,229,526,230,530,234,534,240,537,247,539,256,540,264,539,272,537,278,534,281,530"/>
+<area shape="poly" id="node35" href="html/RelationAlgebra.glang.html" title="glang" alt="" coords="551,413,549,408,546,404,540,401,533,399,526,399,518,399,511,401,505,404,502,408,501,413,502,417,505,421,511,424,518,426,526,427,533,426,540,424,546,421,549,417"/>
+<area shape="poly" id="node37" href="html/RelationAlgebra.kat.html" title="kat" alt="" coords="454,469,453,465,450,461,445,458,440,456,433,455,426,456,421,458,416,461,413,465,412,469,413,473,416,477,421,481,426,483,433,483,440,483,445,481,450,477,453,473"/>
+<area shape="poly" id="node40" href="html/RelationAlgebra.traces.html" title="traces" alt="" coords="562,526,560,521,557,517,551,514,544,512,537,511,529,512,522,514,516,517,513,521,512,526,513,530,516,534,522,537,529,539,537,540,544,539,551,537,557,534,560,530"/>
+<area shape="poly" id="node42" href="html/RelationAlgebra.gregex.html" title="gregex" alt="" coords="645,356,644,352,640,348,633,345,625,343,617,342,608,343,600,345,593,348,589,352,588,356,589,361,593,364,600,368,608,370,617,370,625,370,633,368,640,364,644,361"/>
+<area shape="poly" id="node45" href="html/RelationAlgebra.imp.html" title="imp" alt="" coords="242,17,241,13,238,9,234,6,228,4,221,3,215,4,209,6,204,9,201,13,200,17,201,22,204,26,209,29,215,31,221,31,228,31,234,29,238,26,241,22"/>
+<area shape="poly" id="node47" href="html/RelationAlgebra.rel.html" title="rel" alt="" coords="454,413,453,408,450,404,445,401,440,399,433,399,426,399,421,401,416,404,413,408,412,413,413,417,416,421,421,424,426,426,433,427,440,426,445,424,450,421,453,417"/>
+<area shape="poly" id="node49" href="html/RelationAlgebra.ka_completeness.html" title="ka_completeness" alt="" coords="460,187,457,182,449,178,436,175,420,173,402,173,385,173,369,175,356,178,348,182,345,187,348,191,356,195,369,198,385,200,402,201,420,200,436,198,449,195,457,191"/>
+<area shape="poly" id="node50" href="html/RelationAlgebra.nfa.html" title="nfa" alt="" coords="424,243,423,239,420,235,415,232,409,230,402,229,396,230,390,232,385,235,382,239,381,243,382,248,385,251,390,255,396,257,402,257,409,257,415,255,420,251,423,248"/>
+<area shape="poly" id="node93" href="html/RelationAlgebra.rmx.html" title="rmx" alt="" coords="395,300,394,295,391,291,387,288,381,286,374,286,368,286,362,288,357,291,354,295,353,300,354,304,357,308,362,311,368,313,374,314,381,313,387,311,391,308,394,304"/>
+<area shape="poly" id="node57" href="html/RelationAlgebra.untyping.html" title="untyping" alt="" coords="307,469,305,465,300,461,292,458,282,456,271,455,261,456,251,458,243,461,238,465,236,469,238,473,243,477,251,481,261,483,271,483,282,483,292,481,300,477,305,473"/>
+<area shape="poly" id="node61" href="html/RelationAlgebra.syntax.html" title="syntax" alt="" coords="381,526,380,521,376,517,370,514,362,512,354,511,345,512,338,514,332,517,328,521,326,526,328,530,332,534,338,537,345,539,354,540,362,539,370,537,376,534,380,530"/>
+<area shape="poly" id="node70" href="html/RelationAlgebra.ugregex.html" title="ugregex" alt="" coords="517,356,516,352,511,348,504,345,495,343,485,342,475,343,466,345,458,348,454,352,452,356,454,361,458,364,466,368,475,370,485,370,495,370,504,368,511,364,516,361"/>
+<area shape="poly" id="node96" href="html/RelationAlgebra.powerfix.html" title="powerfix" alt="" coords="139,526,137,521,132,517,125,514,115,512,104,511,93,512,83,514,75,517,70,521,68,526,70,530,75,534,83,537,93,539,104,540,115,539,125,537,132,534,137,530"/>
+<area shape="poly" id="node73" href="html/RelationAlgebra.lang.html" title="lang" alt="" coords="468,526,467,521,464,517,459,514,453,512,446,511,440,512,434,514,429,517,426,521,425,526,426,530,429,534,434,537,440,539,446,540,453,539,459,537,464,534,467,530"/>
+<area shape="poly" id="node77" href="html/RelationAlgebra.level.html" title="level" alt="" coords="504,695,503,691,499,687,495,684,488,682,482,681,475,682,469,684,464,687,461,691,460,695,461,699,464,703,469,706,475,708,482,709,488,708,495,706,499,703,503,699"/>
+<area shape="poly" id="node89" href="html/RelationAlgebra.matrix_ext.html" title="matrix_ext" alt="" coords="291,356,289,352,283,348,274,345,263,343,250,342,238,343,227,345,218,348,212,352,210,356,212,361,218,364,227,368,238,370,250,370,263,370,274,368,283,364,289,361"/>
+<area shape="poly" id="node105" href="html/RelationAlgebra.regex.html" title="regex" alt="" coords="397,413,396,408,392,404,387,401,380,399,372,399,364,399,357,401,352,404,348,408,347,413,348,417,352,421,357,424,364,426,372,427,380,426,387,424,392,421,396,417"/>
+</map>
+
+<h2 id="notes">Notes</h2>
+
+<p> This library started by a complete rewrite of the <a
+ href="http://sardes.inrialpes.fr/~braibant/atbr">ATBR</a> library we
+developed with Thomas Braibant. There was two main reasons for not
+reusing this code: </p>
+
+<ul>
+  <li> The way we designed the algebraic hierarchy in ATBR, using
+  typeclasses, did not scale to the richer structures we present here (converse,
+  residuals, allegories), was not modular enough, and did not allow us
+  to define easily the Boolean lattice of tests needed in KAT. Here we
+  follow a completely different approach, which seems to scale pretty
+  well but required restarting from scratch.
+
+  <li> The fact that we were proving the (algebraic) completeness of
+  KA using the efficient algorithm we designed for deciding language
+  equivalence of regular expressions was sub-optimal: as a consequence
+  of this choice, our proofs were over-complicated. Instead, by using
+  a different path here, we prove KA completeness in about 200 lines
+  of definitions and 200 lines of proofs. This refactorisation was
+  essential to reach KAT with a reasonable amount of efforts.
+</ul>
+
+<h2 id="ack">Acknowledgements</h2>
+
+I am grateful to Thomas Braibant, with whom we developed the ancestor
+of this library, clearing the ground for this subsequent work.
+
+</div>
+
+<br><br>
+<hr>
+<address>http://perso.ens-lyon.fr/damien.pous/ra/</address>
+<!-- hhmts start -->Last modified: Sun Dec 16 23:34:45 CET 2012 <!-- hhmts end -->
+</body> </html>

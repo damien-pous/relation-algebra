@@ -1,0 +1,12 @@
+Name: RelationAlgebra
+Title: Relation Algebra and KAT
+Url: http://perso.ens-lyon.fr/damien.pous/ra/
+Description: A modular library about relation algebra, from idempotent semirings to residuated Kleene allegories, including a decision tactic for Kleene algebra with Tests (KAT).
+Keywords: relation algebra, Kleene algebra with tests, KAT, allegories, residuated structures, automata, regular expressions, matrices
+Category: Mathematics/Algebra
+Author: Damien Pous
+Email: Damien.Pous@ens-lyon.fr
+Homepage: http://perso.ens-lyon.fr/damien.pous/
+Institution: CNRS, LIP - ENS Lyon - UMR 5668
+Require: 
+License: LGPL
