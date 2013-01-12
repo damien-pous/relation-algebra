@@ -36,14 +36,14 @@ let time f x =
 let ra_path = ["RelationAlgebra"]
 
 (* raise an error in Coq *)
-let error s = Printf.kprintf Util.error ("[RelationAlgebra] "^^s)
+let error s = Printf.kprintf Errors.error ("[RelationAlgebra] "^^s)
 
 (* resolving a typeclass [cls] in a goal [gl] *)
 let tc_find gl cls = Typeclasses.resolve_one_typeclass (Tacmach.pf_env gl) (Tacmach.project gl) cls
 
 (* creating new evars *)
-let e_new_evar = Evarutil.e_new_evar ~src:(Util.dummy_loc,Evd.GoalEvar)
-let new_evar = Evarutil.new_evar ~src:(Util.dummy_loc,Evd.GoalEvar)
+let e_new_evar = Evarutil.e_new_evar ~src:(Loc.dummy_loc,Evar_kinds.GoalEvar)
+let new_evar = Evarutil.new_evar ~src:(Loc.dummy_loc,Evar_kinds.GoalEvar)
 
 (* push a variable on the environment *)
 let push x t env = Termops.push_rel_assum (x,t) env
@@ -60,7 +60,7 @@ let fresh_name n goal =
 
 (* access to Coq constants *)
 let get_const dir s = 
-  lazy (Libnames.constr_of_global (Coqlib.find_reference "RelationAlgebra.reification" dir s))
+  lazy (Globnames.constr_of_global (Coqlib.find_reference "RelationAlgebra.reification" dir s))
 
 (* make an application using a lazy value *)
 let force_app f = fun x -> mkApp (Lazy.force f,x)
@@ -88,13 +88,13 @@ let get_fun_14 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 q4 
 (* Calling tactics (from newring.ml4)
    TODO: simplify? *)
 let ltac_call tac (args:glob_tactic_arg list) =
-  TacArg(Util.dummy_loc,TacCall(Util.dummy_loc, 
-				Glob_term.ArgArg(Util.dummy_loc, Lazy.force tac),args))
+  TacArg(Loc.dummy_loc,TacCall(Loc.dummy_loc,
+				Misctypes.ArgArg(Loc.dummy_loc, Lazy.force tac),args))
 let ltac_lcall tac args =
-  TacArg(Util.dummy_loc,TacCall(Util.dummy_loc, 
-				Glob_term.ArgVar(Util.dummy_loc, id_of_string tac),args))
+  TacArg(Loc.dummy_loc,TacCall(Loc.dummy_loc,
+				Misctypes.ArgVar(Loc.dummy_loc, id_of_string tac),args))
 let ltac_letin (x, e1) e2 =
-  TacLetIn(false,[(Util.dummy_loc,id_of_string x),e1],e2)
+  TacLetIn(false,[(Loc.dummy_loc,id_of_string x),e1],e2)
 let ltac_apply (f:glob_tactic_expr) (args:glob_tactic_arg list) =
   Tacinterp.eval_tactic (ltac_letin ("F", Tacexp f) (ltac_lcall "F" args))
 
@@ -102,7 +102,7 @@ let ltac_apply (f:glob_tactic_expr) (args:glob_tactic_arg list) =
 let ltac_constr_arg x = 
   let x = Detyping.detype false [] [] x in 
   (* TODO: replace [] above by appropriate values? *)
-  ConstrMayEval (Glob_term.ConstrTerm (x,None))
+  ConstrMayEval (Genredexpr.ConstrTerm (x,None))
 
 
 
