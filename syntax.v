@@ -12,6 +12,7 @@ Require Export positives comparisons.
 Require Import Eqdep. 
 Require Import monoid.
 Set Implicit Arguments.
+Set Asymmetric Patterns.
 
 (** * Free syntactic model *)
 

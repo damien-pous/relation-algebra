@@ -12,6 +12,7 @@
 Require Import Lt Peano_dec Compare_dec Mult Euclid NPeano. (* TODO: se passer de NPeano? *)
 Require Import ordinal.
 
+Set Asymmetric Patterns.
 Set Implicit Arguments.
 
 (** equivalence between our Boolean strict order on [nat],
