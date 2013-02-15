@@ -124,7 +124,7 @@ Proof.
   constructor. 
    intro. now rewrite weq_spec. 
    intros ? ?. rewrite 2weq_spec. tauto.
-   intros x y z. rewrite 3weq_spec. intuition eauto.
+   intros x y z. rewrite 3weq_spec. intuition; etransitivity; eassumption.
 Qed.
 
 Instance weq_leq `{laws}: subrelation weq leq.
