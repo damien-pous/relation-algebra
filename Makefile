@@ -46,9 +46,9 @@ TIMER=$(if $(TIMED), $(STDTIME), $(TIMECMD))
 #                        #
 ##########################
 
-OCAMLLIBS?=
-COQLIBS?= -R . RelationAlgebra
-COQDOCLIBS?=-R . RelationAlgebra
+OCAMLLIBS?=-I .
+COQLIBS?=-I . 
+COQDOCLIBS?=
 
 ##########################
 #                        #
@@ -73,28 +73,33 @@ COQSRCLIBS?=-I "$(COQLIB)kernel" -I "$(COQLIB)lib" \
   -I "$(COQLIB)interp" -I "$(COQLIB)printing" -I "$(COQLIB)intf" \
   -I "$(COQLIB)proofs" -I "$(COQLIB)tactics" -I "$(COQLIB)tools" \
   -I "$(COQLIB)toplevel" -I "$(COQLIB)grammar" \
-  -I "$(COQLIB)"plugins/btauto \
-  -I "$(COQLIB)"plugins/cc \
-  -I "$(COQLIB)"plugins/decl_mode \
-  -I "$(COQLIB)"plugins/extraction \
-  -I "$(COQLIB)"plugins/firstorder \
-  -I "$(COQLIB)"plugins/fourier \
-  -I "$(COQLIB)"plugins/funind \
-  -I "$(COQLIB)"plugins/micromega \
-  -I "$(COQLIB)"plugins/nsatz \
-  -I "$(COQLIB)"plugins/omega \
-  -I "$(COQLIB)"plugins/quote \
-  -I "$(COQLIB)"plugins/romega \
-  -I "$(COQLIB)"plugins/rtauto \
-  -I "$(COQLIB)"plugins/setoid_ring \
-  -I "$(COQLIB)"plugins/syntax \
-  -I "$(COQLIB)"plugins/xml
-ZFLAGS=$(OCAMLLIBS) $(COQSRCLIBS) -I "$(CAMLP4LIB)"
+  -I $(COQLIB)/plugins/btauto \
+  -I $(COQLIB)/plugins/cc \
+  -I $(COQLIB)/plugins/decl_mode \
+  -I $(COQLIB)/plugins/extraction \
+  -I $(COQLIB)/plugins/field \
+  -I $(COQLIB)/plugins/firstorder \
+  -I $(COQLIB)/plugins/fourier \
+  -I $(COQLIB)/plugins/funind \
+  -I $(COQLIB)/plugins/interface \
+  -I $(COQLIB)/plugins/micromega \
+  -I $(COQLIB)/plugins/nsatz \
+  -I $(COQLIB)/plugins/omega \
+  -I $(COQLIB)/plugins/quote \
+  -I $(COQLIB)/plugins/ring \
+  -I $(COQLIB)/plugins/romega \
+  -I $(COQLIB)/plugins/rtauto \
+  -I $(COQLIB)/plugins/setoid_ring \
+  -I $(COQLIB)/plugins/subtac \
+  -I $(COQLIB)/plugins/subtac/test \
+  -I $(COQLIB)/plugins/syntax \
+  -I $(COQLIB)/plugins/xml
+ZFLAGS=$(OCAMLLIBS) $(COQSRCLIBS) -I $(CAMLP4LIB)
 
-CAMLC?=$(OCAMLC) -c
-CAMLOPTC?=$(OCAMLOPT) -c
-CAMLLINK?=$(OCAMLC)
-CAMLOPTLINK?=$(OCAMLOPT)
+CAMLC?=$(OCAMLC) -c -rectypes
+CAMLOPTC?=$(OCAMLOPT) -c -rectypes
+CAMLLINK?=$(OCAMLC) -rectypes
+CAMLOPTLINK?=$(OCAMLOPT) -rectypes
 GRAMMARS?=grammar.cma
 ifeq ($(CAMLP4),camlp5)
 CAMLP4EXTEND=pa_extend.cmo q_MLast.cmo pa_macro.cmo
@@ -156,6 +161,7 @@ VFILES:=imp.v\
   normalisation.v\
   syntax.v\
   lsyntax.v\
+  move.v\
   rewriting.v\
   kat.v\
   factors.v\
@@ -175,6 +181,7 @@ VFILES:=imp.v\
 .SECONDARY: $(addsuffix .d,$(VFILES))
 
 VOFILES:=$(VFILES:.v=.vo)
+VOFILESINC=$(filter $(wildcard ./*),$(VOFILES)) 
 GLOBFILES:=$(VFILES:.v=.glob)
 VIFILES:=$(VFILES:.v=.vi)
 GFILES:=$(VFILES:.v=.g)
@@ -206,12 +213,16 @@ MLIFILES:=kat_dec.mli
 
 ALLCMOFILES:=$(ML4FILES:.ml4=.cmo) $(MLFILES:.ml=.cmo)
 CMOFILES=$(filter-out $(addsuffix .cmo,$(foreach lib,$(MLLIBFILES:.mllib=_MLLIB_DEPENDENCIES) $(MLPACKFILES:.mlpack=_MLPACK_DEPENDENCIES),$($(lib)))),$(ALLCMOFILES))
+CMOFILESINC=$(filter $(wildcard ./*),$(CMOFILES)) 
 CMXFILES=$(CMOFILES:.cmo=.cmx)
 OFILES=$(CMXFILES:.cmx=.o)
 CMAFILES:=$(MLLIBFILES:.mllib=.cma)
+CMAFILESINC=$(filter $(wildcard ./*),$(CMAFILES)) 
 CMXAFILES:=$(CMAFILES:.cma=.cmxa)
 CMIFILES=$(sort $(ALLCMOFILES:.cmo=.cmi) $(MLIFILES:.mli=.cmi))
+CMIFILESINC=$(filter $(wildcard ./*),$(CMIFILES)) 
 CMXSFILES=$(CMXFILES:.cmx=.cmxs) $(CMXAFILES:.cmxa=.cmxs)
+CMXSFILESINC=$(filter $(wildcard ./*),$(CMXSFILES)) 
 ifeq '$(HASNATDYNLINK)' 'true'
 HASNATDYNLINK_OR_EMPTY := yes
 else
@@ -228,10 +239,10 @@ all: $(VOFILES) $(CMOFILES) $(CMAFILES) $(if $(HASNATDYNLINK_OR_EMPTY),$(CMXSFIL
 
 mlihtml: $(MLIFILES:.mli=.cmi)
 	 mkdir $@ || rm -rf $@/*
-	$(OCAMLDOC) -html -d $@ -m A $(ZDEBUG) $(ZFLAGS) $(^:.cmi=.mli)
+	$(OCAMLDOC) -html -rectypes -d $@ -m A $(ZDEBUG) $(ZFLAGS) $(^:.cmi=.mli)
 
 all-mli.tex: $(MLIFILES:.mli=.cmi)
-	$(OCAMLDOC) -latex -o $@ -m A $(ZDEBUG) $(ZFLAGS) $(^:.cmi=.mli)
+	$(OCAMLDOC) -latex -rectypes -o $@ -m A $(ZDEBUG) $(ZFLAGS) $(^:.cmi=.mli)
 
 spec: $(VIFILES)
 
@@ -283,37 +294,37 @@ userinstall:
 	+$(MAKE) USERINSTALL=true install
 
 install-natdynlink:
-	cd "." && for i in $(CMXSFILES); do \
-	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/RelationAlgebra/$$i`"; \
-	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/RelationAlgebra/$$i; \
+	install -d "$(DSTROOT)"$(COQLIBINSTALL)/$(INSTALLDEFAULTROOT); \
+	for i in $(CMXSFILESINC); do \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/$(INSTALLDEFAULTROOT)/`basename $$i`; \
 	done
 
 install:$(if $(HASNATDYNLINK_OR_EMPTY),install-natdynlink)
-	cd "." && for i in $(VOFILES) $(CMOFILES) $(CMIFILES) $(CMAFILES); do \
-	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/RelationAlgebra/$$i`"; \
-	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/RelationAlgebra/$$i; \
+	install -d "$(DSTROOT)"$(COQLIBINSTALL)/$(INSTALLDEFAULTROOT); \
+	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/$(INSTALLDEFAULTROOT)/`basename $$i`; \
 	done
 
 install-doc:
-	install -d "$(DSTROOT)"$(COQDOCINSTALL)/RelationAlgebra/html
+	install -d "$(DSTROOT)"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/html
 	for i in html/*; do \
-	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/RelationAlgebra/$$i;\
+	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/$$i;\
 	done
-	install -d "$(DSTROOT)"$(COQDOCINSTALL)/RelationAlgebra/mlihtml
+	install -d "$(DSTROOT)"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/mlihtml
 	for i in mlihtml/*; do \
-	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/RelationAlgebra/$$i;\
+	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/$$i;\
 	done
 
 uninstall_me.sh:
 	echo '#!/bin/sh' > $@ 
-	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/RelationAlgebra && rm -f $(CMXSFILES) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "RelationAlgebra" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/RelationAlgebra && rm -f $(VOFILES) $(CMOFILES) $(CMIFILES) $(CMAFILES) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "RelationAlgebra" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/RelationAlgebra \\\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/$(INSTALLDEFAULTROOT) && \\\nfor i in $(CMXSFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "$(INSTALLDEFAULTROOT)" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/$(INSTALLDEFAULTROOT) && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "$(INSTALLDEFAULTROOT)" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT) \\\n' >> "$@"
 	printf '&& rm -f $(shell find "html" -maxdepth 1 -and -type f -print)\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find RelationAlgebra/html -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/RelationAlgebra \\\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find $(INSTALLDEFAULTROOT)/html -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT) \\\n' >> "$@"
 	printf '&& rm -f $(shell find "mlihtml" -maxdepth 1 -and -type f -print)\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find RelationAlgebra/mlihtml -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find $(INSTALLDEFAULTROOT)/mlihtml -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
 	chmod +x $@
 
 uninstall: uninstall_me.sh
@@ -363,7 +374,7 @@ Makefile: Make
 	$(CAMLOPTC) $(ZDEBUG) $(ZFLAGS) $(PP) -impl $<
 
 %.ml4.d: %.ml4
-	$(OCAMLDEP) -slash $(OCAMLLIBS) $(PP) -impl "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
+	$(COQDEP) -slash $(OCAMLLIBS) "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
 %.cmo: %.ml
 	$(CAMLC) $(ZDEBUG) $(ZFLAGS) $<

@@ -1,4 +1,4 @@
--R . RelationAlgebra
+# -R . RelationAlgebra
 
 common.v
 comparisons.v
@@ -18,6 +18,7 @@ ra_fold.ml4
 
 mrewrite.ml4
 rewriting.v
+move.v
 
 lsyntax.v
 syntax.v
@@ -62,3 +63,6 @@ kat_tac.v
 
 compiler_opts.v
 imp.v
+## the following one is commented out because it takes a bit long to compile, 
+## and it is not useful to end-users
+# paterson.v

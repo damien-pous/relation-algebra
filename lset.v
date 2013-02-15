@@ -34,13 +34,13 @@ Set Implicit Arguments.
 (** two lists are equal when they contain the same elements,
    independently of their position or multiplicity *)
 
-Canonical Structure lpw_ops A := lattice.mk_ops (list A)
+Canonical Structure lset_ops A := lattice.mk_ops (list A)
   (fun h k => forall a, In a h -> In a k)
   (fun h k => forall a, In a h <-> In a k)
   (@app A) (@app A) (assert_false id) (@nil A) (@nil A).
 
 (** the fact that this makes a semi-lattice is almost trivial *)
-Instance lpw_laws A: lattice.laws BSL (lpw_ops A).
+Instance lset_laws A: lattice.laws BSL (lset_ops A).
 Proof. 
   constructor; simpl; try discriminate.
    firstorder. 

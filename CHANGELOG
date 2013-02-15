@@ -1,3 +1,10 @@
+== RelationAlgebra 1.1  (2013, February 15th) ==
+
+- [paterson]: proof of equivalence of two flowchart schemes, due to Paterson
+- [compiler_opts]: added the two missing compiler optimisations
+- [move]: tools to easily move subterms inside a product 
+- [lset]: fixed a typo
+
 == RelationAlgebra 1.0  (2012, December 16th) ==
 
 First release of the library

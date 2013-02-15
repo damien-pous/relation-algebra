@@ -442,7 +442,7 @@ Program Definition ttraces_cup x y: ttraces n m := proj1_sig x \cup proj1_sig y.
 Next Obligation. apply typed'_cup; apply proj2_sig. Qed. 
 Program Definition ttraces_cap x y: ttraces n m := proj1_sig x \cap proj1_sig y. 
 Next Obligation. apply typed'_cap; apply proj2_sig. Qed. 
-Program Definition ttraces_neg x: ttraces n m := restrict n m (! x). 
+Program Definition ttraces_neg x: ttraces n m := restrict n m (! proj1_sig x). 
 Program Definition ttraces_bot: ttraces n m := fun _ => False.
 Next Obligation. apply typed'_bot. Qed.
 Program Definition ttraces_top: ttraces n m := typed n m.

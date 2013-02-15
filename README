@@ -54,12 +54,15 @@ We give a few examples of applications of this library to program
 verification:
 - a formalisation of a paper by Dexter Kozen and Maria-Cristina Patron. 
   showing how to certify compiler optimisations using KAT.
-- a formalisation of the IMP programming language, followed by some
+- a formalisation of the IMP programming language, followed by: 1/ some
   simple program equivalences that become straightforward to prove
-  using our tactics.
-- a formalisation of Hoare logic rules for partial correctness in the
-  above language: all rules except the assignation one are proved by a
-  single call to the [hkat] tactic.
+  using our tactics; 2/ a formalisation of Hoare logic rules for partial
+  correctness in the above language: all rules except the assignation one 
+  are proved by a single call to the hkat tactic.
+- a proof of the equivalence of two flowchart schemes, due to
+  Paterson. The informal paper proof takes one page; Allegra Angus and
+  Dexter Kozen gave a six pages long proof using KAT; our Coq proof is
+  about 100 lines.
 
 
 INSTALLATION.

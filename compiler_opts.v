@@ -29,6 +29,29 @@ Set Implicit Arguments.
 Infix " ;" := (dot _ _ _) (left associativity, at level 40): ra_terms. 
 
 
+(** ** preliminary lemmas  *)
+
+Lemma lemma_1 `{L: monoid.laws} `{Hl: BKA<<l} n (x y: X n n): 
+  x;y == x;y;x -> x;y^* == x;(y;x)^*.
+Proof. 
+  intro H. apply antisym. apply str_ind_r'. ka. 
+  rewrite str_dot, <-dotA. rewrite H at 2. ka.
+  rewrite str_dot. apply str_ind_l'. ka. 
+  rewrite str_unfold_l. ra_normalise. rewrite <-H. ka.
+Qed.
+
+Lemma lemma_1' `{L: monoid.laws} `{Hl: BKA<<l} n (x y: X n n): 
+  y;x == x;(y;x) -> y^*;x == (x;y)^*;x.
+Proof. monoid.dual @lemma_1. Qed.
+
+Lemma lemma_1'' `{L: monoid.laws} `{Hl: BKA<<l} n (p q r: X n n):
+  p;q == q;p -> p;r == r -> (p;q)^*;r == q^*;r. 
+Proof.
+  intros Hpq Hpr. apply antisym.
+  rewrite Hpq. apply str_ind_l'. ka. apply str_move in Hpq. mrewrite Hpq. mrewrite Hpr. ka. 
+  apply str_ind_l'. ka. rewrite <-str_snoc at 2. rewrite Hpq at 2 3. mrewrite Hpr. ka. 
+Qed.
+
 Lemma lemma_2 `{L: laws} n b (q: X n n): 
   [b];q == q;[b] -> [b];q^* == [b];(q;[b])^*.
 Proof. hkat. Qed.
@@ -82,12 +105,57 @@ Qed.
 
 (** ** 3.4 Loop Hoisting *)
 
-(* TODO  *)
+Lemma opti_3_4i `{L: laws} n (a b: tst n) (p q r s u w: X n n):
+  u;[b] == u ->
+  [b];u == [b] ->
+  [b];q == q;[b] -> 
+  [b];s == s;[b] -> 
+  [b];r == r;[b] -> 
+  [a];w == w;[a] ->
+  u;r == q -> 
+  u;w == w -> 
+  q;s;w == w;q;s ->
+  p;u;([a];r;s)^*;[!a];w == p;([a];q;s)^*;[!a];w.
+Proof.
+  intros ? ? ? ? ? ? Hur Huw Hqsw. 
+  transitivity (p;u;[b];([a];[b];(u;r);s)^*;[!a];w). hkat. rewrite Hur. 
+  transitivity (p;u;([a];q;s)^*;w;[!a]). hkat. 
+  assert (E: w;([a];q;s)^* == ([a];q;s)^*;w) by (apply str_move; mrewrite Hqsw; hkat). 
+  mrewrite <-E. mrewrite Huw. mrewrite E. hkat. 
+Qed.
+
+Lemma opti_3_4ii `{L: laws} n (a: tst n) (p q u w: X n n):
+  u == w;u ->
+  u;w == w ->
+  w;p;q == p;q;w ->
+  w;[a] == [a];w -> 
+  ([a];u;p;q)^*;[!a];u == ([a];p;q)^*;[!a];u.
+Proof.
+  intros Hwu Huw Hpq Hw. rewrite Hwu at 1 2. transitivity (w;([a];u;(p;q;w))^*;[!a];u). hkat.
+  rewrite <-Hpq. mrewrite Huw. mrewrite Hpq. rewrite <-lemma_1. 
+  rewrite (str_move (z:=[a];p;q)). rewrite Hwu at 2. hkat. mrewrite <-Hpq. hkat. 
+  mrewrite <-Hpq. rewrite <-Huw at 1. rewrite Hwu. mrewrite Huw. hkat. 
+  (* intros Hwu Huw Hpq Hw. rewrite Hwu at 1 2. transitivity (w;([a];u;(p;q;w))^*;[!a];u). hkat. *)
+  (* rewrite <-Hpq. mrewrite Huw. mrewrite Hpq. transitivity ((w;[a];p;q)^*;[!a];(w;u)). hkat.  *)
+  (* rewrite <-3dotA, lemma_1'', <-Hwu. ra. mrewrite <-Hpq. hkat. rewrite <-Hwu at 1. hkat.  *)
+Qed.
 
 
 (** ** 3.5 Induction variable elimination *)
 
-(* TODO  *)
+Lemma opti_3_5 `{L: laws} n (a b c: tst n) (p q r: X n n):
+  q == q;[b] -> 
+  [b] == [b];q -> 
+  [c];r == [c];r;[b] -> 
+  [b];p == [b];p;[c] -> 
+  [c];q == [c];r -> 
+  q;([a];p;q)^* == q;([a];p;r)^*.
+Proof. 
+  intros Hq Hb Hr Hbp Hcq.
+  assert (E: [b];p;q == [b];p;r) by (rewrite Hbp; mrewrite Hcq; hkat). 
+  transitivity (q;([a];([b];p;q))^*;[b]). hkat. rewrite E. hkat. 
+Qed.
+
 
 (** ** (3.6 and 3.7 are void) *)
 
