@@ -35,11 +35,11 @@ Notation typed := (@typed' Atom src tgt).
 
 Fixpoint gerase n m (e: gregex n m): ugregex :=
   match e with
-    | g_zer _ _ => 0
-    | g_prd n p => u_prd p
-    | g_pls _ _ e f => gerase e + gerase f
-    | g_dot _ _ _ e f => gerase e * gerase f
-    | g_itr _ e => gerase e ^+
+    | g_zer _ _ _ => 0
+    | g_prd _ _ p => u_prd p
+    | g_pls e f => gerase e + gerase f
+    | g_dot e f => gerase e * gerase f
+    | g_itr e => gerase e ^+
     | g_var i => u_var _ i
   end.
 

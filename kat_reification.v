@@ -125,15 +125,15 @@ Fixpoint vars {n m} (e: kat_expr n m): list Pred :=
     | e_zer _ _ 
     | e_top _ _ 
     | e_one _ => []
-    | e_pls _ _ x y 
-    | e_cap _ _ x y 
-    | e_ldv _ _ _ x y 
-    | e_rdv _ _ _ x y 
-    | e_dot _ _ _ x y => union (vars x) (vars y)
-    | e_neg _ _ x 
-    | e_itr _ x 
-    | e_str _ x 
-    | e_cnv _ _ x => vars x
+    | e_pls x y 
+    | e_cap x y 
+    | e_ldv x y 
+    | e_rdv x y 
+    | e_dot x y => union (vars x) (vars y)
+    | e_neg x 
+    | e_itr x 
+    | e_str x 
+    | e_cnv x => vars x
     | syntax.e_var (inr (_,x)) => lsyntax.vars x
     | syntax.e_var _ => []
   end.

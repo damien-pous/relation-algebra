@@ -122,7 +122,7 @@ Section m.
  Proof.
    induction h as [|x h IHh]; simpl union. reflexivity. 
    induction k as [|y k IHk]. lattice. case cmp_spec. 
-   intros ->. fold_cons. rewrite IHh. lattice. 
+   intros ->. fold_cons. rewrite IHh. lattice.
    intros _. fold_cons. rewrite IHh. lattice.
    intros _. fold_cons. rewrite IHk. lattice.
  Qed.

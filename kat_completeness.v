@@ -76,8 +76,8 @@ Notation guards n m := (list (guard n m)).
    back to [gregex] in the obvious way *)
 Definition geval n m (x: guard n m) :=
   match x with 
-    | g_pred n a => g_atom n a
-    | g_elem n m a e b => g_atom n a * e * g_atom m b
+    | @g_pred n a => g_atom n a
+    | @g_elem n m a e b => g_atom n a * e * g_atom m b
   end.
 Notation teval := (sup (@geval _ _)).
 
@@ -135,15 +135,15 @@ Qed.
 (** [g_dot1 x y] tries to compose two externally guarded terms *)
 Definition g_dot1 n m (x: guard n m): forall p, guard m p -> guards n p  := 
   match x with
-    | g_pred _ a => fun p y => 
+    | g_pred a => fun p y => 
       match y with 
-        | g_pred _ b       => if eqb a b then [g_pred a] else []
-        | g_elem _ _ b e c => if eqb a b then [g_elem b e c] else []
+        | g_pred b       => if eqb a b then [g_pred a] else []
+        | g_elem b e c => if eqb a b then [g_elem b e c] else []
       end
-    | g_elem _ _ a e b => fun p y => 
+    | g_elem a e b => fun p y => 
       match y with 
-        | g_pred _ c => fun e => if eqb b c then [g_elem a e b] else []
-        | g_elem _ _ c f d => fun e => if eqb b c then [g_elem a (e*g_atom _ b*f) d] else []
+        | g_pred c => fun e => if eqb b c then [g_elem a e b] else []
+        | g_elem c f d => fun e => if eqb b c then [g_elem a (e*g_atom _ b*f) d] else []
       end e
   end.
 
@@ -193,19 +193,19 @@ Qed.
 (** Kleene star is defined by induction on the list of externally
    guarded terms, see Kozen and Smith' paper *)
 
-Definition fst n m (x: guard n m) := match x with g_pred _ a | g_elem _ _ a _ _ => a end.
-Definition lst n m (x: guard n m) := match x with g_pred _ a | g_elem _ _ _ _ a => a end.
+Definition fst n m (x: guard n m) := match x with g_pred a | g_elem a _ _ => a end.
+Definition lst n m (x: guard n m) := match x with g_pred a | g_elem _ _ a => a end.
 Definition g_inner_dot n m (x: guard n m): forall p, guard m p -> gregex n p :=
   match x with
-    | g_pred _ a => fun p y => 
+    | g_pred a => fun p y => 
       match y with 
-        | g_pred _ b       => 0
-        | g_elem _ _ b e c => if eqb a b \cap eqb a c then e else 0
+        | g_pred b       => 0
+        | g_elem b e c => if eqb a b \cap eqb a c then e else 0
       end
-    | g_elem _ _ a e b => fun p y => 
+    | g_elem a e b => fun p y => 
       match y with 
-        | g_pred _ c => fun e => if eqb a b \cap eqb b c  then e else 0
-        | g_elem _ _ c f d => fun e => if eqb b c \cap eqb a d then e*g_atom _ b*f else 0
+        | g_pred c => fun e => if eqb a b \cap eqb b c  then e else 0
+        | g_elem c f d => fun e => if eqb b c \cap eqb a d then e*g_atom _ b*f else 0
       end e
   end.
 
@@ -309,11 +309,11 @@ Qed.
 
 Fixpoint hat n m (e: gregex n m): guards n m := 
   match e with
-    | g_zer _ _ => []
-    | g_prd n p => g_prd' n p
-    | g_pls _ _ e f => hat e \cup hat f
-    | g_dot _ _ _ e f => g_dot' (hat e) (hat f)
-    | g_itr _ e => g_dot' (hat e) (g_str' (hat e))
+    | g_zer _ _ _ => []
+    | g_prd _ _ p => g_prd' _ p
+    | g_pls e f => hat e \cup hat f
+    | g_dot e f => g_dot' (hat e) (hat f)
+    | g_itr e => g_dot' (hat e) (g_str' (hat e))
     | g_var i => g_var' i
   end.
 
@@ -451,11 +451,11 @@ End n.
 
 Fixpoint o n m (e: gregex n m): expr3 n m:=
   match e with
-    | g_zer _ _ => 0
-    | g_prd n p => o_pred n p
-    | g_pls _ _ e f => o e + o f
-    | g_dot _ _ _ e f => o e * o f
-    | g_itr _ e => o e ^+
+    | g_zer _ _ _ => 0
+    | g_prd _ _ p => o_pred _ p
+    | g_pls e f => o e + o f
+    | g_dot e f => o e * o f
+    | g_itr e => o e ^+
     | g_var j => e_var (l_var j)
   end.
 

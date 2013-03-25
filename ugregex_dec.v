@@ -46,7 +46,7 @@ Notation tod e := (fun f => u_dot f e) (only parsing).
 Fixpoint pderiv a i (e: ugregex): list ugregex :=
   match e with
     | u_prd _ => []
-    | u_var j => if eqb_pos i j then [u_one _] else []
+    | u_var _ j => if eqb_pos i j then [u_one _] else []
     | u_pls e f => union (pderiv a i e) (pderiv a i f)
     | u_dot e f => 
         if epsilon a e then union (map (tod f) (pderiv a i e)) (pderiv a i f)
@@ -101,7 +101,7 @@ Qed.
 Fixpoint vars (e: ugregex) :=
   match e with
     | u_prd _ => []
-    | u_var i => [i]
+    | u_var _ i => [i]
     | u_pls e f | u_dot e f => union (vars e) (vars f)
     | u_itr e => vars e
   end.

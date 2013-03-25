@@ -1,4 +1,4 @@
-# -R . RelationAlgebra
+-R . RelationAlgebra
 
 common.v
 comparisons.v
@@ -65,4 +65,4 @@ compiler_opts.v
 imp.v
 ## the following one is commented out because it takes a bit long to compile, 
 ## and it is not useful to end-users
-# paterson.v
+paterson.v

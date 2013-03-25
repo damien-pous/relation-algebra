@@ -71,11 +71,11 @@ Variable fs: forall i, X (fo (src i)) (fo (tgt i)).
 
 Fixpoint eval n m (e: gregex n m): X (fo n) (fo m) := 
   match e with
-    | g_zer _ _ => 0
-    | g_prd n p => [lsyntax.eval (fp n) p]
-    | g_pls _ _ e f => eval e + eval f
-    | g_dot _ _ _ e f => eval e * eval f
-    | g_itr _ e => eval e ^+
+    | g_zer => 0
+    | @g_prd n p => [lsyntax.eval (fp n) p]
+    | g_pls e f => eval e + eval f
+    | g_dot e f => eval e * eval f
+    | g_itr e => eval e ^+
     | g_var i => fs i
   end.
 

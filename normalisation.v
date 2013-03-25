@@ -50,7 +50,7 @@ Fixpoint insert_pls n m (x: expr n m): expr n m -> expr n m :=
   match x with
     | e_zer _ _ => fun y => y
     | e_top _ _ => fun y => top
-    | e_pls _ _ x z => fun y => 
+    | e_pls x z => fun y => 
       match cmp y z with 
         | Lt => insert_pls x y+z
         | Gt => x+z+y
@@ -68,7 +68,7 @@ Fixpoint pls' n m (y: expr n m): expr n m -> expr n m :=
   match y with
     | e_zer _ _ => fun x => x
     | e_top _ _ => fun y => top
-    | e_pls _ _ y z => fun x => insert_pls (pls' y x) z
+    | e_pls y z => fun x => insert_pls (pls' y x) z
     | y => fun x => insert_pls x y
   end%ast.
 
@@ -170,7 +170,7 @@ Fixpoint dot_l n m (x: expr n m): forall p, expr m p -> expr n p :=
   match x in syntax.expr _ _ n m return forall p, expr m p -> expr n p with
     | e_zer _ _ => fun p y => 0
     | e_one _ => fun p y => y
-    | e_pls _ _ x1 x2 => fun p y => 
+    | e_pls x1 x2 => fun p y => 
       if distribute then pls' (dot_l x1 y) (dot_l x2 y)
       else (x1+x2)*y
     | x => fun p y => x * y 
@@ -181,10 +181,10 @@ Fixpoint dot_r m p (y: expr m p): forall n, expr n m -> expr n p :=
   match y in syntax.expr _ _ m p return forall n, expr n m -> expr n p with
     | e_zer _ _ => fun n x => 0
     | e_one _ => fun n x => x
-    | e_pls _ _ y1 y2 => fun n x => 
+    | e_pls y1 y2 => fun n x => 
       if distribute then pls' (dot_r y1 x) (dot_r y2 x)
       else dot_l x (y1+y2)
-    | e_dot _ _ _ y z => fun n x => dot_l (dot_r y x) z
+    | e_dot y z => fun n x => dot_l (dot_r y x) z
     | y => fun n x => dot_l x y
   end%ast.
 
@@ -242,15 +242,15 @@ Fixpoint cnv' n m (x: expr n m): expr m n :=
     | e_zer _ _ => 0
     | e_top _ _ => top
     | e_one _ => 1
-    | e_pls _ _ x y => cnv' x + cnv' y
-    | e_cap _ _ x y => cnv' x ^ cnv' y
-    | e_neg _ _ x => ! cnv' x                        (* TODO: normalise complements *)
-    | e_dot _ _ _ x y => dot' (cnv' y) (cnv' x) (* we need to reverse parentheses *)
-    | e_ldv _ _ _ x y => e_rdv (cnv' x) (cnv' y)     (* TODO: normalise residuals? *)
-    | e_rdv _ _ _ x y => e_ldv (cnv' x) (cnv' y)
-    | e_itr _ x => cnv' x ^+
-    | e_str _ x => cnv' x ^*
-    | e_cnv _ _ x => x
+    | e_pls x y => cnv' x + cnv' y
+    | e_cap x y => cnv' x ^ cnv' y
+    | e_neg x => ! cnv' x                        (* TODO: normalise complements *)
+    | e_dot x y => dot' (cnv' y) (cnv' x) (* we need to reverse parentheses *)
+    | e_ldv x y => e_rdv (cnv' x) (cnv' y)     (* TODO: normalise residuals? *)
+    | e_rdv x y => e_ldv (cnv' x) (cnv' y)
+    | e_itr x => cnv' x ^+
+    | e_str x => cnv' x ^*
+    | e_cnv x => x
     | e_var a => e_var a`
   end%ast.
 
@@ -283,8 +283,8 @@ Qed.
 
 Fixpoint remove n m (x: expr n m): expr n m :=
   match x with
-    | e_itr _ x => x
-    | e_pls _ _ x y => pls' (remove x) (remove y)
+    | e_itr x => x
+    | e_pls x y => pls' (remove x) (remove y)
     | x => x
   end.
 
@@ -373,15 +373,15 @@ Fixpoint norm n m (x: expr n m): expr n m :=
     | e_zer _ _ => 0
     | e_top _ _ => top
     | e_one _ => 1
-    | e_pls _ _ x y => pls' (norm x) (norm y)
-    | e_cap _ _ x y => cap' (norm x) (norm y)
-    | e_neg _ _ x => e_neg (norm x)
-    | e_dot _ _ _ x y => dot' (norm x) (norm y)
-    | e_ldv _ _ _ x y => e_ldv (norm x) (norm y)
-    | e_rdv _ _ _ x y => e_rdv (norm x) (norm y)
-    | e_itr _ x => itr' (norm x)
-    | e_str _ x => str' (norm x)
-    | e_cnv _ _ x => cnv' (norm x)
+    | e_pls x y => pls' (norm x) (norm y)
+    | e_cap x y => cap' (norm x) (norm y)
+    | e_neg x => e_neg (norm x)
+    | e_dot x y => dot' (norm x) (norm y)
+    | e_ldv x y => e_ldv (norm x) (norm y)
+    | e_rdv x y => e_rdv (norm x) (norm y)
+    | e_itr x => itr' (norm x)
+    | e_str x => str' (norm x)
+    | e_cnv x => cnv' (norm x)
     | e_var a => e_var a
   end%ast.
 
@@ -426,23 +426,23 @@ Definition expr_leq := powerfix 100
       | e_zer _ _, _ 
       | _, e_top _ _  
       | e_one _, e_one _ 
-      | e_one _, e_str _ _ => true
-      | e_one _, e_itr _ y => leq x y
+      | e_one _, e_str _ => true
+      | e_one _, e_itr y => leq x y
       | e_var a, e_var b => eqb a b
-      | e_pls _ _ x x', _ => leq x y &&& leq x' y
-      | _, e_cap _ _ y y' =>  leq x y &&& leq x y'
-      | e_cap _ _ x x', _ => leq x y ||| leq x' y
-      | _, e_pls _ _ y y' =>  leq x y ||| leq x y'
-      | e_dot _ u _ x x', e_dot _ v _ y y' (* split using one? *)
-      | e_ldv u _ _ y x', e_ldv v _ _ x y' (* ldv_spec in the other cases? *)
-      | e_rdv u _ _ y x', e_rdv v _ _ x y' => eqb u v &&& leq x y &&& leq x' y'
-      | e_one _, e_ldv _ _ _ x y
-      | e_one _, e_rdv _ _ _ x y
-      | e_neg _ _ y, e_neg _ _ x 
-      | e_itr _ x, e_itr _ y
-      | e_itr _ x, e_str _ y
-      | e_str _ x, e_str _ y
-      | e_cnv _ _ x, e_cnv _ _ y => leq x y
+      | e_pls x x', _ => leq x y &&& leq x' y
+      | _, e_cap y y' =>  leq x y &&& leq x y'
+      | e_cap x x', _ => leq x y ||| leq x' y
+      | _, e_pls y y' =>  leq x y ||| leq x y'
+      | @e_dot _ _ _ _ u _ x x', @e_dot _ _ _ _ v _ y y' (* split using one? *)
+      | @e_ldv _  _ _ u _ _ y x', @e_ldv _ _ _ v _ _ x y' (* ldv_spec in the other cases? *)
+      | @e_rdv _ _ _ u _ _ y x', @e_rdv _ _ _ v _ _ x y' => eqb u v &&& leq x y &&& leq x' y'
+      | e_one _, e_ldv x y
+      | e_one _, e_rdv x y
+      | e_neg y, e_neg x 
+      | e_itr x, e_itr y
+      | e_itr x, e_str y
+      | e_str x, e_str y
+      | e_cnv x, e_cnv y => leq x y
       | _,_ => false
     end) (fun _ _ _ _ _ _ _ => false) tt.
 

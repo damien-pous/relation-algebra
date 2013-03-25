@@ -46,9 +46,9 @@ TIMER=$(if $(TIMED), $(STDTIME), $(TIMECMD))
 #                        #
 ##########################
 
-OCAMLLIBS?=-I .
-COQLIBS?=-I . 
-COQDOCLIBS?=
+OCAMLLIBS?=
+COQLIBS?= -R . RelationAlgebra
+COQDOCLIBS?=-R . RelationAlgebra
 
 ##########################
 #                        #
@@ -77,21 +77,16 @@ COQSRCLIBS?=-I "$(COQLIB)kernel" -I "$(COQLIB)lib" \
   -I $(COQLIB)/plugins/cc \
   -I $(COQLIB)/plugins/decl_mode \
   -I $(COQLIB)/plugins/extraction \
-  -I $(COQLIB)/plugins/field \
   -I $(COQLIB)/plugins/firstorder \
   -I $(COQLIB)/plugins/fourier \
   -I $(COQLIB)/plugins/funind \
-  -I $(COQLIB)/plugins/interface \
   -I $(COQLIB)/plugins/micromega \
   -I $(COQLIB)/plugins/nsatz \
   -I $(COQLIB)/plugins/omega \
   -I $(COQLIB)/plugins/quote \
-  -I $(COQLIB)/plugins/ring \
   -I $(COQLIB)/plugins/romega \
   -I $(COQLIB)/plugins/rtauto \
   -I $(COQLIB)/plugins/setoid_ring \
-  -I $(COQLIB)/plugins/subtac \
-  -I $(COQLIB)/plugins/subtac/test \
   -I $(COQLIB)/plugins/syntax \
   -I $(COQLIB)/plugins/xml
 ZFLAGS=$(OCAMLLIBS) $(COQSRCLIBS) -I $(CAMLP4LIB)
@@ -130,7 +125,8 @@ endif
 #                    #
 ######################
 
-VFILES:=imp.v\
+VFILES:=paterson.v\
+  imp.v\
   compiler_opts.v\
   kat_tac.v\
   kat_reification.v\
@@ -181,7 +177,6 @@ VFILES:=imp.v\
 .SECONDARY: $(addsuffix .d,$(VFILES))
 
 VOFILES:=$(VFILES:.v=.vo)
-VOFILESINC=$(filter $(wildcard ./*),$(VOFILES)) 
 GLOBFILES:=$(VFILES:.v=.glob)
 VIFILES:=$(VFILES:.v=.vi)
 GFILES:=$(VFILES:.v=.g)
@@ -213,16 +208,12 @@ MLIFILES:=kat_dec.mli
 
 ALLCMOFILES:=$(ML4FILES:.ml4=.cmo) $(MLFILES:.ml=.cmo)
 CMOFILES=$(filter-out $(addsuffix .cmo,$(foreach lib,$(MLLIBFILES:.mllib=_MLLIB_DEPENDENCIES) $(MLPACKFILES:.mlpack=_MLPACK_DEPENDENCIES),$($(lib)))),$(ALLCMOFILES))
-CMOFILESINC=$(filter $(wildcard ./*),$(CMOFILES)) 
 CMXFILES=$(CMOFILES:.cmo=.cmx)
 OFILES=$(CMXFILES:.cmx=.o)
 CMAFILES:=$(MLLIBFILES:.mllib=.cma)
-CMAFILESINC=$(filter $(wildcard ./*),$(CMAFILES)) 
 CMXAFILES:=$(CMAFILES:.cma=.cmxa)
 CMIFILES=$(sort $(ALLCMOFILES:.cmo=.cmi) $(MLIFILES:.mli=.cmi))
-CMIFILESINC=$(filter $(wildcard ./*),$(CMIFILES)) 
 CMXSFILES=$(CMXFILES:.cmx=.cmxs) $(CMXAFILES:.cmxa=.cmxs)
-CMXSFILESINC=$(filter $(wildcard ./*),$(CMXSFILES)) 
 ifeq '$(HASNATDYNLINK)' 'true'
 HASNATDYNLINK_OR_EMPTY := yes
 else
@@ -294,37 +285,37 @@ userinstall:
 	+$(MAKE) USERINSTALL=true install
 
 install-natdynlink:
-	install -d "$(DSTROOT)"$(COQLIBINSTALL)/$(INSTALLDEFAULTROOT); \
-	for i in $(CMXSFILESINC); do \
-	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/$(INSTALLDEFAULTROOT)/`basename $$i`; \
+	cd "." && for i in $(CMXSFILES); do \
+	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/RelationAlgebra/$$i`"; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/RelationAlgebra/$$i; \
 	done
 
 install:$(if $(HASNATDYNLINK_OR_EMPTY),install-natdynlink)
-	install -d "$(DSTROOT)"$(COQLIBINSTALL)/$(INSTALLDEFAULTROOT); \
-	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do \
-	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/$(INSTALLDEFAULTROOT)/`basename $$i`; \
+	cd "." && for i in $(VOFILES) $(CMOFILES) $(CMIFILES) $(CMAFILES); do \
+	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/RelationAlgebra/$$i`"; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/RelationAlgebra/$$i; \
 	done
 
 install-doc:
-	install -d "$(DSTROOT)"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/html
+	install -d "$(DSTROOT)"$(COQDOCINSTALL)/RelationAlgebra/html
 	for i in html/*; do \
-	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/$$i;\
+	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/RelationAlgebra/$$i;\
 	done
-	install -d "$(DSTROOT)"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/mlihtml
+	install -d "$(DSTROOT)"$(COQDOCINSTALL)/RelationAlgebra/mlihtml
 	for i in mlihtml/*; do \
-	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/$$i;\
+	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/RelationAlgebra/$$i;\
 	done
 
 uninstall_me.sh:
 	echo '#!/bin/sh' > $@ 
-	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/$(INSTALLDEFAULTROOT) && \\\nfor i in $(CMXSFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "$(INSTALLDEFAULTROOT)" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/$(INSTALLDEFAULTROOT) && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "$(INSTALLDEFAULTROOT)" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT) \\\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/RelationAlgebra && rm -f $(CMXSFILES) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "RelationAlgebra" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/RelationAlgebra && rm -f $(VOFILES) $(CMOFILES) $(CMIFILES) $(CMAFILES) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "RelationAlgebra" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/RelationAlgebra \\\n' >> "$@"
 	printf '&& rm -f $(shell find "html" -maxdepth 1 -and -type f -print)\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find $(INSTALLDEFAULTROOT)/html -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT) \\\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find RelationAlgebra/html -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/RelationAlgebra \\\n' >> "$@"
 	printf '&& rm -f $(shell find "mlihtml" -maxdepth 1 -and -type f -print)\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find $(INSTALLDEFAULTROOT)/mlihtml -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find RelationAlgebra/mlihtml -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
 	chmod +x $@
 
 uninstall: uninstall_me.sh

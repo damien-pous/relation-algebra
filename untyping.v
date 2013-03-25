@@ -72,11 +72,11 @@ Fixpoint is_clean n m (x: expr n m) :=
   match x with
   | e_one _
   | e_var _ => True
-  | e_pls _ _ x y 
-  | e_dot _ _ _ x y => is_clean x /\ is_clean y
-  | e_cnv _ _ x
-  | e_itr _ x 
-  | e_str _ x => is_clean x
+  | e_pls x y 
+  | e_dot x y => is_clean x /\ is_clean y
+  | e_cnv x
+  | e_itr x 
+  | e_str x => is_clean x
   | _ => False
   end.
 
@@ -103,11 +103,11 @@ Fixpoint clean n m (x: expr n m): expr n m :=
   match x with
   | e_zer _ _ => 0
   | e_one _ => 1
-  | e_pls _ _ x y => e_pls' (clean x) (clean y)
-  | e_dot _ _ _ x y => e_dot' (clean x) (clean y)
-  | e_itr _ x => e_itr' (clean x)
-  | e_str _ x => e_str' (clean x)
-  | e_cnv _ _ x => e_cnv' (clean x)
+  | e_pls x y => e_pls' (clean x) (clean y)
+  | e_dot x y => e_dot' (clean x) (clean y)
+  | e_itr x => e_itr' (clean x)
+  | e_str x => e_str' (clean x)
+  | e_cnv x => e_cnv' (clean x)
   | e_var a => e_var a
   (** unused cases, ruled out later by level constraints *)
   | x => x
@@ -350,9 +350,9 @@ Lemma eval_pls n m x y z: eval n m (x+y) z ->
 Proof. 
   remember (x+y)%ast as z' eqn:E. destruct 1; try discriminate. 
   rewrite <- (f_equal ((fun n m (e: syntax.expr _ _ n m) => 
-    match e with e_pls _ _ x _ => x | x => x end) _ _) E). 
+    match e with e_pls x _ => x | x => x end) _ _) E). 
   rewrite <- (f_equal ((fun n m (e: syntax.expr _ _ n m) => 
-    match e with e_pls _ _ _ y => y | x => x end) _ _) E). 
+    match e with e_pls _ y => y | x => x end) _ _) E). 
   eauto. 
 Qed.
 
@@ -362,7 +362,7 @@ Proof.
   remember (x*y)%ast as z' eqn:E. destruct 1; try discriminate.
   generalize (f_equal ((fun n m e =>
     match e in syntax.expr _ _ n m return syntax.expr _ _ n xH with 
-      | e_dot _ p _ x _ => 
+      | @e_dot _ _ _ _ p _ x _ => 
         match eqb_spec cmp_pos p xH with 
           | reflect_t H => eq_rect _ (syntax.expr _ _ _) x _ H
           | _ => e_zer _ _
@@ -372,7 +372,7 @@ Proof.
   intro. rewrite 2cmp_eq_rect_eq. intros <-. 
   generalize (f_equal ((fun n m e =>
     match e in syntax.expr _ _ n m return syntax.expr _ _ xH m with 
-      | e_dot _ p _ _ x => 
+      | @e_dot _ _ _ _ p _ _ x => 
         match eqb_spec cmp_pos p xH with 
           | reflect_t H => eq_rect _ (fun p => syntax.expr _ _ p _) x _ H
           | _ => e_zer _ _
@@ -387,7 +387,7 @@ Lemma eval_cnv n m x z: eval n m (x`) z -> exists x', eval m n x x' /\ z=e_cnv x
 Proof.
   remember (x`)%ast as z' eqn:E. destruct 1; try discriminate. 
   rewrite <- (f_equal ((fun n m (e: syntax.expr _ _ n m) => 
-    match e with e_cnv _ _ x => x | _ => e_zer _ _ end) _ _) E). 
+    match e with e_cnv x => x | _ => e_zer _ _ end) _ _) E). 
   eauto. 
 Qed.
 
@@ -418,7 +418,7 @@ Proof.
       exists x', eval n n x x' /\ z = eq_rect _ (expr n) (e_itr x') m H).
   intros m z' H. destruct 1; intros E v Hv; try discriminate. 
   rewrite <-(f_equal ((fun n m (e: syntax.expr _ _ n m) => 
-    match e with e_itr _ y => y | x => x end) _ _) Hv).
+    match e with e_itr y => y | x => x end) _ _) Hv).
   eexists. split. eassumption. now rewrite cmp_eq_rect_eq. 
   intro Hz. apply (G _ _ _ Hz eq_refl _ eq_refl). 
 Qed.
@@ -430,7 +430,7 @@ Proof.
       exists x', eval n n x x' /\ z = eq_rect _ (expr n) (e_str x') m H).
   intros m z' H. destruct 1; intros E v Hv; try discriminate. 
   rewrite <-(f_equal ((fun n m (e: syntax.expr _ _ n m) => 
-    match e with e_str _ y => y | x => x end) _ _) Hv).
+    match e with e_str y => y | x => x end) _ _) Hv).
   eexists. split. eassumption. now rewrite cmp_eq_rect_eq. 
   intro Hz. apply (G _ _ _ Hz eq_refl _ eq_refl). 
 Qed.
