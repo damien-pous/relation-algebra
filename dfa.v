@@ -142,7 +142,7 @@ Definition empty := \inf_(j<_) (steps i j <<< !v A j).
 Lemma empty_lang1 j: steps i j -> empty -> lang A j <== bot.
 Proof.
   intros Hj He. setoid_rewrite is_true_inf in He. setoid_rewrite le_bool_spec in He. 
-  pose proof (fun i => He i (in_seq _)) as H. clear He. 
+  pose proof (fun i => He i (ordinal.in_seq _)) as H. clear He. 
   intro w. revert j Hj. induction w as [|a w IH]; simpl lang; intros j Hj. 
   apply (H j), negb_spec in Hj. rewrite Hj. discriminate. 
   intros [Ha Hj']. apply IH in Hj' as []. now apply steps_snoc.
