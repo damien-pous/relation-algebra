@@ -46,7 +46,7 @@ Proof.
   rewrite set.xO_0, set.xI_0.
   setoid_rewrite set.xO_S. 
   setoid_rewrite set.xI_S.
-  refine (comm4 [_] [_] _ _).
+  simpl. refine (comm4 [_] [_] _ _).
 Qed.
 
 Lemma atom_xO n (f: ord (pow2 n)): 
