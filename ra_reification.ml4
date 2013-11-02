@@ -200,4 +200,4 @@ let reify_goal l goal =
 
 	
 (* tactic grammar entries *)
-TACTIC EXTEND ra_reify [ "ra_reify" constr(level) ] -> [ reify_goal level ] END
+TACTIC EXTEND ra_reify [ "ra_reify" constr(level) ] -> [ Proofview.V82.tactic (reify_goal level) ] END
