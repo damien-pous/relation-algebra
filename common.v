@@ -23,7 +23,7 @@ Definition apply X x Y (f: X -> Y) := f x.
 Ltac print_goal := match goal with |- ?x => idtac x end.
 
 (** closing tactic *)
-Ltac now tac := tac; solve [auto].
+Ltac Now tac := tac; solve [auto].
 
 
 (** coercion from Booleans to propositions *)

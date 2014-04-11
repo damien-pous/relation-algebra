@@ -22,7 +22,7 @@ let ra_fold_term ops ob t goal =
   let tops = Tacmach.pf_type_of goal ops in
   let sigma,gl = Refiner.unpackage goal in
   let rec fill ops tops = 
-    if tops = Lazy.force Monoid.ops then ops 
+    if Constr.equal tops (Lazy.force Monoid.ops) then ops 
     else match kind_of_term (strip_outer_cast tops) with
       | Prod(_,s,t) -> 
 	let x = e_new_evar sigma env s in

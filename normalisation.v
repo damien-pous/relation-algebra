@@ -299,14 +299,14 @@ Definition str' n (x: expr n n): expr n n :=
   else remove x^*)%ast.
 
 Lemma remove_level n m (x: expr n m): e_level (remove x) << e_level x.
-Proof. induction x; simpl; rewrite ?pls'_level; solve_lower'. Qed.
+Proof. induction x; cbn; rewrite ?pls'_level; solve_lower'. Qed.
 
 Lemma itr'_level n (x: expr n n): e_level (itr' x) << STR+e_level x.
 Proof. 
   unfold itr'. 
   case is_zer_spec. reflexivity. 
   case is_top_spec. solve_lower'. 
-  simpl. now rewrite remove_level. 
+  cbn. now rewrite remove_level. 
 Qed.
 
 Lemma str'_level n (x: expr n n): e_level (str' x) << STR+e_level x.
@@ -314,14 +314,14 @@ Proof.
   unfold str'. 
   case is_zer_spec. reflexivity. 
   case is_top_spec. solve_lower'. 
-  simpl. now rewrite remove_level. 
+  cbn. now rewrite remove_level. 
 Qed.
 
 Lemma remove_spec_dep l n m (x: expr n m):
   forall (H: n=m) {Hl: STR+e_level x << l}, (cast H eq_refl (remove x))^+ ==_[l] cast H eq_refl x^+.
 Proof.
-  induction x; simpl; trivial; intros H Hl. 
-  - subst. simpl cast. rewrite itr_pls_itr, pls'pls by (rewrite 2remove_level; solve_lower').
+  induction x; cbn; trivial; intros H Hl. 
+  - subst. cbn. rewrite itr_pls_itr, pls'pls by (rewrite 2remove_level; solve_lower').
     rewrite <-(IHx1 eq_refl), <-(IHx2 eq_refl) by solve_lower'. simpl cast. apply itr_pls_itr. 
   - now rewrite 2cast_eq, itr_invol. 
 Qed.
@@ -342,7 +342,7 @@ Qed.
 Lemma remove_spec_dep' l n m (x: expr n m): forall (H: n=m) {Hl: STR+e_level x << l}, 
   (cast H eq_refl (remove x))^* ==_[l] cast H eq_refl x^*.
 Proof.
-  induction x; simpl; trivial; intros H Hl. 
+  induction x; cbn; trivial; intros H Hl. 
   - subst. simpl cast. rewrite str_pls_str. 
     rewrite <-(IHx1 eq_refl), <-(IHx2 eq_refl) by solve_lower'. 
     simpl cast. rewrite <-str_pls_str. apply str_weq. apply pls'pls. 
