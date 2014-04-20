@@ -455,8 +455,9 @@ Proof.
   (* TODO: this proof could be factorised, using a more appropriate
      case disjunction, it's not that easy to setup, however *)
   unfold expr_leq. apply powerfix_invariant. 2: discriminate.
-  intros leq IH n m x p q y Hnp Hmq H Hl. 
-  destruct x; simpl e_level in Hl; try subst.
+  intros leq IH n m x p q y Hnp Hmq H Hl.
+  (** FIXME : subst here causes an effect leak *)
+  destruct x; simpl e_level in Hl; repeat match goal with [ H : ?m = ?n |- _ ] => rewrite H in *; clear H end.
   - rewrite cast_eq. lattice.
   - destruct y; simpl e_level in Hl; try discriminate H. 
     + now rewrite cast_eq.
@@ -464,16 +465,16 @@ Proof.
       apply (IH _ _ _ _ _ _ eq_refl eq_refl) in H; auto; solve_lower'. 
     + apply landb_spec in H as [H1 H2]. apply leq_xcap; apply IH; trivial; solve_lower'. 
   - destruct y; simpl e_level in Hl; try discriminate H; try subst. 
-    + rewrite cast_eq. lattice.
+    + subst. rewrite cast_eq. lattice.
     + now rewrite cast_eq. 
-    + apply leq_xcup. apply lorb_spec in H as [H|H];
+    + subst. apply leq_xcup. apply lorb_spec in H as [H|H];
       apply (IH _ _ _ _ _ _ eq_refl eq_refl) in H; auto; solve_lower'. 
     + apply landb_spec in H as [H1 H2]. apply leq_xcap; apply IH; trivial; solve_lower'. 
     + rewrite <-itr_ext. apply IH. assumption. solve_lower'. 
     + rewrite cast_eq. apply str_refl. 
-    + rewrite cast_eq. apply ldv_spec. rewrite dotx1. 
+    + subst. rewrite cast_eq. apply ldv_spec. rewrite dotx1. 
       apply (IH _ _ _ _ _ _ eq_refl eq_refl H); solve_lower'. 
-    + rewrite cast_eq. apply rdv_spec. rewrite dot1x. 
+    + subst. rewrite cast_eq. apply rdv_spec. rewrite dot1x. 
       apply (IH _ _ _ _ _ _ eq_refl eq_refl H); solve_lower'. 
   - destruct y; simpl e_level in Hl; try discriminate H; try subst;
     try (apply landb_spec in H as [H1 H2]; apply leq_cupx;  
@@ -507,7 +508,7 @@ Proof.
        apply (IH _ _ _ _ _ _ eq_refl eq_refl H2); solve_lower'.
   - destruct y; simpl e_level in Hl; try discriminate H; try subst.
     + lattice.
-    + apply leq_xcup. apply lorb_spec in H as [H|H];
+    + subst. apply leq_xcup. apply lorb_spec in H as [H|H];
       apply (IH _ _ _ _ _ _ eq_refl eq_refl) in H; auto; solve_lower'. 
     + apply landb_spec in H as [H1 H2]. apply leq_xcap; apply IH; trivial; solve_lower'. 
     + rewrite cast_eq. apply itr_leq. 
@@ -517,7 +518,7 @@ Proof.
       simpl cast in H. now rewrite H. 
   - destruct y; simpl e_level in Hl; try discriminate H; try subst.
     + lattice.
-    + apply leq_xcup. apply lorb_spec in H as [H|H];
+    + subst. apply leq_xcup. apply lorb_spec in H as [H|H];
       apply (IH _ _ _ _ _ _ eq_refl eq_refl) in H; auto; solve_lower'. 
     + apply landb_spec in H as [H1 H2]. apply leq_xcap; apply IH; trivial; solve_lower'. 
     + rewrite cast_eq. apply str_leq. 
@@ -549,7 +550,7 @@ Proof.
       apply rdv_leq. 
        apply (IH _ _ _ _ _ _ eq_refl eq_refl H1); solve_lower'.
        apply (IH _ _ _ _ _ _ eq_refl eq_refl H2); solve_lower'.
-  - destruct y; simpl e_level in Hl; try discriminate H; try subst.
+  - destruct y; simpl e_level in Hl; try discriminate H; subst.
     + lattice.
     + apply leq_xcup. apply lorb_spec in H as [H|H]; eapply IH in H; eauto; solve_lower'. 
     + apply landb_spec in H as [H1 H2]. apply leq_xcap; apply IH; trivial; solve_lower'. 

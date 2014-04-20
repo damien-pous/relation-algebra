@@ -213,7 +213,8 @@ end
     a sequence of "let ... in", so that we can later get all
     reification ingredients from Ltac, just by doing "intros ..." *)
 
-let reify_kat_goal ?kat check goal =
+let reify_kat_goal ?kat check =
+  Proofview.V82.tactic begin fun goal ->
   let msg = 
     match kat with 
       | Some b when b=Lazy.force Coq.true_ -> "KAT"
@@ -382,11 +383,13 @@ let reify_kat_goal ?kat check goal =
   in	  
   (try Tactics.convert_concl reified DEFAULTcast goal
    with e -> Pp.msg_warning (Printer.pr_lconstr reified); raise e))
+  end
 
 
 (** tactic to precompute the alphabet and the universal expression,
     for Hoare hypotheses elimination ([hkat]) *)
-let get_kat_alphabet goal =
+let get_kat_alphabet =
+  Proofview.V82.tactic begin fun goal ->
 
   let rec insert x = function
     | [] -> [x]
@@ -459,7 +462,7 @@ let get_kat_alphabet goal =
   in	  
     (try Tactics.convert_concl reified DEFAULTcast goal
      with e -> (* Pp.msg_warning (Printer.pr_lconstr reified); *) raise e)
-	
+  end
 
 (* tactic grammar entries *)
 TACTIC EXTEND ra_kat_reify_nocheck [ "ra_kat_reify_nocheck" constr(kat) ] -> [ reify_kat_goal ~kat false ] END

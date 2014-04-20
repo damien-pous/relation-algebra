@@ -39,7 +39,8 @@ let rec lenght t =
     | Prod(_,_,t) -> 1+lenght t
     | _ -> 0
 
-let extend k dir h goal =
+let extend k dir h =
+  Proofview.Goal.enter begin fun goal ->
   let fst,snd = match dir with `LR -> 2,1 | `RL -> 1,2 in
   let ext_2 rel = match dir,rel with 
     | `LR,`Weq -> Ext.weq_2
@@ -59,7 +60,7 @@ let extend k dir h goal =
     | `LR,`Leq -> Ext.leq_4
     | `RL,`Leq -> Ext.leq_4'
   in
-  let sigma,gl = Refiner.unpackage goal in
+  let sigma = ref (Proofview.Goal.sigma goal) in
   let rec dots env t =
     match kind_of_term (strip_outer_cast t) with
       | App(c,ca) when c = Lazy.force Monoid.dot0 ->
@@ -99,11 +100,11 @@ let extend k dir h goal =
       | Prod(x,s,t) -> mkLambda(x,s,ext (push x s env) (i-1) (mkApp(h,[|mkRel i|])) t)
       | _ -> error "the provided term does not end with a relation algebra (in)equation"
   in
-  let t = Tacmach.pf_type_of goal h in
-  let h = ext (Tacmach.pf_env goal) (lenght t) h t in
-  let goal = Refiner.repackage sigma gl in
-  ltac_apply k [ltac_constr_arg h] goal
-
+  let t = Tacmach.New.pf_type_of goal h in
+  let h = ext (Proofview.Goal.env goal) (lenght t) h t in
+  Tacticals.New.tclTHEN (Proofview.V82.tclEVARS !sigma)
+  (ltac_apply k [ltac_constr_arg h])
+  end
 
 TACTIC EXTEND ra_extend_lr [ "ra_extend" tactic(k) "->" constr(h) ] -> [ extend k `LR h ] END
 TACTIC EXTEND ra_extend_rl [ "ra_extend" tactic(k) "<-" constr(h) ] -> [ extend k `RL h ] END
