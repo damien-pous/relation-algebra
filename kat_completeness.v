@@ -780,7 +780,7 @@ Proof.
   unfold clean1, geval.
   rewrite 2G.lang_dot, 2G.lang_atom. 
   setoid_rewrite atom_single_atom. rewrite gl_single'. rewrite 2eq_app_dot. 
-  do 2 setoid_rewrite R.lang_dot. rewrite R.lang_var.
+  do 2 setoid_rewrite R.lang_dot. setoid_rewrite R.lang_var.
   setoid_rewrite R_lang_atom. apply dotA.
 Qed.
 

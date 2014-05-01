@@ -63,7 +63,7 @@ let extend k dir h =
   let sigma = ref (Proofview.Goal.sigma goal) in
   let rec dots env t =
     match kind_of_term (strip_outer_cast t) with
-      | App(c,ca) when c = Lazy.force Monoid.dot0 ->
+      | App(c,ca) when Constr.equal c (Lazy.force Monoid.dot0) ->
 	(match dots env ca.(4) with
 	  | None -> 
   	    let ops = ca.(0) in
@@ -83,8 +83,8 @@ let extend k dir h =
     match kind_of_term (strip_outer_cast t) with
       | App(c,ca) ->
 	(match 
-	    if c = Lazy.force Lattice.weq then Some `Weq
-	    else if c = Lazy.force Lattice.leq then Some `Leq
+	    if Constr.equal c (Lazy.force Lattice.weq) then Some `Weq
+	    else if Constr.equal c (Lazy.force Lattice.leq) then Some `Leq
 	    else None
 	 with
 	   | None -> error "the provided term does not end with a relation algebra (in)equation"

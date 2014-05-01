@@ -101,9 +101,9 @@ let reify_goal l goal =
   (* get the (in)equation *)
   let rel,lops,lhs,rhs = 
     match kind_of_term (strip_outer_cast (Tacmach.pf_concl goal)) with
-      | App(c,ca) when c = Lazy.force Lattice.leq_or_weq 
+      | App(c,ca) when Constr.equal c (Lazy.force Lattice.leq_or_weq)
 		  -> mkApp (c,[|ca.(0);ca.(1)|]), ca.(1), ca.(2), ca.(3)
-      | App(c,ca) when c = Lazy.force Lattice.leq || c = Lazy.force Lattice.weq
+      | App(c,ca) when Constr.equal c (Lazy.force Lattice.leq) || Constr.equal c (Lazy.force Lattice.weq)
 		  -> mkApp (c,[|ca.(0)|]), ca.(0), ca.(1), ca.(2)
       | _ -> error "unrecognised goal"
   in
@@ -111,7 +111,7 @@ let reify_goal l goal =
   (* get the monoid.ops and the domain/codomain types *)
   let ops,src',tgt' = 
     match kind_of_term (strip_outer_cast lops) with
-      | App(c,ca) when c = Lazy.force Monoid.mor0 -> ca.(0),ca.(1),ca.(2)
+      | App(c,ca) when Constr.equal c (Lazy.force Monoid.mor0) -> ca.(0),ca.(1),ca.(2)
       | _ -> error "could not find monoid operations"
   in
   let src = insert_type src' in	

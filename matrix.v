@@ -261,6 +261,8 @@ Context `{L: laws} `{Hl: BSL<<l} {u: ob X}.
 Notation U := (car (@mor X u u)).
 Notation mx := (mx U).
 
+Import lset.Fix.
+
 (** matrix product is associative *)
 Lemma mx_dotA n m p q (M: mx n m) N (P: mx p q): M*(N*P) == (M*N)*P.
 Proof.
@@ -299,6 +301,8 @@ Proof.
 Qed.
 
 (** matrix product distributes over the sup-semilattice structure *)
+
+Import lset.Fix.
 
 Lemma mx_dotplsx_ n m p (M N: mx n m) (P: mx m p): (M+N)*P <== M*P+N*P.
 Proof. intros i j. simpl. unfold mx_dot. setoid_rewrite dotplsx. now rewrite supcup. Qed.
@@ -383,6 +387,11 @@ Section cbsl.
 Context `{L: laws} `{Hl: BSL+CNV<<l} {u: ob X}.
 Notation U := (car (@mor X u u)).
 Notation mx := (mx U).
+
+Canonical Structure lset_ops A := lattice.mk_ops (list A)
+  (fun h k => forall a, List.In a h -> List.In a k)
+  (fun h k => forall a, List.In a h <-> List.In a k)
+  (@app A) (@app A) (assert_false id) (@nil A) (@nil A).
 
 Lemma mx_cnvdot_ n m p (M: mx n m) (N: mx m p): (M*N)` <== N`*M`.
 Proof. intros i j. setoid_rewrite cnvsum. now setoid_rewrite cnvdot. Qed.

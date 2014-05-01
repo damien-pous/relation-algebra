@@ -11,6 +11,7 @@
 Require Import List.
 Require Import common comparisons.
 
+Local Unset Injection On Proofs.
 Set Implicit Arguments.
 
 (** * Boolean strict order on natural numbers *)

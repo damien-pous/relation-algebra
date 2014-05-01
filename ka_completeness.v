@@ -111,7 +111,8 @@ Proof. set (o:=eval one). vm_compute in o; subst o. ra. Qed.
 
 Lemma eval_pls e f: eval (pls e f) == eval e + eval f.
 Proof.
-  destruct e as [n u M v]. destruct f as [m s N t]. simpl. 
+  destruct e as [n u M v]. destruct f as [m s N t].
+  change (mx_scal (row_mx u s * blk_mx M 0 0 N ^* * col_mx v t) == mx_scal (u * M ^* * v) + mx_scal (s * N ^* * t)).
   rewrite <-mx_scal_pls. apply mx_scal_weq.
   rewrite mx_str_diagonal.
   setoid_rewrite mx_dot_rowcol. rewrite dotplsx. 
@@ -120,7 +121,8 @@ Qed.
 
 Lemma eval_dot e f: eval (dot e f) == eval e * eval f.
 Proof.
-  destruct e as [n u M v]. destruct f as [m s N t]. simpl. 
+  destruct e as [n u M v]. destruct f as [m s N t].
+  change (mx_scal (row_mx u 0 * blk_mx M (v * s) 0 N ^* * col_mx 0 t) == mx_scal (u * M ^* * v) * mx_scal (s * N ^* * t)).
   rewrite <-mx_scal_dot. apply mx_scal_weq.
   rewrite mx_str_trigonal. setoid_rewrite mx_dot_rowcol. rewrite dotplsx. 
   rewrite <-dotA, mx_dot_rowcol. ra. 
@@ -128,7 +130,8 @@ Qed.
 
 Lemma eval_itr e: eval (itr e) == eval e ^+.
 Proof.
-  rewrite itr_str_l. destruct e as [n u M v]. simpl.
+  rewrite itr_str_l. destruct e as [n u M v].
+  change (mx_scal (u * (M + v * u) ^* * v) == mx_scal (u * M ^* * v) * mx_scal (u * M ^* * v) ^*).
   rewrite <-mx_scal_str, <-mx_scal_dot. apply mx_scal_weq. 
   rewrite str_pls. rewrite <-3dotA, <-str_dot. ra. 
 Qed.
@@ -156,7 +159,7 @@ Qed.
 Lemma is_enfa e: is_enfa (enfa e).
 Proof. 
   Opaque Peano.plus.
-  unfold is_enfa. induction e; simpl; intuition auto with mx_predicates. 
+  unfold is_enfa. induction e; cbn; intuition auto with mx_predicates. 
   Transparent Peano.plus.
 Qed.
 
@@ -178,7 +181,12 @@ Definition nfa e :=
 
 Theorem eval_nfa e: eval (nfa e) == e.
 Proof.
-  rewrite <- (Thompson.correct e) at 2. unfold nfa. simpl. 
+  rewrite <- (Thompson.correct e) at 2. unfold nfa.
+  change (mx_scal
+    ((Thompson.enfa e) ^u *
+     (epsilon_mx (Thompson.enfa e) ^M ^* * pure_part_mx (Thompson.enfa e) ^M)
+     ^* * (epsilon_mx (Thompson.enfa e) ^M ^* * (Thompson.enfa e) ^v)) ==
+    eval (Thompson.enfa e)).
   set (f := Thompson.enfa e). set (J := epsilon_mx f^M). apply mx_scal_weq.
   rewrite (@expand_simple_mx _ _ f^M) at 2 by apply Thompson.is_enfa.
   rewrite str_pls. rewrite <-dotA, (dotA _ (J^*)). rewrite <-str_dot. apply dotA. 
@@ -190,7 +198,7 @@ Qed.
 Lemma is_nfa_nfa e: is_nfa (nfa e).
 Proof.
   generalize (Thompson.is_enfa e).
-  unfold nfa, is_nfa, is_enfa. simpl. 
+  unfold nfa, is_nfa, is_enfa. cbn. 
   intuition auto with mx_predicates.
 Qed.
 
@@ -263,7 +271,7 @@ Definition det := dfa.mk
 
 Lemma det_uX: u == det^u * X.
 Proof.
-  intros i j. simpl. rewrite mx_dot_fun, dot1x. 
+  intros i j. cbn. rewrite mx_dot_fun, dot1x. 
   symmetry. apply mem_of_row, Hnfa. 
 Qed.
 
@@ -280,11 +288,11 @@ Qed.
 Lemma det_MX: X * M^* == det^M^* * X.
 Proof.
   apply str_move.
-  rewrite M_sum. simpl. rewrite dotxsum, dotsumx. apply sup_weq. 2: reflexivity. 
+  rewrite M_sum. cbn. rewrite dotxsum, dotsumx. apply sup_weq. 2: reflexivity. 
   intros a x j. 
   rewrite mx_dot_fun. unfold X. 
   rewrite (mem_of_row ord0) by (unfold T_; auto with mx_predicates). 
-  unfold weq. simpl. 
+  unfold weq.
   setoid_rewrite dotxsum. apply sup_weq. 2: reflexivity. 
   intro j'. unfold M_, T_, epsilon_mx, mx_map.
   now rewrite 2dotA, dot_ofboolx.
@@ -292,7 +300,7 @@ Qed.
 
 Lemma det_Xv: X*v == det^v.
 Proof. 
-  intros x j. simpl. setoid_rewrite ord0_unique. apply expand_01.
+  intros x j. setoid_rewrite ord0_unique. apply expand_01.
   apply is_01_mx_dot. intros ? ?. apply is_01_ofbool. apply Hnfa.
 Qed.
 
@@ -381,7 +389,8 @@ Definition R: rmx (n B) (n A) := fun j i => ofbool (dfa.lang_incl_dec _ _ Hvars 
 
 Lemma R_v: R * A^v <== B^v. 
 Proof.
-  intros j i'. apply leq_supx. intros i _. simpl. clear i'. 
+  intros j i'. apply leq_supx. intros i _. unfold dot; simpl. clear i'. 
+ match goal with [|- ?P (_ ?x ?y) ?z ] => change (leq (x * y) z) end.
   setoid_rewrite <-andb_dot. apply ofbool_leq, le_bool_spec.
   setoid_rewrite Bool.andb_true_iff.  setoid_rewrite is_true_sumbool. 
   intros [H]. exact (H nil). 
@@ -401,7 +410,7 @@ Qed.
 Hypothesis HAB: regex.lang (eval A) <== regex.lang (eval B).
 Lemma R_u: A^u <== B^u * R. 
 Proof. 
-  intros z i. simpl. rewrite mx_dot_fun, dot1x. unfold mx_fun. clear z. 
+  intros z i. cbn. rewrite mx_dot_fun, dot1x. unfold mx_fun. clear z. 
   case eqb_ord_spec. 2: intro; apply leq_bx. 
   intros ->. apply epsilon_reflexive. unfold R.
   rewrite sumbool_true. reflexivity. 

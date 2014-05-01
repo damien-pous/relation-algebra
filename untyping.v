@@ -350,9 +350,9 @@ Lemma eval_pls n m x y z: eval n m (x+y) z ->
 Proof. 
   remember (x+y)%ast as z' eqn:E. destruct 1; try discriminate. 
   rewrite <- (f_equal ((fun n m (e: syntax.expr _ _ n m) => 
-    match e with e_pls x _ => x | x => x end) _ _) E). 
+    match e in syntax.expr _ _ n m return syntax.expr _ _ n m with e_pls x _ => x | x => x end) _ _) E). 
   rewrite <- (f_equal ((fun n m (e: syntax.expr _ _ n m) => 
-    match e with e_pls _ y => y | x => x end) _ _) E). 
+    match e in syntax.expr _ _ n m return syntax.expr _ _ n m with e_pls _ y => y | x => x end) _ _) E). 
   eauto. 
 Qed.
 
@@ -418,7 +418,7 @@ Proof.
       exists x', eval n n x x' /\ z = eq_rect _ (expr n) (e_itr x') m H).
   intros m z' H. destruct 1; intros E v Hv; try discriminate. 
   rewrite <-(f_equal ((fun n m (e: syntax.expr _ _ n m) => 
-    match e with e_itr y => y | x => x end) _ _) Hv).
+    match e in syntax.expr _ _ n m return syntax.expr _ _ n m with e_itr y => y | x => x end) _ _) Hv).
   eexists. split. eassumption. now rewrite cmp_eq_rect_eq. 
   intro Hz. apply (G _ _ _ Hz eq_refl _ eq_refl). 
 Qed.
@@ -430,7 +430,7 @@ Proof.
       exists x', eval n n x x' /\ z = eq_rect _ (expr n) (e_str x') m H).
   intros m z' H. destruct 1; intros E v Hv; try discriminate. 
   rewrite <-(f_equal ((fun n m (e: syntax.expr _ _ n m) => 
-    match e with e_str y => y | x => x end) _ _) Hv).
+    match e in syntax.expr _ _ n m return syntax.expr _ _ n m with e_str y => y | x => x end) _ _) Hv).
   eexists. split. eassumption. now rewrite cmp_eq_rect_eq. 
   intro Hz. apply (G _ _ _ Hz eq_refl _ eq_refl). 
 Qed.

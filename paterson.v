@@ -15,6 +15,8 @@
 Require Import kat normalisation rewriting move kat_tac comparisons rel.
 Set Implicit Arguments.
 
+Unset Injection On Proofs.
+
 (** * Memory model  *)
 
 (** we need only five memory locations: the [y_i] are temporary
@@ -286,13 +288,14 @@ Notation del y := (y<-O).
 
 (** * Laws of schematic KAT *)
 
-Opaque rel_monoid_ops rel_lattice_ops. 
+Arguments rel_monoid_ops : simpl never.
+Arguments rel_lattice_ops : simpl never. 
 
 (** (the numbering corresponds to Angus and Kozen's paper)  *)
 Lemma eq_6 (x y: loc) (s t: expr nat): 
   negb (eqb x y) &&& free y s -> x<-s;y<-t == y<-subst x s t; x<-s. 
 Proof.
-  rewrite landb_spec, neqb_spec. intros [D H]. simpl. 
+  rewrite landb_spec, neqb_spec. intros [D H]. cbn. 
   rewrite 2frel_comp. apply frel_weq. intro m. 
   unfold update at 1 2 3. rewrite set_set' by congruence. f_equal.  
   now rewrite eval_update, subst_free.
@@ -302,7 +305,7 @@ Qed.
 Lemma eq_7 (x y: loc) (s t: expr nat): 
   negb (eqb x y) &&& free x s -> x<-s;y<-t == x<-s;y<-subst x s t. 
 Proof.
-  rewrite landb_spec, neqb_spec. intros [D H]. simpl. 
+  rewrite landb_spec, neqb_spec. intros [D H]. cbn. 
   rewrite 2frel_comp. apply frel_weq. intro m. 
   unfold update at 1 3. f_equal.  
   rewrite 2eval_update. symmetry. rewrite subst_free. reflexivity. 
@@ -311,7 +314,7 @@ Qed.
 
 Lemma eq_8 (x: loc) (s t: expr nat): x<-s;x<-t == x<-subst x s t. 
 Proof.
-  simpl. rewrite frel_comp. apply frel_weq. intro m. 
+  cbn. rewrite frel_comp. apply frel_weq. intro m. 
   unfold update. rewrite set_set. f_equal. apply eval_update. 
 Qed.
 
@@ -330,13 +333,15 @@ Proof. rewrite landb_spec. intros [? ?]. now rewrite eq_6, subst_free. Qed.
 Lemma eq_9' (x: loc) (t: expr nat) (phi: test): free x phi -> [phi];x<-t == x<-t;[phi].
 Proof. intro. now rewrite <-eq_9, subst_free. Qed.
 
+Transparent rel_lattice_ops.
+Arguments rel_lattice_ops : simpl never.
 
 Lemma same_value (f: state -> state) (p: prog') (a b: test):
   bstep p == frel f -> (forall m, eval a (f m) = eval b (f m)) -> 
   p;[a\cap !b \cup !a\cap b] <== 0.
 Proof.
-  intros Hp H. simpl. rewrite Hp. 
-  Transparent rel_lattice_ops. intros m m' [? -> [<- E]]. Opaque rel_lattice_ops. 
+  intros Hp H. cbn. rewrite Hp. 
+   intros m m' [? -> [<- E]]. 
   exfalso. rewrite lorb_spec, 2landb_spec, 2negb_spec, H in E. intuition congruence.
 Qed.
 
@@ -353,23 +358,25 @@ Fixpoint gc y (p: prog'): prog' :=
     | p_pls p q => gc y p + gc y q
   end.
 
+Arguments prog_monoid_ops : simpl never.
+Arguments prog_lattice_ops : simpl never.
+Arguments prog_kat_ops : simpl never.
+
 Lemma gc_correct y p: dont_read y p -> gc y p; del y == p; del y.
 Proof.
-  Opaque prog_monoid_ops prog_lattice_ops prog_kat_ops.
   intro H. transitivity (del y; gc y p).
-  induction p; simpl. 
+  induction p; cbn. 
    now apply eq_9'.
    case eqb_spec. ra. intro. apply eq_6'. now rewrite eqb_false. 
    symmetry. apply str_move. symmetry. now auto. 
    apply landb_spec in H as [? ?]. mrewrite IHp2. 2: assumption. now mrewrite IHp1.  
    apply landb_spec in H as [? ?]. ra_normalise. now apply cup_weq; auto. 
-  symmetry. induction p; simpl. 
+  symmetry. induction p; cbn. 
    now apply eq_9'.
    case eqb_spec. intros <-. rewrite eq_8. ra. intro D. apply eq_6'. now rewrite eqb_false. 
    symmetry. apply str_move. symmetry. now auto. 
    apply landb_spec in H as [? ?]. mrewrite IHp2. 2: assumption. now mrewrite IHp1.  
    apply landb_spec in H as [? ?]. ra_normalise. now apply cup_weq; auto. 
-   Transparent prog_monoid_ops prog_lattice_ops prog_kat_ops.
 Qed.   
 
 
@@ -426,7 +433,7 @@ Proof.
   assert (q211q311: q211;q311;[a2\cap !a3 \cup !a2\cap a3] <== 0).
    eapply same_value. apply frel_comp. reflexivity.
   assert (r12p22: r12;p22;p22;[a1\cap !a2 \cup !a1\cap a2] <== 0).
-   eapply same_value. simpl. rewrite 2frel_comp. reflexivity. reflexivity.
+   eapply same_value. simpl bstep. rewrite 2frel_comp. reflexivity. reflexivity.
   (** this one cannot be used by [hkat], it's used by [rmov1]  *)
   assert (p13p22: p13;p22 == p22;p13) by now apply eq_6'.
 
@@ -453,7 +460,7 @@ Proof.
     ([!a2];p22)^*;[a1 \cap a2 \cap a3 \cap a4];(p13;z2)). 
   clear -a1p22; hkat. 
   setoid_replace (p13;z2) with z2
-     by (unfold z2, clr; mrewrite <-(gc_correct y1); [ simpl; kat | reflexivity ]). 
+     by (unfold z2, clr; mrewrite <-(gc_correct y1); [ simpl gc; kat | reflexivity ]).
   (** (24) *)
   transitivity (x1;p41;p11;q214;q311;
     ([a1 \cap a4];p13;([!a2];p22)^*;[a2 \cap !a3];p41;p11;q214;q311)^*;
@@ -462,7 +469,9 @@ Proof.
   (** big simplification w.r.t the paper proof here... *)
 
   (** (27) *)
-  assert (p41p11q214: p41;p11;q214 == p41;p11;q211) by (simpl; now rewrite 3frel_comp).
+  assert (p41p11q214: p41;p11;q214 == p41;p11;q211).
+  change (upd y4 (f' y1) ; upd y1 (f' y1) ; upd y2 (g' y1 y4) == upd y4 (f' y1) ; upd y1 (f' y1) ; upd y2 (g' y1 y1)).
+  now rewrite 3frel_comp.
   do 2 mrewrite p41p11q214. clear p41p11q214.
   (** (29) *)
   transitivity (x1;(p41;(p11;q211;q311;[a1];p13;([!a2];p22)^*;[a2\cap!a3]))^*;
@@ -471,7 +480,7 @@ Proof.
   (** (31) *)
   transitivity (x1;(p11;q211;q311;[a1];p13;([!a2];p22)^*;[a2\cap!a3])^*;
                 p11;q211;q311;([!a2];p22)^*;[a1\cap a2\cap a3];z2).
-  unfold z2, clr. mrewrite <-(gc_correct y4). 2: reflexivity. simpl. kat. 
+  unfold z2, clr. mrewrite <-(gc_correct y4). 2: reflexivity. simpl gc. kat. 
   (** (32) *)
   rmov1 p13.
   transitivity ((x1;p11);(q211;q311;([!a2];p22)^*;[a1\cap a2\cap!a3];(p13;p11))^*;
@@ -492,7 +501,8 @@ Proof.
                 q211;q311;([!a2];p22)^*;[a1\cap a2\cap a3];z2).
   clear -a1q311 a1q211; hkat. 
   (** (35) *)
-  setoid_replace (q211;q311;r13) with (q211;q311;r12) by (simpl; now rewrite 3frel_comp).
+  setoid_replace (q211;q311;r13) with (q211;q311;r12).
+  2: change (upd y2 (g' y1 y1) ; upd y3 (g' y1 y1) ; upd y1 (f' (f' y3)) == upd y2 (g' y1 y1) ; upd y3 (g' y1 y1) ; upd y1 (f' (f' y2))); now rewrite 3frel_comp.
   (** (36) *)
   transitivity (s1;([a1];(q211;q311);[!a2];r12;([!a2];p22)^*;[a2])^*;
                 (q211;q311);[a2];([!a2];p22)^*;[a1\cap a2];z2).
@@ -500,7 +510,7 @@ Proof.
   (** (37) *)
   transitivity (s1;([a1];q211;[!a2];r12;([!a2];p22)^*;[a2])^*;
                 q211;[a2];([!a2];p22)^*;[a1\cap a2];z2).
-  unfold z2, clr. mrewrite <-(gc_correct y3). 2: reflexivity. simpl. kat. 
+  unfold z2, clr. mrewrite <-(gc_correct y3). 2: reflexivity. simpl gc. kat. 
   (** (38) *)
   transitivity (s1;[a1];q211;([!a2];r12;[a1];p22;[a2];q211 + 
                               [!a2];r12;[a1];p22;[!a2];(p22;q211))^*;[a2];z2).

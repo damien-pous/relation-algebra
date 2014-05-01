@@ -138,3 +138,12 @@ Section m.
  Proof. intros. rewrite insert_union. apply union_app. Qed.
 
 End m.
+
+Module Fix.
+
+Canonical Structure lset_ops A := lattice.mk_ops (list A)
+  (fun h k => forall a, In a h -> In a k)
+  (fun h k => forall a, In a h <-> In a k)
+  (@app A) (@app A) (assert_false id) (@nil A) (@nil A).
+
+End Fix.

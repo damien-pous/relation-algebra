@@ -88,7 +88,7 @@ let ra_fold_term ops ob t goal =
     let t = Typing.type_of env !sigma e in
     match ob with
       | Some o when convertible' (env,!sigma) t (Lattice.car (Monoid.mor ops o o)) -> ra_fold env o o e
-      | Some o when t = mkProp ->
+      | Some o when Constr.equal t mkProp ->
 	(match kind_of_term (strip_outer_cast e) with
 	  | App(c,ca) when 2 <= Array.length ca ->
 	    let n = Array.length ca in 
@@ -102,7 +102,7 @@ let ra_fold_term ops ob t goal =
 	      mkApp(leq,[|ra_fold env o o ca.(n-2);ra_fold env o o ca.(n-1)|]) else
 	    gen_fold env e
 	  | _ -> gen_fold env e)
-      | _ when t = mkProp ->
+      | _ when Constr.equal t mkProp ->
 	(match kind_of_term (strip_outer_cast e) with
 	  | App(c,ca) when 2 <= Array.length ca ->
 	    let n = Array.length ca in 

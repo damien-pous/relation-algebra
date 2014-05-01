@@ -217,7 +217,7 @@ let reify_kat_goal ?kat check =
   Proofview.V82.tactic begin fun goal ->
   let msg = 
     match kat with 
-      | Some b when b=Lazy.force Coq.true_ -> "KAT"
+      | Some b when Constr.equal b (Lazy.force Coq.true_) -> "KAT"
       | _ -> "KA"
   in
 
@@ -250,8 +250,8 @@ let reify_kat_goal ?kat check =
   let rel,ca = 
     match kind_of_term (strip_outer_cast (Tacmach.pf_concl goal)) with
       | App(c,ca) ->
-	if c = Lazy.force Lattice.weq then mkApp (c,[|ca.(0)|]), ca
-	else if c = Lazy.force Lattice.leq then mkApp (c,[|ca.(0)|]), ca
+	if Constr.equal c (Lazy.force Lattice.weq) then mkApp (c,[|ca.(0)|]), ca
+	else if Constr.equal c (Lazy.force Lattice.leq) then mkApp (c,[|ca.(0)|]), ca
 	else error "unrecognised goal"
       | _ -> error "unrecognised goal"
   in
@@ -259,13 +259,13 @@ let reify_kat_goal ?kat check =
   (* get the monoid operations and the domain/codomain types *)
   let mops,src',tgt' = 
     match kind_of_term (strip_outer_cast ca.(0)) with
-      | App(c,ca) when c = Lazy.force Monoid.mor0 -> ca.(0),ca.(1),ca.(2)
+      | App(c,ca) when Constr.equal c (Lazy.force Monoid.mor0) -> ca.(0),ca.(1),ca.(2)
       | _ -> error "could not find monoid operations"
   in
   (* get the kat operations *)
   let kops = 
     match kind_of_term (strip_outer_cast mops) with
-      | App(c,ca) when c = Lazy.force KAT.kar -> ca.(0)
+      | App(c,ca) when Constr.equal c (Lazy.force KAT.kar) -> ca.(0)
       | _ -> error "could not find KAT operations"
   in
   let lops = KAT.tst kops in
@@ -400,8 +400,8 @@ let get_kat_alphabet =
   let ca = 
     match kind_of_term (strip_outer_cast (Tacmach.pf_concl goal)) with
       | App(c,ca) ->
-	if c = Lazy.force Lattice.weq then ca
-	else if c = Lazy.force Lattice.leq then ca
+	if Constr.equal c (Lazy.force Lattice.weq) then ca
+	else if Constr.equal c (Lazy.force Lattice.leq) then ca
 	else error "unrecognised goal"
       | _ -> error "unrecognised goal"
   in
@@ -409,13 +409,13 @@ let get_kat_alphabet =
   (* get the monoid operations and the domain/codomain types *)
   let mops,src',tgt' = 
     match kind_of_term (strip_outer_cast ca.(0)) with
-      | App(c,ca) when c = Lazy.force Monoid.mor0 -> ca.(0),ca.(1),ca.(2)
+      | App(c,ca) when Constr.equal c (Lazy.force Monoid.mor0) -> ca.(0),ca.(1),ca.(2)
       | _ -> error "could not find monoid operations"
   in
   (* get the kat operations *)
   let kops = 
     match kind_of_term (strip_outer_cast mops) with
-      | App(c,ca) when c = Lazy.force KAT.kar -> ca.(0)
+      | App(c,ca) when Constr.equal c (Lazy.force KAT.kar) -> ca.(0)
       | _ -> error "could not find KAT operations"
   in
 
