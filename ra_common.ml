@@ -60,7 +60,7 @@ let fresh_name n goal =
 
 (* access to Coq constants *)
 let get_const dir s = 
-  lazy (Globnames.constr_of_global (Coqlib.find_reference "RelationAlgebra.reification" dir s))
+  lazy (Universes.constr_of_global (Coqlib.find_reference "RelationAlgebra.reification" dir s))
 
 (* make an application using a lazy value *)
 let force_app f = fun x -> mkApp (Lazy.force f,x)
