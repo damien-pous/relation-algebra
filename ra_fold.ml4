@@ -17,6 +17,8 @@ open Term
 open Names
 open Proof_type
 
+DECLARE PLUGIN "ra_fold"
+
 let ra_fold_term ops ob t goal =
   let env = Tacmach.pf_env goal in
   let tops = Tacmach.pf_type_of goal ops in

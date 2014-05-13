@@ -18,6 +18,8 @@ open Term
 open Names
 open Proof_type
 
+DECLARE PLUGIN "ra_reification"
+
 (* RelationAlgebra.mono Coq module *)
 (* module Mono = struct *)
 (*   let path = ra_path@["mono"] *)

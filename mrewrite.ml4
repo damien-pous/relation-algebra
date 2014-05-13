@@ -17,6 +17,8 @@ open Term
 open Names
 open Proof_type
 
+DECLARE PLUGIN "mrewrite"
+
 module Ext = struct
   let path = ra_path@["rewriting"]
   let leq_2  = get_fun_10 path "ext_leq_2"

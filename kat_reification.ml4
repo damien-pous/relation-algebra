@@ -23,6 +23,8 @@ open Term
 open Names
 open Proof_type
 
+DECLARE PLUGIN "kat_reification"
+
 (* RelationAlgebra.kat Coq module *)
 module KAT = struct
   let path = ra_path@["kat"]
