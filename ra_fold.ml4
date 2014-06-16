@@ -153,10 +153,11 @@ let ra_fold_all ops ob goal =
     (ra_fold_concl ops ob) hyps goal
 
 (* tactic grammar entries *)
-TACTIC EXTEND ra_fold_ccl1 [ "ra_fold" constr(ops) ] -> [ Proofview.V82.tactic (ra_fold_concl ops None) ] END
-TACTIC EXTEND ra_fold_ccl2 [ "ra_fold" constr(ops) constr(ob)] -> [ Proofview.V82.tactic (ra_fold_concl ops (Some ob)) ] END
-TACTIC EXTEND ra_fold_hyps1 [ "ra_fold" constr(ops) "in" hyp_list(l)] -> [ Proofview.V82.tactic (ra_fold_hyps ops None l) ] END
-TACTIC EXTEND ra_fold_hyps2 [ "ra_fold" constr(ops) constr(ob) "in" hyp_list(l)] -> [ Proofview.V82.tactic (ra_fold_hyps ops (Some ob) l) ] END
-TACTIC EXTEND ra_fold_all1 [ "ra_fold" constr(ops) "in" "*"] -> [ Proofview.V82.tactic (ra_fold_all ops None) ] END
-TACTIC EXTEND ra_fold_all2 [ "ra_fold" constr(ops) constr(ob) "in" "*"] -> [ Proofview.V82.tactic (ra_fold_all ops (Some ob)) ] END
-
+TACTIC EXTEND ra_fold
+  | [ "ra_fold" constr(ops) ] -> [ Proofview.V82.tactic (ra_fold_concl ops None) ]
+  | [ "ra_fold" constr(ops) constr(ob)] -> [ Proofview.V82.tactic (ra_fold_concl ops (Some ob)) ]
+  | [ "ra_fold" constr(ops) "in" hyp_list(l)] -> [ Proofview.V82.tactic (ra_fold_hyps ops None l) ]
+  | [ "ra_fold" constr(ops) constr(ob) "in" hyp_list(l)] -> [ Proofview.V82.tactic (ra_fold_hyps ops (Some ob) l) ]
+  | [ "ra_fold" constr(ops) "in" "*"] -> [ Proofview.V82.tactic (ra_fold_all ops None) ]
+  | [ "ra_fold" constr(ops) constr(ob) "in" "*"] -> [ Proofview.V82.tactic (ra_fold_all ops (Some ob)) ]
+END
