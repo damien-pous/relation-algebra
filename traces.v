@@ -410,7 +410,12 @@ Lemma typed'_str n (x: traces'): typed' n n x -> typed' n n (x^*).
 Proof. intros Hx w [i Hw]. eapply typed'_iter in Hw; eauto using typed'_one. Qed.
 
 Lemma typed'_single i: typed' (src i) (tgt i) (tsingle i).
-Proof. intros [|? ? [?|]] []. do 2 constructor. Qed.
+Proof.
+intros [?|? ?].
+intros [].
+intros [?|] [].
+do 2 constructor.
+Qed.
 
 (** ** packing typed traces as a residuated Kleene lattice *)
 
