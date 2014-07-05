@@ -11,6 +11,7 @@
 Require Import List.
 Require Import common comparisons.
 
+Set Standard Proposition Elimination Names.
 Local Unset Injection On Proofs.
 Set Implicit Arguments.
 
