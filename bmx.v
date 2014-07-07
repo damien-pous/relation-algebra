@@ -58,7 +58,8 @@ Proof. induction 1. constructor. eapply clot_cons; eassumption. Qed.
 Theorem bmx_str_clot n (M: bmx n n) i j: M^* i j <-> rt_clot M i j. 
 Proof.
 split.
-- rewrite bmx_str_str. revert i j. 
+- assert (M^* i j == bmx_str M i j). (*MS: FIXME, why is it needed now ? *)
+  apply bmx_str_str. rewrite H. clear H. revert i j. 
   induction n as [|n IH]; intros i' j'. 
    simpl. intro. eapply clot_cons. eassumption. constructor. 
   unfold bmx_str; fold (@bmx_str n). set (M' := sub11_mx (n1:=1) (m1:=1) M). 

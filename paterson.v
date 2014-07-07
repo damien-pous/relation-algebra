@@ -76,7 +76,7 @@ Variable pp: nat -> bool.
 (** we use a single inductive to represent Arithmetic and Boolean
    expressions: this allows us to share code about evaluation, free
    variables and so on, through polymorphism *)
-Inductive expr: Type -> Type :=
+Inductive expr: Set -> Set :=
   | e_var: loc -> expr nat
   | O: expr nat
   | f': expr nat -> expr nat
@@ -380,6 +380,22 @@ Proof.
 Qed.   
 
 
+Ltac solve_rmov ::=
+  first 
+    [ eassumption 
+    | symmetry; eassumption
+    | eapply rmov_x_dot
+    | apply rmov_x_pls
+    | apply rmov_x_str
+    | apply rmov_x_itr
+    | apply rmov_x_cap
+    | apply rmov_x_cup
+    | apply rmov_x_neg
+    | apply rmov_inj
+    | apply rmov_x_1
+    | apply rmov_x_0 ]; 
+    match goal with |- ?x == ?y => solve_rmov end.
+  
 (** * Paterson's equivalence *)
 Theorem Paterson: 
   let a1 := p' y1: test in
@@ -449,7 +465,7 @@ Proof.
      [a1\cap a4];p13;([!a2];p22)^*;[a2 \cap !a3];p41;p11;q214;q311)^*;
     [a1];p13;([!a2];p22)^*;[a2 \cap a3 \cap a4];z2). 
   clear -a4p13 a4p22. hkat. 
-  do 2 rmov1 p13.
+  do 2 rmov1 p13. 
   (** (23+) *)
   transitivity (
     x1;p41;p11;q214;q311;

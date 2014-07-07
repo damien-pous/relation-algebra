@@ -26,6 +26,10 @@ DECLARE PLUGIN "ra_reification"
 (*   let mono = get_fun_3 path "mono" *)
 (* end *)
 
+let retype c gl =
+  let sigma, _ = Tacmach.pf_apply Typing.e_type_of gl c in
+    Refiner.tclEVARS sigma gl
+
 module Syntax = Make_Syntax(struct let typ = Pos.t end)
 
 module Tbl : sig
@@ -197,7 +201,7 @@ let reify_goal l goal =
     mkNamedLetIn rhs_n rhs_v x (
     (mkApp (rel, [|lhs;rhs|]))))))))
   in	  
-    (try Tactics.convert_concl reified DEFAULTcast goal
+    (try Tacticals.tclTHEN (retype reified) (Tactics.convert_concl reified DEFAULTcast) goal
      with e -> Pp.msg_warning (Printer.pr_lconstr reified); raise e)
 
 	
