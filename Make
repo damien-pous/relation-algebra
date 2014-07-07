@@ -1,4 +1,5 @@
 -R . RelationAlgebra
+-I .
 
 common.v
 comparisons.v
