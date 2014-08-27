@@ -158,6 +158,9 @@ TACTIC EXTEND ra_fold
   | [ "ra_fold" constr(ops) constr(ob)] -> [ Proofview.V82.tactic (ra_fold_concl ops (Some ob)) ]
   | [ "ra_fold" constr(ops) "in" hyp_list(l)] -> [ Proofview.V82.tactic (ra_fold_hyps ops None l) ]
   | [ "ra_fold" constr(ops) constr(ob) "in" hyp_list(l)] -> [ Proofview.V82.tactic (ra_fold_hyps ops (Some ob) l) ]
+END
+
+TACTIC EXTEND ra_fold_in_star
   | [ "ra_fold" constr(ops) "in" "*"] -> [ Proofview.V82.tactic (ra_fold_all ops None) ]
   | [ "ra_fold" constr(ops) constr(ob) "in" "*"] -> [ Proofview.V82.tactic (ra_fold_all ops (Some ob)) ]
 END
