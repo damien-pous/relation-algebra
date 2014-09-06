@@ -42,7 +42,7 @@ let rec lenght t =
     | _ -> 0
 
 let extend k dir h =
-  Proofview.Goal.enter begin fun goal ->
+  Proofview.Goal.nf_enter begin fun goal ->
   let fst,snd = match dir with `LR -> 2,1 | `RL -> 1,2 in
   let ext_2 rel = match dir,rel with 
     | `LR,`Weq -> Ext.weq_2
