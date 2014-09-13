@@ -69,7 +69,7 @@ let extend k dir h =
 	(match dots env ca.(4) with
 	  | None -> 
   	    let ops = ca.(0) in
-	    let l = e_new_evar sigma env (Lazy.force Level.t) in
+	    let l = e_new_evar env sigma (Lazy.force Level.t) in
 	    let sg,laws = 
 	      try Typeclasses.resolve_one_typeclass env !sigma (Monoid.laws l ops) 
 	      with Not_found -> error "could not find monoid laws"

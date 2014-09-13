@@ -100,7 +100,7 @@ let ltac_apply (f:glob_tactic_expr) (args:glob_tactic_arg list) =
 
 (* converting a constr into a ltac argument *)
 let ltac_constr_arg x = 
-  let x = Detyping.detype false [] [] x in 
+  let x = Detyping.detype false [] [] Evd.empty x in 
   (* TODO: replace [] above by appropriate values? *)
   ConstrMayEval (Genredexpr.ConstrTerm (x,None))
 

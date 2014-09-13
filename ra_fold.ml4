@@ -27,7 +27,7 @@ let ra_fold_term ops ob t goal =
     if Constr.equal tops (Lazy.force Monoid.ops) then ops 
     else match kind_of_term (strip_outer_cast tops) with
       | Prod(_,s,t) -> 
-	let x = e_new_evar sigma env s in
+	let x = e_new_evar env sigma s in
 	fill (mkApp(ops,[|x|])) t
       | _ -> error "provided argument is not a monoid operation"
   in
@@ -109,8 +109,8 @@ let ra_fold_term ops ob t goal =
 	  | App(c,ca) when 2 <= Array.length ca ->
 	    let n = Array.length ca in 
 	    let rel = (partial_app (n-2) c ca) in
-	    let sg,s = new_evar !sigma env obt in
-	    let sg,t = new_evar sg env obt in
+	    let sg,s = new_evar env !sigma obt in
+	    let sg,t = new_evar env sg obt in
 	    let lops = Monoid.mor ops s t in
 	    let leq = Lattice.leq1 lops in
 	    let weq = Lattice.weq1 lops in
@@ -121,8 +121,8 @@ let ra_fold_term ops ob t goal =
 	    else gen_fold env e
 	  | _ -> gen_fold env e)
       | _ ->
-	let sg,s' = new_evar !sigma env obt in
-	let sg,t' = new_evar sg env obt in
+	let sg,s' = new_evar env !sigma obt in
+	let sg,t' = new_evar env sg obt in
 	if unifiable sg env t (Lattice.car (Monoid.mor ops s' t')) 
 	then ra_fold env s' t' e
 	else gen_fold env e
