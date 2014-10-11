@@ -201,7 +201,7 @@ let reify_goal l goal =
     mkNamedLetIn rhs_n rhs_v x (
     (mkApp (rel, [|lhs;rhs|]))))))))
   in	  
-    (try Tacticals.tclTHEN (retype reified) (Tactics.convert_concl reified DEFAULTcast) goal
+    (try Tacticals.tclTHEN (retype reified) (Proofview.V82.of_tactic (Tactics.convert_concl reified DEFAULTcast)) goal
      with e -> Pp.msg_warning (Printer.pr_lconstr reified); raise e)
 
 	
