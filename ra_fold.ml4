@@ -137,7 +137,7 @@ let ra_fold_concl ops ob goal =
 
 let ra_fold_hyp' ops ob (id,body,typ) goal =
   let typ,goal = ra_fold_term ops ob typ goal in
-  (try Proofview.V82.of_tactic (Tactics.convert_hyp ~unsafe:true (id,body,typ)) goal
+  (try Proofview.V82.of_tactic (Tactics.convert_hyp ~check:false (id,body,typ)) goal
    with e -> Pp.msg_warning (Printer.pr_lconstr typ); raise e)
 
 let ra_fold_hyp ops ob hyp goal =
