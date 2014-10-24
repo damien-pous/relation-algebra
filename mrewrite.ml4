@@ -104,7 +104,7 @@ let extend k dir h =
   in
   let t = Tacmach.New.pf_type_of goal h in
   let h = ext (Proofview.Goal.env goal) (lenght t) h t in
-  Tacticals.New.tclTHEN (Proofview.V82.tclEVARS !sigma)
+  Tacticals.New.tclTHEN (Proofview.Unsafe.tclEVARS !sigma)
   (ltac_apply k [ltac_constr_arg h])
   end
 
