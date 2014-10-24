@@ -53,7 +53,7 @@ Lemma atom_xO n (f: ord (pow2 n)):
   @atom (S n) (set.xO f) == ! e_var ord0 \cap eval (fun i => e_var (ordS i)) (atom f).
 Proof.
   unfold atom. simpl. rewrite set.mem_xO_0. apply cap_weq. reflexivity.
-  setoid_rewrite eval_inf. rewrite sup_map.
+  setoid_rewrite eval_inf with (g := fun i => e_var (ordS i)). rewrite sup_map.
   apply (sup_weq (l:=BL) (L:=lattice.dual_laws _ _ _)). 2: reflexivity. intro i.
   rewrite set.mem_xO_S. now case set.mem. 
 Qed.
@@ -62,7 +62,7 @@ Lemma atom_xI n (f: ord (pow2 n)):
   @atom (S n) (set.xI f) == e_var ord0 \cap eval (fun i => e_var (ordS i)) (atom f).
 Proof.
   unfold atom. simpl. rewrite set.mem_xI_0. apply cap_weq. reflexivity.
-  setoid_rewrite eval_inf. rewrite sup_map.
+  setoid_rewrite eval_inf with (g := fun i => e_var (ordS i)). rewrite sup_map.
   apply (sup_weq (l:=BL) (L:=lattice.dual_laws _ _ _)). 2: reflexivity. intro i.
   rewrite set.mem_xI_S. now case set.mem. 
 Qed.
@@ -149,8 +149,8 @@ Qed.
 Lemma eval_atom (a b: Atom): eval (set.mem a) (atom b) -> a=b. 
 Proof.
   intro. apply set.ext. intro i. 
-  unfold atom in H. setoid_rewrite eval_inf in H. 
-  rewrite is_true_inf in H. specialize (H i (in_seq i)). 
+  unfold atom in H. setoid_rewrite eval_inf with (g := set.mem a) in H. 
+  rewrite is_true_inf in H; cbv beta in H. specialize (H i (in_seq i)). 
   destruct (set.mem b i). assumption. apply Bool.negb_true_iff. assumption. 
 Qed.
 

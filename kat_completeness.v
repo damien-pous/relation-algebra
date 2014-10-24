@@ -791,7 +791,7 @@ Proof.
   destruct x as [a|a e b]; destruct y as [c|c f d]; unfold g_dot1; 
     (case eqb_spec; [intros <-|intro E]); try apply clean_bot; apply clean_single; trivial.
   revert Hx Hy. unfold clean1, geval. rewrite 8G.lang_dot, 3G.lang_atom.
-  simpl o; simpl v. fold_regex. rewrite 8R.lang_dot. setoid_rewrite R_lang_atom. 
+  simpl o; simpl v. fold_regex. rewrite 8R.lang_dot. repeat change (o_pred ?a (atom ?b)) with (o (g_atom a b)). setoid_rewrite R_lang_atom. 
   intros Hx Hy. rewrite 4dotA, <-dotA, <-(dotA _ _ (latom _ _)). 
   apply gl_dot. assumption. rewrite 2dotA. assumption. 
 Qed.
@@ -825,9 +825,9 @@ Proof.
     unfold clean1, geval in He. rewrite 2G.lang_dot, 2G.lang_atom in He. 
     unfold clean1, geval in Hf. rewrite 2G.lang_dot, 2G.lang_atom in Hf. 
     simpl o in *; simpl v in *. 
-    rewrite 2R.lang_dot in He. setoid_rewrite R_lang_atom in He. 
-    rewrite 2R.lang_dot in Hf. setoid_rewrite R_lang_atom in Hf. 
-    rewrite 2R.lang_dot. setoid_rewrite R_lang_atom. 
+    rewrite 2R.lang_dot in He. repeat change (o_pred ?a (atom ?b)) with (o (g_atom a b)) in He. setoid_rewrite R_lang_atom in He. 
+    rewrite 2R.lang_dot in Hf. repeat change (o_pred ?a (atom ?b)) with (o (g_atom a b)) in Hf. setoid_rewrite R_lang_atom in Hf. 
+    rewrite 2R.lang_dot. repeat change (o_pred ?a (atom ?b)) with (o (g_atom a b)). setoid_rewrite R_lang_atom. 
     setoid_rewrite G.lang_dot. rewrite dotA. setoid_rewrite G.lang_dot. 
     rewrite G.lang_atom. 
     rewrite dotA. rewrite <-(dotA _ (G f)). 
@@ -849,7 +849,7 @@ Proof.
   rewrite 2dotA, <-str_itr, <-2itr_str_l. 
   rewrite G.lang_dot, G.lang_itr, G.lang_dot, G.lang_sup, G.lang_atom.
   rewrite R.lang_dot, R.lang_itr, R.lang_dot, o_sup, v_sup, R.lang_sup.
-  setoid_rewrite R_lang_atom. 
+  repeat change (o_pred ?a (atom ?b)) with (o (g_atom a b)). setoid_rewrite R_lang_atom. 
   apply gl_itr. rewrite 2dotxsum, 2dotsumx, gl_sup. 
   apply sup_weq'. reflexivity. intros f Hf. 
   apply clean_inner_dot. apply Ha. apply He, Hf. 
