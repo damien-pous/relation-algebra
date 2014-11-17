@@ -202,7 +202,7 @@ Hint Resolve is_01_mx_zer is_01_mx_one is_01_mx_cup is_01_mx_dot is_01_mx_scal i
 
 Lemma is_01_mx_str n (M: rmx n n): is_01_mx M -> is_01_mx (M^*).
 Proof. 
-  revert M. simpl str. induction n; intros M HM. assumption. 
+  revert M. induction n; intros M HM. assumption.
   simpl. unfold mx_str_build. change (S n) with (1+n)%nat. 
   ra_fold (mx_ops regex_ops regex_tt). 
   auto 13 using is_01_str with mx_predicates. 
