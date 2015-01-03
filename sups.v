@@ -117,12 +117,12 @@ End s.
 
 (** we use "\sup_(i\in l) f" in the general case *)
 Notation "\sup_ ( i \in l ) f" := (sup (fun i => f) l)
-  (at level 41, F at level 41, i, A at level 50,
+  (at level 41, f at level 41, i, l at level 50,
     format "'[' \sup_ ( i \in  l ) '/  '  f ']'"): ra_terms.
 
 (** and "\sup_(i<n) f" when [l] is the set of ordinals smaller than [n] *)
 Notation "\sup_ ( i < n ) f" := (\sup_(i \in seq n) f)
-  (at level 41, F at level 41, i, n at level 50,
+  (at level 41, f at level 41, i, n at level 50,
     format "'[' \sup_ ( i < n ) '/  '  f ']'"): ra_terms.
 
 (** we shall moreover use the notation [\sum] when the lattice
@@ -203,11 +203,11 @@ Proof. rewrite capC, capxsup. now setoid_rewrite capC at 1. Qed.
 (** obtained for free, by duality *)
 
 Notation "\inf_ ( i \in l ) f" := (sup (X:=dual _) (fun i => f) l)
-  (at level 41, F at level 41, i, A at level 50,
+  (at level 41, f at level 41, i, l at level 50,
     format "'[' \inf_ ( i \in  l ) '/  '  f ']'"): ra_terms.
 
 Notation "\inf_ ( i < n ) f" := (\inf_(i \in seq n) f)
-  (at level 41, F at level 41, i, n at level 50,
+  (at level 41, f at level 41, i, n at level 50,
     format "'[' \inf_ ( i < n ) '/  '  f ']'"): ra_terms.
 
 Instance inf_leq `{laws} `{CAP+TOP<<l} I:

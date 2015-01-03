@@ -17,11 +17,11 @@ Require Export sups.
 (** in the setting of monoids, we prefer the "sum" notation *)
 
 Notation "\sum_ ( i \in l ) f" := (@sup (mor _ _) _ (fun i => f) l)
-  (at level 41, F at level 41, i, A at level 50,
+  (at level 41, f at level 41, i, l at level 50,
     format "'[' \sum_ ( i \in  l ) '/  '  f ']'"): ra_terms.
 
 Notation "\sum_ ( i < n ) f" := (\sum_(i \in seq n) f)
-  (at level 41, F at level 41, i, n at level 50,
+  (at level 41, f at level 41, i, n at level 50,
     format "'[' \sum_ ( i < n ) '/  '  f ']'"): ra_terms.
 
 (** [dot] distributes over sums *)
