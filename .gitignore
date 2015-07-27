@@ -1,0 +1,11 @@
+*.bak
+*.vo
+*.d
+*.glob
+*.cm*
+*.o
+*.a
+deps.dat
+deps.pdf
+diff
+html
