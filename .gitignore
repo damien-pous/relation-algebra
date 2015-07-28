@@ -1,3 +1,4 @@
+*.aux
 *.bak
 *.vo
 *.d
@@ -9,3 +10,4 @@ deps.dat
 deps.pdf
 diff
 html
+_CoqProject
