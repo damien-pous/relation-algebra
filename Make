@@ -62,8 +62,9 @@ kat_reification.ml4
 kat_reification.mllib
 kat_tac.v
 
+relalg.v
+
+# examples of applications
 compiler_opts.v
 imp.v
-## the following one is commented out because it takes a bit long to compile, 
-## and it is not useful to end-users
 paterson.v

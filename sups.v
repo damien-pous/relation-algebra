@@ -59,6 +59,9 @@ Proof. apply sup_spec. Qed.
 Lemma leq_xsup f J i: In i J -> f i <== sup f J.
 Proof. now apply sup_spec. Qed.
 
+Lemma leq_xsup' f J i x: In i J -> x <== f i -> x <== sup f J.
+Proof. intros ? E. rewrite E. now apply leq_xsup. Qed.
+
 (** [sup] is monotone, w.r.t, both the function [f] and the set [J] *)
 Global Instance sup_leq: Proper (pwr leq ==> leq ==> leq) sup.
 Proof.
@@ -202,7 +205,9 @@ Proof. rewrite capC, capxsup. now setoid_rewrite capC at 1. Qed.
 
 (** obtained for free, by duality *)
 
-Notation "\inf_ ( i \in l ) f" := (sup (X:=dual _) (fun i => f) l)
+Notation inf f l := (@sup (dual _) _ f l).
+
+Notation "\inf_ ( i \in l ) f" := (inf (fun i => f) l)
   (at level 41, f at level 41, i, l at level 50,
     format "'[' \inf_ ( i \in  l ) '/  '  f ']'"): ra_terms.
 
@@ -210,10 +215,28 @@ Notation "\inf_ ( i < n ) f" := (\inf_(i \in seq n) f)
   (at level 41, f at level 41, i, n at level 50,
     format "'[' \inf_ ( i < n ) '/  '  f ']'"): ra_terms.
 
-Instance inf_leq `{laws} `{CAP+TOP<<l} I:
-  Proper (pwr (@leq X) ==> leq --> @leq X) (@sup (lattice.dual X) I).
-Proof. intros ? ? ? ? ?. now lattice.dual @sup_leq. Qed.
+Section inf.
+Context `{laws} `{CAP+TOP<<l} {I: Type}.
 
-Lemma inf_spec `{laws} `{CAP+TOP<<l} I (f: I -> X) J (x: X): 
+Global Instance inf_leq:
+  Proper (pwr (@leq X) ==> leq --> @leq X) (@sup (dual X) I).
+Proof. intros ? ? ? ? ?. now dual @sup_leq. Qed.
+
+Lemma inf_spec (f: I -> X) J (x: X): 
   x <== \inf_(i\in J) f i <-> forall i, In i J -> x <== f i.
-Proof. lattice.dual @sup_spec. Qed.
+Proof. dual @sup_spec. Qed.
+
+Lemma inf_singleton (f: I -> X) i: inf f (i::nil) == f i.
+Proof. dual @sup_singleton. Qed.
+
+Lemma leq_xinf (f: I -> X) J x: (forall i, In i J -> x <== f i) -> x <== inf f J.
+Proof. dual @leq_supx. Qed.
+
+Lemma leq_infx (f: I -> X) J i: In i J -> @leq X (inf f J) (f i).
+Proof. dual @leq_xsup. Qed.
+
+Lemma leq_infx' (f: I -> X) J i x: In i J -> f i <== x -> @leq X (inf f J) x.
+Proof. dual @leq_xsup'. Qed.
+
+End inf.
+

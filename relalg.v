@@ -6,7 +6,7 @@
 (*  Copyright 2015: Damien Pous, Insa Stucke.                      *)
 (*******************************************************************)
 
-Require Import lattice monoid normalisation rewriting.
+Require Export lattice monoid kleene normalisation rewriting kat_tac.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -29,7 +29,11 @@ Proof. dual @top_nnm. Qed.
 
 
 
-(** algebraic properties of relations *)
+(** algebraic properties of relations 
+    we use typeclasses to infer those properties automatically whenever possible
+    typically, [rewrite transitive] will rewrite the first occurrence of a
+    pattern [x*x] such that [x] is provably transitive. 
+*)
 
 
 Section props.
@@ -39,7 +43,7 @@ Context `{X: ops}.
 Class is_reflexive n (x: X n n) := reflexive: 1 <== x.
 Class is_irreflexive n (x: X n n) := irreflexive: x <== !1.
 Class is_transitive n (x: X n n) := transitive: x * x <== x.
-Class is_symmetric n (x: X n n) := symmetric: x` == x.
+Class is_symmetric n (x: X n n) := symmetric_: x` <== x. (* see below for [symmetric] *)
 Class is_antisymmetric n (x: X n n) := antisymmetric: x`\cap x <== 1.
 Class is_univalent n m (x: X n m) := univalent: x` * x <== 1.
 Class is_injective n m (x: X n m) := injective: x * x` <== 1.
@@ -68,22 +72,33 @@ Class is_order n (p: X n n) := {
   ord_preorder:> is_preorder p;
   ord_antisymmetric:> is_antisymmetric p}.
 
-Context {l} {L:laws l X} {Hl: CNV<<l}.
+Context {l} {L:laws l X}.
+
+Lemma symmetric {Hl: CNV<<l} {n} {x: X n n} {Hx: is_symmetric x}: x`==x.
+Proof. apply antisym. assumption. now cnv_switch. Qed.
+
+Lemma vector' {Hl: TOP<<l} {n m} {v: X n m} {Hv: is_vector v} x: v * x <== v.
+Proof. rewrite <-vector at 2. ra. Qed.
+
+Global Instance is_symmetric_neg1 {Hl: BL+CNV<<l} {n}: is_symmetric (!one n).
+Proof. unfold is_symmetric. rewrite <-dotx1. apply Schroeder_. rewrite negneg. ra. Qed.
+
+Global Instance irreflexive_cnv {Hl: BL+CNV<<l} {n} {x: X n n} {H: is_irreflexive x}: is_irreflexive (x`).
+Proof. unfold is_irreflexive. cnv_switch. now rewrite symmetric. Qed.
+
+Context {Hl: CNV<<l}.
 
 Global Instance reflexive_cnv {n} {x: X n n} {H: is_reflexive x}: is_reflexive (x`).
 Proof. unfold is_reflexive. cnv_switch. now ra_normalise. Qed.
-
-Global Instance irreflexive_cnv {n} {x: X n n} {H: is_irreflexive x}: is_irreflexive (x`).
-Admitted.
 
 Global Instance transitive_cnv {n} {x: X n n} {H: is_transitive x}: is_transitive (x`).
 Proof. unfold is_transitive. cnv_switch. now ra_normalise. Qed.
 
 Global Instance symmetric_cnv {n} {x: X n n} {H: is_symmetric x}: is_symmetric (x`).
-Proof. unfold is_symmetric. now rewrite cnv_invol. Qed.
+Proof. unfold is_symmetric. now cnv_switch. Qed.
 
-Global Instance antisymmetric_cnv {n} {x: X n n} {H: is_antisymmetric x}: is_antisymmetric (x`).
-Admitted.                       (* need CAP<<l *)
+Global Instance antisymmetric_cnv {Hl': CAP+CNV<<l} {n} {x: X n n} {H: is_antisymmetric x}: is_antisymmetric (x`).
+Proof. clear Hl. unfold is_antisymmetric. now rewrite cnv_invol, capC. Qed.
 
 Global Instance injective_cnv {n m} {x: X n m} {H: is_univalent x}: is_injective (x`).
 Proof. unfold is_injective. now rewrite cnv_invol. Qed.
@@ -100,14 +115,40 @@ Proof. unfold is_total. now rewrite cnv_invol. Qed.
 Global Instance preorder_cnv {n} {x: X n n} {H: is_preorder x}: is_preorder (x`).
 Proof. constructor; eauto with typeclass_instances. Qed.
 
-Global Instance order_cnv {n} {x: X n n} {H: is_order x}: is_order (x`).
-Proof. constructor; eauto with typeclass_instances. Qed.
-
 End props.
 
-(** alternative characterisation of [is_total]  *)
+Instance order_cnv `{laws} `{BL+CNV<<l} {n} {x: X n n} {H: is_order x}: is_order (x`).
+Proof. constructor; eauto with typeclass_instances. Qed.
 
-Lemma total_xt `{laws} `{TOP+CNV<<l} {n m x} {Hx: @is_total X n m x} p: x*top' _ p == top.
+(** properties of Kleene star and strict iteration *)
+
+Instance preorder_str `{laws} `{STR<<l} n (x: X n n): is_preorder (x^*).
+Proof. split. apply str_refl. apply weq_leq, str_trans. Qed.
+
+Instance symmetric_str `{laws} `{STR+CNV<<l} {n} {x: X n n} {Hx: is_symmetric x}: is_symmetric (x^*).
+Proof. unfold is_symmetric. now rewrite cnvstr, symmetric. Qed.
+
+Instance reflexive_itr `{laws} `{STR<<l} {n} {x: X n n} {Hx: is_reflexive x}: is_reflexive (x^+).
+Proof. unfold is_reflexive. rewrite reflexive. apply itr_ext. Qed.
+
+Instance transitive_itr `{laws} `{STR<<l} n (x: X n n): is_transitive (x^+).
+Proof. apply itr_trans. Qed.
+
+Instance symmetric_itr `{laws} `{STR+CNV<<l} {n} {x: X n n} {Hx: is_symmetric x}: is_symmetric (x^+).
+Proof. unfold is_symmetric. now rewrite cnvitr, symmetric. Qed.
+
+Lemma itr_transitive `{laws} `{STR<<l} n (R: X n n): is_transitive R -> R^+ == R.
+Proof. 
+  intro. apply antisym. now apply itr_ind_l1. apply itr_ext.
+Qed.
+
+Lemma str_transitive `{laws} `{STR+CUP<<l} n (R: X n n): is_transitive R -> R^* == 1+R.
+Proof. intro. now rewrite str_itr, itr_transitive. Qed.
+
+
+(** alternative characterisation of [is_total] and [is_surjective] *)
+
+Lemma total_xt `{laws} `{TOP<<l} {n m x} {Hx: @is_total X n m x} p: x*top' _ p == top.
 Proof.
   apply leq_tx_iff. transitivity (x * x` * top' _ p).
   rewrite <-total. ra. rewrite <-dotA. apply dot_leq; lattice.
@@ -120,12 +161,19 @@ Proof.
   rewrite capC, capdotx. ra. 
 Qed.
 
+Lemma surjective_tx `{laws} `{TOP<<l} {n m} {x: X n m} {Hx: is_surjective x} p: top' p _ * x == top.
+Proof. now dual @total_xt. Qed.
+
+Lemma tx_surjective `{laws} `{TOP+CAP+CNV<<l} n m (x: X m n): top' n n <== top*x -> is_surjective x.
+Proof. now dual @xt_total. Qed.
+
+
 (** lemmas about relations of a specific shape *)
 
-Lemma dot_univalent_cap `{laws} `{CAP+CNV<<l} n m p (x: X n m)(y z: X m p)
+Lemma dot_univalent_cap `{laws} `{CAP+CNV<<l} {n m p} {x: X n m} {y z: X m p}
   {E: is_univalent x}: x * (y ^ z) == (x*y) ^ (x*z).  
 Proof. apply antisym. ra. rewrite capdotx. mrewrite univalent. ra. Qed.
 
-Lemma dot_cap_injective `{laws} `{CAP+CNV<<l} n m p (x: X m n)(y z: X p m)
+Lemma dot_cap_injective `{laws} `{CAP+CNV<<l} {n m p} {x: X m n} {y z: X p m}
   {E: is_injective x}: (y ^ z) * x == (y*x) ^ (z*x).  
 Proof. revert E. dual @dot_univalent_cap. Qed.

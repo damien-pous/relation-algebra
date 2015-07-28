@@ -382,6 +382,12 @@ Proof. split. intro. hlattice. intro E. rewrite <- E. lattice. Qed.
 Lemma capcup `{laws} `{DL<<l}: forall x y z, x \cap (y \cup z) == (x\cap y) \cup (x\cap z).
 Proof. dual @cupcap. Qed.
 
+Lemma cupcap' `{laws} `{DL<<l}: forall x y z, (y \cap z) \cup x == (y\cup x) \cap (z\cup x).
+Proof. intros. now rewrite cupC, cupcap, 2(cupC x). Qed.
+
+Lemma capcup' `{laws} `{DL<<l}: forall x y z, (y \cup z) \cap x == (y\cap x) \cup (z\cap x).
+Proof. dual @cupcap'. Qed.
+
 
 (** * Properties of negation *)
 
