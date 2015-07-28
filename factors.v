@@ -6,7 +6,7 @@
 (*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
 (*******************************************************************)
 
-(** * factors: addtional properties of left and right factors *)
+(** * factors: additional properties of left and right factors *)
 
 Require Import kleene.
 Set Implicit Arguments.
@@ -28,6 +28,9 @@ Proof. apply antisym. apply str_ldv_. apply str_ext. Qed.
 
 Lemma ldv_rdv `{laws} `{DIV<<l} n m p q (x: X n m) y (z: X p q): x -o (y o- z) == (x -o y) o- z.
 Proof. apply from_below. intro. now rewrite ldv_spec, 2rdv_spec, ldv_spec, dotA. Qed.
+
+Lemma ldv_unfold `{laws} `{BL+DIV+CNV<<l} n m p (x: X n m) (y: X n p): x -o y == !(x` * !y).
+Proof. apply from_below. intro. now rewrite ldv_spec, neg_leq_iff', <-Schroeder_l. Qed.
 
 
 (** dual properties for right factors *)
@@ -56,3 +59,6 @@ Proof. dual @ldv_trans. Qed.
 
 Lemma str_rdv `{laws} `{STR+DIV<<l} n m (x: X m n): (x o- x)^* == x o- x.
 Proof. dual @str_ldv. Qed.
+
+Lemma rdv_unfold `{laws} `{BL+DIV+CNV<<l} n m p (x: X m n) (y: X p n): y o- x == !(!y*x`).
+Proof. dual @ldv_unfold. Qed.

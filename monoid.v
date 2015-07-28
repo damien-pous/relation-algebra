@@ -57,6 +57,7 @@ Notation "x ^ y" := (@cap (mor _ _) x y) (right associativity, at level 30): ra_
 (* would be better to keep [^] at the level of [*]... *) (* TOFIX *)
 Notation "1" := (one _): ra_terms.
 Notation zer n m := (@bot (mor n m)).
+Notation top' n m := (@top (mor n m)) (only parsing).
 Notation "0" := (zer _ _): ra_terms.
 Notation "x `"  := (cnv _ _ x) (at level 30): ra_terms.
 Notation "x ^+" := (itr _ x) (at level 30): ra_terms.
@@ -193,8 +194,8 @@ Proof. apply antisym; [|cnv_switch]; apply leq_xt. Qed.
 Lemma cnvneg `{laws} `{CNV+BL<<l} n m (x: X n m): (neg x)` == neg (x`).
 Proof.
   apply neg_unique. 
-  rewrite <-cnvpls, cupC, cupneg. apply cnvtop.
-  rewrite <-cnvcap, capC, capneg. apply cnv0.
+  rewrite <-cnvpls, cupC, cupneg. now rewrite cnvtop.
+  rewrite <-cnvcap, capC, capneg. now rewrite cnv0.
 Qed.
 
 
@@ -281,6 +282,22 @@ Proof.
   cnv_switch. rewrite ldv_spec.
   cnv_switch. rewrite cnvdot, cnv_invol. 
   now rewrite rdv_spec. 
+Qed.
+
+
+(** ** Schroeder rules  *)
+Lemma Schroeder_  `{laws} `{BL+CNV<<l} n m p (x : X n m) (y : X m p) (z : X n p): 
+  x`*!z <== !y -> x*y <== z.
+Proof.
+  intro E. apply leq_cap_neg in E. rewrite negneg in E. 
+  apply leq_cap_neg. now rewrite capdotx, capC, E, dotx0. 
+Qed.
+  
+Lemma Schroeder_l `{laws} `{BL+CNV<<l} n m p (x : X n m) (y : X m p) (z : X n p): 
+  x*y <== z <-> x`*!z <== !y. 
+Proof.
+  split. 2: apply Schroeder_. intro.
+  apply Schroeder_. now rewrite 2negneg, cnv_invol. 
 Qed.
 
 
@@ -430,6 +447,10 @@ Proof. dual @cnvldv. Qed.
 
 Lemma dotcapx `{laws} `{CAP<<l} n m p (x: X m n) (y z: X p m): (y^z) * x <== (y*x) ^ (z*x). 
 Proof. dual @dotxcap. Qed.
+
+Lemma Schroeder_r `{laws} `{BL+CNV<<l} n m p (x : X n m) (y : X m p) (z : X n p): 
+  x*y <== z <-> !z*y` <== !x.
+Proof. dual @Schroeder_l. Qed.
 
 
 (** * Functors (i.e., monoid morphisms) *)
