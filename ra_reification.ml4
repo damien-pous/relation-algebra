@@ -27,7 +27,7 @@ DECLARE PLUGIN "ra_reification"
 (* end *)
 
 let retype c gl =
-  let sigma, _ = Tacmach.pf_apply Typing.type_of gl c in
+  let sigma, _ = Tacmach.pf_apply Typing.e_type_of gl c in
     Refiner.tclEVARS sigma gl
 
 module Syntax = Make_Syntax(struct let typ = Pos.t end)

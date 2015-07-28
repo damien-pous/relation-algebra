@@ -21,7 +21,7 @@ DECLARE PLUGIN "ra_fold"
 
 let ra_fold_term ops ob t goal =
   let env = Tacmach.pf_env goal in
-  let tops = Tacmach.pf_unsafe_type_of goal ops in
+  let tops = Tacmach.pf_type_of goal ops in
   let sigma,gl = Refiner.unpackage goal in
   let rec fill ops tops = 
     if Constr.equal tops (Lazy.force Monoid.ops) then ops 
@@ -87,7 +87,7 @@ let ra_fold_term ops ob t goal =
       | _ -> e
 
   and fold env e =
-    let t = Typing.unsafe_type_of env !sigma e in
+    let t = Typing.type_of env !sigma e in
     match ob with
       | Some o when convertible' (env,!sigma) t (Lattice.car (Monoid.mor ops o o)) -> ra_fold env o o e
       | Some o when Constr.equal t mkProp ->
