@@ -468,8 +468,14 @@ Proof.
   intro E. now rewrite (neg_unique' _ _ E), negneg.
 Qed.
 
+Lemma leq_cap_neg' `{laws} `{BL<<l} (x y: X): y \cap x <== bot <-> y <== !x.
+Proof. rewrite <-(negneg x) at 1. symmetry. apply leq_cap_neg. Qed.
+
 Lemma leq_cup_neg `{laws} `{BL<<l} (x y: X): x <== y <-> top <== y \cup !x.
 Proof. dual @leq_cap_neg. Qed.
+
+Lemma leq_cup_neg' `{laws} `{BL<<l} (x y: X): top <== y \cup x -> !x <== y.
+Proof. dual @leq_cap_neg'. Qed.
 
 
 (** * Morphisms *)

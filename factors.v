@@ -23,6 +23,12 @@ Proof. now rewrite ldv_spec. Qed.
 Lemma ldv_1x `{laws} `{DIV<<l} n m (x: X n m): 1 -o x == x.
 Proof. apply from_below. intro y. now rewrite ldv_spec, dot1x. Qed.
 
+Lemma ldv_0x `{laws} `{DIV+BOT+TOP<<l} n m p (x: X n m): 0 -o x == top' p m.
+Proof. apply from_below. intro y. rewrite ldv_spec, dot0x. split; intros _; lattice. Qed.
+
+Lemma ldv_xt `{laws} `{DIV+TOP<<l} n m p (x: X n m): x -o top == top' m p.
+Proof. apply from_below. intro y. rewrite ldv_spec. split; intros _; lattice. Qed.
+
 Lemma str_ldv `{laws} `{STR+DIV<<l} n m (x: X n m): (x -o x)^* == x -o x. 
 Proof. apply antisym. apply str_ldv_. apply str_ext. Qed.
 
@@ -52,6 +58,12 @@ Proof. dual @ldv_xx. Qed.
 
 Lemma rdv_1x `{laws} `{DIV<<l} n m (x: X m n): x o- 1 == x.
 Proof. dual @ldv_1x. Qed.
+
+Lemma rdv_0x `{laws} `{DIV+BOT+TOP<<l} n m p (x: X m n): x o- 0 == top' m p.
+Proof. dual @ldv_0x. Qed.
+
+Lemma rdv_xt `{laws} `{DIV+TOP<<l} n m p (x: X m n): top o- x == top' p m.
+Proof. dual @ldv_xt. Qed.
 
 Lemma rdv_trans `{laws} `{DIV<<l} n m p q (x: X m n) (y: X p n) (z: X q n): 
   (z o- y)*(y o- x) <== z o- x.

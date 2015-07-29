@@ -6,7 +6,7 @@
 (*  Copyright 2015: Damien Pous, Insa Stucke.                      *)
 (*******************************************************************)
 
-Require Export lattice monoid kleene normalisation rewriting kat_tac.
+Require Export common lattice monoid kleene normalisation rewriting.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -27,6 +27,12 @@ Proof. apply leq_tx_iff. apply dottx. Qed.
 Lemma top_mnn `{laws} `{TOP<<l} n m: top' m n * top' n n == top' m n. 
 Proof. dual @top_nnm. Qed.
 
+Lemma disjoint_id `{laws} `{AL+BOT<<l} n m (p q: X n m): p \cap q <== 0 -> 1\cap (p*q`) == 0. 
+Proof. 
+  intro Hpq. apply leq_xb_iff. rewrite capC, capxdot. ra_normalise.
+  rewrite Hpq. ra. 
+Qed.
+
 
 
 (** algebraic properties of relations 
@@ -35,6 +41,7 @@ Proof. dual @top_nnm. Qed.
     pattern [x*x] such that [x] is provably transitive. 
 *)
 
+Ltac tc := solve [eauto with typeclass_instances].
 
 Section props.
   
@@ -97,7 +104,7 @@ Proof. unfold is_transitive. cnv_switch. now ra_normalise. Qed.
 Global Instance symmetric_cnv {n} {x: X n n} {H: is_symmetric x}: is_symmetric (x`).
 Proof. unfold is_symmetric. now cnv_switch. Qed.
 
-Global Instance antisymmetric_cnv {Hl': CAP+CNV<<l} {n} {x: X n n} {H: is_antisymmetric x}: is_antisymmetric (x`).
+Global Instance antisymmetric_cnv {Hl': AL<<l} {n} {x: X n n} {H: is_antisymmetric x}: is_antisymmetric (x`).
 Proof. clear Hl. unfold is_antisymmetric. now rewrite cnv_invol, capC. Qed.
 
 Global Instance injective_cnv {n m} {x: X n m} {H: is_univalent x}: is_injective (x`).
@@ -113,12 +120,12 @@ Global Instance total_cnv {n m} {x: X n m} {H: is_surjective x}: is_total (x`).
 Proof. unfold is_total. now rewrite cnv_invol. Qed.
 
 Global Instance preorder_cnv {n} {x: X n n} {H: is_preorder x}: is_preorder (x`).
-Proof. constructor; eauto with typeclass_instances. Qed.
+Proof. constructor; tc. Qed.
 
 End props.
 
 Instance order_cnv `{laws} `{BL+CNV<<l} {n} {x: X n n} {H: is_order x}: is_order (x`).
-Proof. constructor; eauto with typeclass_instances. Qed.
+Proof. constructor; tc. Qed.
 
 (** properties of Kleene star and strict iteration *)
 
@@ -142,7 +149,7 @@ Proof.
   intro. apply antisym. now apply itr_ind_l1. apply itr_ext.
 Qed.
 
-Lemma str_transitive `{laws} `{STR+CUP<<l} n (R: X n n): is_transitive R -> R^* == 1+R.
+Lemma str_transitive `{laws} `{KA<<l} n (R: X n n): is_transitive R -> R^* == 1+R.
 Proof. intro. now rewrite str_itr, itr_transitive. Qed.
 
 
@@ -154,7 +161,7 @@ Proof.
   rewrite <-total. ra. rewrite <-dotA. apply dot_leq; lattice.
 Qed.
 
-Lemma xt_total `{laws} `{TOP+CAP+CNV<<l} n m (x: X n m): top' n n <== x*top -> is_total x.
+Lemma xt_total `{laws} `{AL+TOP<<l} n m (x: X n m): top' n n <== x*top -> is_total x.
 Proof.
   intro E. unfold is_total.
   transitivity (1 ^ (x*top' m n)). rewrite <-E. lattice.
@@ -164,16 +171,41 @@ Qed.
 Lemma surjective_tx `{laws} `{TOP<<l} {n m} {x: X n m} {Hx: is_surjective x} p: top' p _ * x == top.
 Proof. now dual @total_xt. Qed.
 
-Lemma tx_surjective `{laws} `{TOP+CAP+CNV<<l} n m (x: X m n): top' n n <== top*x -> is_surjective x.
+Lemma tx_surjective `{laws} `{AL+TOP<<l} n m (x: X m n): top' n n <== top*x -> is_surjective x.
 Proof. now dual @xt_total. Qed.
 
 
 (** lemmas about relations of a specific shape *)
 
-Lemma dot_univalent_cap `{laws} `{CAP+CNV<<l} {n m p} {x: X n m} {y z: X m p}
+Lemma dot_univalent_cap `{laws} `{AL<<l} {n m p} {x: X n m} {y z: X m p}
   {E: is_univalent x}: x * (y ^ z) == (x*y) ^ (x*z).  
 Proof. apply antisym. ra. rewrite capdotx. mrewrite univalent. ra. Qed.
 
-Lemma dot_cap_injective `{laws} `{CAP+CNV<<l} {n m p} {x: X m n} {y z: X p m}
+Lemma dot_cap_injective `{laws} `{AL<<l} {n m p} {x: X m n} {y z: X p m}
   {E: is_injective x}: (y ^ z) * x == (y*x) ^ (z*x).  
 Proof. revert E. dual @dot_univalent_cap. Qed.
+
+Lemma univalent_antisym `{laws} `{AL+TOP<<l} {n m} {x y: X n m} {Hy: is_univalent y}:
+  y*top' m m <== x*top -> x <== y -> x == y. 
+Proof. 
+  intros Htop Hsub. apply antisym. assumption. 
+  transitivity (y \cap (x*(top' m m))). rewrite <- Htop. rewrite <- dotxt. lattice.
+Admitted.                       (* TODO *)
+
+Lemma disjoint_vect_iff `{laws} `{BL+CNV<<l} n m (p q: X n m):
+  is_vector q -> (p\cap q <== 0 <-> q`*p <== 0).
+Proof.
+  intro. rewrite Schroeder_l, cnv_invol, negbot.
+  rewrite vector, capC. apply leq_cap_neg'.
+Qed.
+
+(* TOTHINK: the above lemma might hold in bounded division allegories
+   (i.e., without assuming a Boolean lattice) *)
+Lemma disjoint_vect_iff' `{laws} `{AL+DIV+BOT+TOP<<l} n m (p q: X n m):
+  is_vector q -> (p\cap q <== 0 <-> q`*p <== 0).
+Proof.
+  intro Hq. split; intro Hpq.
+   admit.
+  rewrite <-ldv_spec in Hpq. rewrite capC, Hpq.
+  rewrite <-vector at 1. rewrite capdotx. rewrite ldv_cancel. ra.
+Abort.
