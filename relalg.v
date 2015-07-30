@@ -63,6 +63,10 @@ Class is_point n m (p: X n m) := {
   point_injective:> is_injective p;
   point_surjective:> is_surjective p}.
 
+Class is_atom n m (a: X n m) := {
+  atom_point_l: is_point (a*top' m m);
+  atom_point_r: is_point (a`*top' n n)}.
+
 Class is_mapping n m (f: X n m) := {
   mapping_univalent:> is_univalent f;
   mapping_total:> is_total f}.
