@@ -119,6 +119,9 @@ Proof. unfold is_surjective. now rewrite cnv_invol. Qed.
 Global Instance total_cnv {n m} {x: X n m} {H: is_surjective x}: is_total (x`).
 Proof. unfold is_total. now rewrite cnv_invol. Qed.
 
+Global Instance mapping_cnv {n m} {x: X n m} {H: is_point x}: is_mapping (x`).
+Proof. split; tc. Qed.          (* actually just need x to be injecive and surjective *)
+
 Global Instance preorder_cnv {n} {x: X n n} {H: is_preorder x}: is_preorder (x`).
 Proof. constructor; tc. Qed.
 
