@@ -134,6 +134,13 @@ End props.
 Instance order_cnv `{laws} `{BL+CNV<<l} {n} {x: X n n} {H: is_order x}: is_order (x`).
 Proof. constructor; tc. Qed.
 
+Instance vector_cap `{laws} `{CAP+TOP<<l} {n m} {v w: X n m} {Hv: is_vector v} {Hw: is_vector w}: is_vector (v \cap w). 
+Proof. 
+  unfold is_vector. apply antisym. 2: apply dotxt. 
+  now rewrite dotcapx, 2vector. 
+Qed.   
+
+
 (** properties of Kleene star and strict iteration *)
 
 Instance preorder_str `{laws} `{STR<<l} n (x: X n n): is_preorder (x^*).
@@ -192,12 +199,14 @@ Lemma dot_cap_injective `{laws} `{AL<<l} {n m p} {x: X m n} {y z: X p m}
   {E: is_injective x}: (y ^ z) * x == (y*x) ^ (z*x).  
 Proof. revert E. dual @dot_univalent_cap. Qed.
 
-Lemma univalent_antisym `{laws} `{AL+TOP<<l} {n m} {x y: X n m} {Hy: is_univalent y}:
-  y*top' m m <== x*top -> x <== y -> x == y. 
+Lemma univalent_antisym `{laws} `{AL+TOP<<l} n m (x y: X n m):
+  is_univalent y -> y*top' m m <== x*top -> x <== y -> x == y. 
 Proof. 
-  intros Htop Hsub. apply antisym. assumption. 
-  transitivity (y \cap (x*(top' m m))). rewrite <- Htop. rewrite <- dotxt. lattice.
-Admitted.                       (* TODO *)
+  intros Hy Ht Hxy. apply antisym. assumption.
+  transitivity (y \cap (x*(top' m m))). rewrite <- Ht, <- dotxt. lattice.
+  rewrite capC, capdotx. 
+  ra_normalise. rewrite Hxy at 2. mrewrite univalent. ra.
+Qed.
 
 Lemma disjoint_vect_iff `{laws} `{BL+CNV<<l} n m (p q: X n m):
   is_vector q -> (p\cap q <== 0 <-> q`*p <== 0).
