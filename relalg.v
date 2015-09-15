@@ -215,16 +215,14 @@ Proof.
   rewrite vector, capC. apply leq_cap_neg'.
 Qed.
 
-(* TOTHINK: the above lemma might hold in bounded division allegories
-   (i.e., without assuming a Boolean lattice) *)
 Lemma disjoint_vect_iff' `{laws} `{AL+DIV+BOT+TOP<<l} {n m} {p q: X n m}
   {Hq: is_vector q}: p\cap q <== 0 <-> q`*p <== 0.
 Proof.
   split; intro Hpq.
-   admit.
+   rewrite <-capxt, capdotx, cnv_invol, vector, Hpq. ra.
   rewrite <-ldv_spec in Hpq. rewrite capC, Hpq.
   rewrite <-vector at 1. rewrite capdotx. rewrite ldv_cancel. ra.
-Abort.
+Qed.
 
 Lemma leq_xyp `{laws} {n m k} {p: X m k} {x: X n k} {y: X n m}
   {Hp: is_point p}: x <== y*p <-> x*p` <== y.
