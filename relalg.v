@@ -124,7 +124,7 @@ Global Instance total_cnv {n m} {x: X n m} {H: is_surjective x}: is_total (x`).
 Proof. unfold is_total. now rewrite cnv_invol. Qed.
 
 Global Instance mapping_cnv {n m} {x: X n m} {H: is_point x}: is_mapping (x`).
-Proof. split; tc. Qed.          (* actually just need x to be injecive and surjective *)
+Proof. split; tc. Qed.          (* actually just need x to be injective and surjective *)
 
 Global Instance preorder_cnv {n} {x: X n n} {H: is_preorder x}: is_preorder (x`).
 Proof. constructor; tc. Qed.
@@ -199,29 +199,41 @@ Lemma dot_cap_injective `{laws} `{AL<<l} {n m p} {x: X m n} {y z: X p m}
   {E: is_injective x}: (y ^ z) * x == (y*x) ^ (z*x).  
 Proof. revert E. dual @dot_univalent_cap. Qed.
 
-Lemma univalent_antisym `{laws} `{AL+TOP<<l} n m (x y: X n m):
-  is_univalent y -> y*top' m m <== x*top -> x <== y -> x == y. 
+Lemma univalent_antisym `{laws} `{AL+TOP<<l} {n m} {x y: X n m}
+  {Hy: is_univalent y}: y*top' m m <== x*top -> x <== y -> x == y. 
 Proof. 
-  intros Hy Ht Hxy. apply antisym. assumption.
+  intros Ht Hxy. apply antisym. assumption.
   transitivity (y \cap (x*(top' m m))). rewrite <- Ht, <- dotxt. lattice.
   rewrite capC, capdotx. 
   ra_normalise. rewrite Hxy at 2. mrewrite univalent. ra.
 Qed.
 
-Lemma disjoint_vect_iff `{laws} `{BL+CNV<<l} n m (p q: X n m):
-  is_vector q -> (p\cap q <== 0 <-> q`*p <== 0).
+Lemma disjoint_vect_iff `{laws} `{BL+CNV<<l} {n m} {p q: X n m}
+  {Hq: is_vector q}: p\cap q <== 0 <-> q`*p <== 0.
 Proof.
-  intro. rewrite Schroeder_l, cnv_invol, negbot.
+  rewrite Schroeder_l, cnv_invol, negbot.
   rewrite vector, capC. apply leq_cap_neg'.
 Qed.
 
 (* TOTHINK: the above lemma might hold in bounded division allegories
    (i.e., without assuming a Boolean lattice) *)
-Lemma disjoint_vect_iff' `{laws} `{AL+DIV+BOT+TOP<<l} n m (p q: X n m):
-  is_vector q -> (p\cap q <== 0 <-> q`*p <== 0).
+Lemma disjoint_vect_iff' `{laws} `{AL+DIV+BOT+TOP<<l} {n m} {p q: X n m}
+  {Hq: is_vector q}: p\cap q <== 0 <-> q`*p <== 0.
 Proof.
-  intro Hq. split; intro Hpq.
+  split; intro Hpq.
    admit.
   rewrite <-ldv_spec in Hpq. rewrite capC, Hpq.
   rewrite <-vector at 1. rewrite capdotx. rewrite ldv_cancel. ra.
 Abort.
+
+Lemma leq_xyp `{laws} {n m k} {p: X m k} {x: X n k} {y: X n m}
+  {Hp: is_point p}: x <== y*p <-> x*p` <== y.
+Proof.
+  split; intro E.
+   rewrite <-(dotx1 y). rewrite <-injective. now mrewrite <-E.
+   rewrite <-(dotx1 x). rewrite surjective. now mrewrite E.
+Qed.
+
+Lemma leq_pxq `{laws} `{CNV<<l} {n m k} {p: X n k} {q: X m k} {x: X n m}
+   {Hp: is_point p} {Hq: is_point q}: p <== x*q <-> q <==x`*p.
+Proof. rewrite 2leq_xyp. now rewrite cnv_leq_iff', cnvdot, cnv_invol. Qed.
