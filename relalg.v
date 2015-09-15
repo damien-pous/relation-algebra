@@ -33,8 +33,6 @@ Proof.
   rewrite Hpq. ra. 
 Qed.
 
-
-
 (** algebraic properties of relations 
     we use typeclasses to infer those properties automatically whenever possible
     typically, [rewrite transitive] will rewrite the first occurrence of a
@@ -57,15 +55,17 @@ Class is_injective n m (x: X n m) := injective: x * x` <== 1.
 Class is_surjective n m (x: X n m) := surjective: 1 <== x` * x.
 Class is_total n m (x: X n m) := total: 1 <== x * x`.
 Class is_vector n m (v: X n m) := vector: v*top == v.
+Class is_nonempty n m (x: X n m) := nonempty: forall p q, top' p q <== top * x * top.
 
 Class is_point n m (p: X n m) := {
   point_vector:> is_vector p;
   point_injective:> is_injective p;
-  point_surjective:> is_surjective p}.
+  point_nonempty:> is_nonempty p}.
 
 Class is_atom n m (a: X n m) := {
-  atom_point_l: is_point (a*top' m m);
-  atom_point_r: is_point (a`*top' n n)}.
+  a_top_a': a*top*a` <== 1;
+  a'_top_a: a`*top*a <== 1;
+  atom_nonempty:> is_nonempty a}.
 
 Class is_mapping n m (f: X n m) := {
   mapping_univalent:> is_univalent f;
@@ -83,7 +83,36 @@ Class is_order n (p: X n n) := {
   ord_preorder:> is_preorder p;
   ord_antisymmetric:> is_antisymmetric p}.
 
-Context {l} {L:laws l X}.
+End props.
+
+(** alternative characterisation of [is_total] and [is_surjective] *)
+
+Lemma total_xt `{laws} `{TOP<<l} {n m x} {Hx: @is_total X n m x} p: x*top' _ p == top.
+Proof.
+  apply leq_tx_iff. transitivity (x * x` * top' _ p).
+  rewrite <-total. ra. rewrite <-dotA. apply dot_leq; lattice.
+Qed.
+
+Lemma xt_total `{laws} `{AL+TOP<<l} n m (x: X n m): top' n n <== x*top -> is_total x.
+Proof.
+  intro E. unfold is_total.
+  transitivity (1 ^ (x*top' m n)). rewrite <-E. lattice.
+  rewrite capC, capdotx. ra. 
+Qed.
+
+Lemma surjective_tx `{laws} `{TOP<<l} {n m} {x: X n m} {Hx: is_surjective x} p: top' p _ * x == top.
+Proof. now dual @total_xt. Qed.
+
+Lemma tx_surjective `{laws} `{AL+TOP<<l} n m (x: X m n): top' n n <== top*x -> is_surjective x.
+Proof. now dual @xt_total. Qed.
+
+Instance point_surjective `{laws} `{AL+TOP<<l} {n m} {p: X n m} {Hp: is_point p}: is_surjective p | 1.
+Proof. apply tx_surjective. rewrite nonempty at 1. now mrewrite vector. Qed.
+
+
+Section props'.
+  
+Context {X: ops} {l} {L:laws l X}.
 
 Lemma symmetric {Hl: CNV<<l} {n} {x: X n n} {Hx: is_symmetric x}: x`==x.
 Proof. apply antisym. assumption. now cnv_switch. Qed.
@@ -123,15 +152,26 @@ Proof. unfold is_surjective. now rewrite cnv_invol. Qed.
 Global Instance total_cnv {n m} {x: X n m} {H: is_surjective x}: is_total (x`).
 Proof. unfold is_total. now rewrite cnv_invol. Qed.
 
-Global Instance mapping_cnv {n m} {x: X n m} {H: is_point x}: is_mapping (x`).
-Proof. split; tc. Qed.          (* actually just need x to be injective and surjective *)
-
 Global Instance preorder_cnv {n} {x: X n n} {H: is_preorder x}: is_preorder (x`).
 Proof. constructor; tc. Qed.
 
-End props.
+End props'.
 
-Instance order_cnv `{laws} `{BL+CNV<<l} {n} {x: X n n} {H: is_order x}: is_order (x`).
+Instance nonempty_cnv `{laws} `{CNV+TOP<<l} {n m} {x: X n m} {Hx: is_nonempty x}: is_nonempty (x`).
+Proof. intros i j. cnv_switch. ra_normalise. apply Hx. Qed.
+
+Instance atom_cnv `{laws} `{CNV+TOP<<l} {n m} {x: X n m} {Hx: is_atom x}: is_atom (x`).
+Proof.
+  split.
+  rewrite cnv_invol. apply a'_top_a.
+  rewrite cnv_invol. apply a_top_a'.
+  apply nonempty_cnv.
+Qed.
+
+Instance mapping_cnv `{laws} `{AL+TOP<<l} {n m} {x: X n m} {Hx: is_point x}: is_mapping (x`).
+Proof. split; tc. Qed.          (* actually just need x to be injective and surjective *)
+
+Instance order_cnv `{laws} `{BL+CNV<<l} {n} {x: X n n} {Hx: is_order x}: is_order (x`).
 Proof. constructor; tc. Qed.
 
 Instance vector_cap `{laws} `{CAP+TOP<<l} {n m} {v w: X n m} {Hv: is_vector v} {Hw: is_vector w}: is_vector (v \cap w). 
@@ -167,26 +207,6 @@ Lemma str_transitive `{laws} `{KA<<l} n (R: X n n): is_transitive R -> R^* == 1+
 Proof. intro. now rewrite str_itr, itr_transitive. Qed.
 
 
-(** alternative characterisation of [is_total] and [is_surjective] *)
-
-Lemma total_xt `{laws} `{TOP<<l} {n m x} {Hx: @is_total X n m x} p: x*top' _ p == top.
-Proof.
-  apply leq_tx_iff. transitivity (x * x` * top' _ p).
-  rewrite <-total. ra. rewrite <-dotA. apply dot_leq; lattice.
-Qed.
-
-Lemma xt_total `{laws} `{AL+TOP<<l} n m (x: X n m): top' n n <== x*top -> is_total x.
-Proof.
-  intro E. unfold is_total.
-  transitivity (1 ^ (x*top' m n)). rewrite <-E. lattice.
-  rewrite capC, capdotx. ra. 
-Qed.
-
-Lemma surjective_tx `{laws} `{TOP<<l} {n m} {x: X n m} {Hx: is_surjective x} p: top' p _ * x == top.
-Proof. now dual @total_xt. Qed.
-
-Lemma tx_surjective `{laws} `{AL+TOP<<l} n m (x: X m n): top' n n <== top*x -> is_surjective x.
-Proof. now dual @xt_total. Qed.
 
 
 (** lemmas about relations of a specific shape *)
@@ -208,6 +228,14 @@ Proof.
   ra_normalise. rewrite Hxy at 2. mrewrite univalent. ra.
 Qed.
 
+Lemma surjective_injective_antisym `{laws} `{Hl: AL+TOP<<l} {n m} {p q: X n m}
+   {Hp: is_surjective p} {Hq: is_injective q}: p <== q -> p == q. 
+Proof.
+  intros Hpq. cnv_switch. apply univalent_antisym.
+  cnv_switch; ra_normalise. rewrite surjective_tx. lattice.
+  now cnv_switch.
+Qed.
+
 Lemma disjoint_vect_iff `{laws} `{BL+CNV<<l} {n m} {p q: X n m}
   {Hq: is_vector q}: p\cap q <== 0 <-> q`*p <== 0.
 Proof.
@@ -224,7 +252,7 @@ Proof.
   rewrite <-vector at 1. rewrite capdotx. rewrite ldv_cancel. ra.
 Qed.
 
-Lemma leq_xyp `{laws} {n m k} {p: X m k} {x: X n k} {y: X n m}
+Lemma leq_xyp `{laws} `{AL+TOP<<l} {n m k} {p: X m k} {x: X n k} {y: X n m}
   {Hp: is_point p}: x <== y*p <-> x*p` <== y.
 Proof.
   split; intro E.
@@ -232,6 +260,63 @@ Proof.
    rewrite <-(dotx1 x). rewrite surjective. now mrewrite E.
 Qed.
 
-Lemma leq_pxq `{laws} `{CNV<<l} {n m k} {p: X n k} {q: X m k} {x: X n m}
+Lemma leq_pxq `{laws} `{AL+TOP<<l} {n m k} {p: X n k} {q: X m k} {x: X n m}
    {Hp: is_point p} {Hq: is_point q}: p <== x*q <-> q <==x`*p.
 Proof. rewrite 2leq_xyp. now rewrite cnv_leq_iff', cnvdot, cnv_invol. Qed.
+
+(*
+Lemma atom_of_points_pre_aux `{laws} `{AL+TOP<<l} {n m k} {p: X n m} {q: X k m} {Hp: is_point p} {Hq: is_point q}:
+  is_point (p*q`*top' k k).
+Proof.
+  split.
+  unfold is_vector. now mrewrite top_mnn.
+  unfold is_injective. ra_normalise. mrewrite top_mnn.
+  mrewrite surjective_tx. transitivity (p*(top*q)`*p`). ra.
+  mrewrite surjective_tx. ra_normalise. rewrite vector. now apply injective.
+  intros i j. mrewrite (surjective_tx (x:=p)). mrewrite top_nnm. now apply nonempty_cnv.
+Qed.
+*)
+
+Lemma atom_of_points_aux `{laws} `{AL+TOP<<l} {n m k} {p: X n m} {q: X k m} {Hp: is_point p} {Hq: is_point q}:
+  p * q` * top * q * p` <== 1.
+Proof.
+  mrewrite surjective_tx. transitivity (p*(top*q)`*p`). ra.
+  mrewrite surjective_tx. ra_normalise. rewrite vector. now apply injective.
+Qed.
+
+Instance is_point_weq `{laws} {n m}: Proper (weq ==> iff) (@is_point X n m).
+Admitted.                       (* to be moved *)
+
+Lemma atom_of_points `{laws} `{AL+TOP<<l} {n m k} {p: X n m} {q: X k m} {Hp: is_point p} {Hq: is_point q}:
+  is_atom (p*q`).
+Proof.
+  split. ra_normalise. apply atom_of_points_aux. 
+  ra_normalise. apply atom_of_points_aux.
+  intros i j. mrewrite (surjective_tx (x:=p)). now apply nonempty_cnv.
+Qed.
+
+Lemma point_a_top `{laws} `{CNV+TOP<<l} {n m} {a: X n m} {Ha: is_atom a}: is_point (a*top' m m).
+Proof.
+  split.
+  unfold is_vector. now mrewrite top_nnm.
+  unfold is_injective. ra_normalise. mrewrite top_nnm. apply a_top_a'.
+  intros i j. mrewrite top_nnm. apply atom_nonempty.
+Qed.
+
+Lemma point_a'_top `{laws} `{CNV+TOP<<l} {n m} {a: X n m} {Ha: is_atom a}: is_point (a`*top' n n).
+Proof. apply point_a_top. Qed.
+
+Lemma atom_decomp `{laws} `{AL+TOP<<l} {n m} {a: X n m} {Ha: is_atom a}: (a * top) ^ (top * a) == a.
+Proof.
+  apply antisym.
+  rewrite capdotx. mrewrite a'_top_a. ra.
+  rewrite <-2(leq_xt 1). ra. 
+Qed.  
+  
+Lemma a_top_a `{laws} `{AL+TOP<<l} {n m} {a: X n m} {Ha: is_atom a}: a * top * a == a.
+Proof.
+  rewrite <-atom_decomp at 3.
+  apply antisym.
+  rewrite <-(leq_xt (top*a)), <-(leq_xt (a*top)). ra.
+  rewrite capdotx. mrewrite <-(leq_xt (a`*top' n n)). ra.
+Qed.
