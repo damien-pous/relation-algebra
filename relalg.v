@@ -41,6 +41,16 @@ Qed.
 
 Ltac tc := solve [eauto with typeclass_instances].
 
+Class is_nonempty {X: ops} n m (x: X n m) := nonempty: forall p q, top' p q <== top * x * top.
+Notation is_nonempty' m := (is_nonempty (one m)).
+
+Lemma nonempty_dom `{laws} `{TOP<<l} n m {x: X n m} {Hx: is_nonempty x}: is_nonempty' n.
+Proof. intros i j. rewrite nonempty. mrewrite (leq_xt (x*top' _ j)). ra. Qed.
+
+Lemma nonempty_cod `{laws} `{TOP<<l} n m {x: X n m} {Hx: is_nonempty x}: is_nonempty' m.
+Proof. intros i j. rewrite nonempty. rewrite (leq_xt (top' i _*x)). ra. Qed.
+
+
 Section props.
   
 Context {l: level} {X: ops}. 
@@ -55,7 +65,6 @@ Class is_injective n m (x: X n m) := injective: x * x` <== 1.
 Class is_surjective n m (x: X n m) := surjective: 1 <== x` * x.
 Class is_total n m (x: X n m) := total: 1 <== x * x`.
 Class is_vector n m (v: X n m) := vector: v*top == v.
-Class is_nonempty n m (x: X n m) := nonempty: forall p q, top' p q <== top * x * top.
 
 Class is_point n m (p: X n m) := {
   point_vector:> is_vector p;
@@ -107,7 +116,7 @@ Global Instance is_total_weq `{CNV<<l} {n m}: Proper (weq ==> iff) (@is_total n 
 Proof. intros ? ? E. unfold is_total. now rewrite E. Qed.
 Global Instance is_vector_weq {n m}: Proper (weq ==> iff) (@is_vector n m).
 Proof. intros ? ? E. unfold is_vector. now rewrite E. Qed.
-Global Instance is_nonempty_weq {n m}: Proper (weq ==> iff) (@is_nonempty n m).
+Global Instance is_nonempty_weq {n m}: Proper (weq ==> iff) (@is_nonempty X n m).
 Proof. intros ? ? E. unfold is_nonempty. now setoid_rewrite E. Qed.
 
 Lemma proper_weq_leq_iff n m (P: X n m -> Prop): Proper (weq ==> impl) P -> Proper (weq ==> iff) P.
@@ -149,7 +158,7 @@ Proof. apply antisym. assumption. now cnv_switch. Qed.
 Lemma vector' `{TOP<<l} {n m} {v: X n m} {Hv: is_vector v} x: v * x <== v.
 Proof. rewrite <-vector at 2. ra. Qed.
 
-Lemma top_nonempty `{TOP<<l} {n m p} {Hm: is_nonempty (one m)}: top' n m * top' m p == top.
+Lemma top_nonempty `{TOP<<l} {n m p} {Hm: is_nonempty' m}: top' n m * top' m p == top.
 Proof. apply leq_tx_iff. rewrite nonempty. ra. Qed.
 
 
@@ -238,13 +247,11 @@ Proof. unfold is_symmetric. now rewrite cnvitr, symmetric. Qed.
 
 (** lemmas about relations of a specific shape *)
 
-Lemma itr_transitive `{STR<<l} n (x: X n n) {Hx: is_transitive x}: x^+ == x.
-Proof. 
-  apply antisym. now apply itr_ind_l1. apply itr_ext.
-Qed.
+Lemma itr_transitive `{STR<<l} n (x: X n n): is_transitive x -> x^+ == x.
+Proof. intro. apply antisym. now apply itr_ind_l1. apply itr_ext. Qed.
 
-Lemma str_transitive `{KA<<l} n (x: X n n) {Hx: is_transitive x}: x^* == 1+x.
-Proof. now rewrite str_itr, itr_transitive. Qed.
+Lemma str_transitive `{KA<<l} n (x: X n n): is_transitive x -> x^* == 1+x.
+Proof. intro. now rewrite str_itr, itr_transitive. Qed.
 
 Lemma dot_univalent_cap `{AL<<l} {n m p} {x: X n m} {y z: X m p}
   {E: is_univalent x}: x * (y ^ z) == (x*y) ^ (x*z).  
@@ -284,7 +291,7 @@ Proof.
 Qed.
 
 Lemma gen_point {Hl: CNV+TOP<<l} n m k (p: X n m):
-   is_nonempty (one k) -> is_point p -> is_point (p*top' m k).
+   is_nonempty' k -> is_point p -> is_point (p*top' m k).
 Proof.
   intros Hk Hp. split.
   unfold is_vector. now mrewrite top_mnn.
@@ -356,7 +363,7 @@ Proof.
   rewrite capdotx. mrewrite <-(leq_xt (a`*top' n n)). ra.
 Qed.
 
-Lemma atom_points `{AL+TOP<<l} {n m k} {a: X n m} {Ha: is_atom a} {Hk: is_nonempty (one k)}:
+Lemma atom_points `{AL+TOP<<l} {n m k} {a: X n m} {Ha: is_atom a} {Hk: is_nonempty' k}:
   exists p q: X _ k, is_point p /\ is_point q /\ a == p*q`.
 Proof.
   exists (a*top). exists (a`*top). 
@@ -378,8 +385,6 @@ Proof.
 Qed.
 
 End props.
-
-Notation is_nonempty' m := (is_nonempty (one m)).
 
 (** lemmas obtained by duality *)
 
