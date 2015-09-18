@@ -159,6 +159,9 @@ Qed.
 Lemma symmetric `{CNV<<l} {n} {x: X n n} {Hx: is_symmetric x}: x`==x.
 Proof. apply antisym. assumption. now cnv_switch. Qed.
 
+Lemma irreflexive' `{BL<<l} {n} {x: X n n} {Hx: is_irreflexive x}: x <== !1.
+Proof. now rewrite <-leq_cap_neg'. Qed.
+
 Lemma vector' `{TOP<<l} {n m} {v: X n m} {Hv: is_vector v} x: v * x <== v.
 Proof. rewrite <-vector at 2. ra. Qed.
 
