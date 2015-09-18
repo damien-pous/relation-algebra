@@ -60,7 +60,7 @@ Section props.
 Context {l: level} {X: ops}. 
 
 Class is_reflexive n (x: X n n) := reflexive: 1 <== x.
-Class is_irreflexive n (x: X n n) := irreflexive: x <== !1.
+Class is_irreflexive n (x: X n n) := irreflexive: x \cap 1 <== 0.
 Class is_transitive n (x: X n n) := transitive: x * x <== x.
 Class is_symmetric n (x: X n n) := symmetric_: x` <== x. (* see below for [symmetric] *)
 Class is_antisymmetric n (x: X n n) := antisymmetric: x`\cap x <== 1.
@@ -102,7 +102,7 @@ Context {L: laws l X}.
 
 Global Instance is_reflexive_weq {n}: Proper (weq ==> iff) (@is_reflexive n).
 Proof. intros ? ? E. unfold is_reflexive. now rewrite E. Qed.
-Global Instance is_irreflexive_weq {n}: Proper (weq ==> iff) (@is_irreflexive n).
+Global Instance is_irreflexive_weq {n} `{CAP<<l}: Proper (weq ==> iff) (@is_irreflexive n).
 Proof. intros ? ? E. unfold is_irreflexive. now rewrite E. Qed.
 Global Instance is_transitive_weq {n}: Proper (weq ==> iff) (@is_transitive n).
 Proof. intros ? ? E. unfold is_transitive. now rewrite E. Qed.
@@ -180,8 +180,8 @@ Proof. unfold is_univalent. rewrite <-a'_top_a. rewrite <-(leq_xt 1). ra. Qed.
 Global Instance is_symmetric_neg1 `{BL+CNV<<l} {n}: is_symmetric (!one n).
 Proof. unfold is_symmetric. rewrite <-dotx1. apply Schroeder_. rewrite negneg. ra. Qed.
 
-Global Instance irreflexive_cnv `{BL+CNV<<l} {n} {x: X n n} {H: is_irreflexive x}: is_irreflexive (x`).
-Proof. unfold is_irreflexive. cnv_switch. now rewrite symmetric. Qed.
+Global Instance irreflexive_cnv `{AL+BOT<<l} {n} {x: X n n} {H: is_irreflexive x}: is_irreflexive (x`).
+Proof. unfold is_irreflexive. cnv_switch. ra_normalise. apply irreflexive. Qed.
 
 Global Instance reflexive_cnv `{CNV<<l} {n} {x: X n n} {H: is_reflexive x}: is_reflexive (x`).
 Proof. unfold is_reflexive. cnv_switch. now ra_normalise. Qed.
@@ -365,6 +365,17 @@ Proof.
   apply antisym.
   rewrite <-(leq_xt (top*a)), <-(leq_xt (a*top)). ra.
   rewrite capdotx. mrewrite <-(leq_xt (a`*top' n n)). ra.
+Qed.
+
+Global Instance atom_transitive `{AL+TOP<<l} {n} {a: X n n} {Ha: is_atom a}: is_transitive a.
+Proof. unfold is_transitive. rewrite <-a_top_a at 3. rewrite <-(leq_xt 1). ra. Qed.
+
+(* TOTHINK: transitivity should follow from mono *)
+Lemma atom_mono `{AL+TOP<<l} {n} {a: X n n} {Ha: is_atom a}: a*a <== 1.
+Proof.
+  transitivity (a*a \cap a). apply leq_xcap. reflexivity. apply atom_transitive.
+  rewrite dedekind. transitivity ((a*a`)*(a`*a)). apply dot_leq; lattice.
+  mrewrite (injective (x:=a)). mrewrite (univalent (x:=a)). ra.
 Qed.
 
 Lemma atom_points `{AL+TOP<<l} {n m k} {a: X n m} {Ha: is_atom a} {Hk: is_nonempty' k}:
