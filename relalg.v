@@ -33,6 +33,10 @@ Proof.
   rewrite Hpq. ra. 
 Qed.
 
+Lemma dedekind `{laws} `{AL<<l} n m p (x : X n m) (y : X m p) (z : X n p):
+  x*y \cap z <== (x \cap (z*y`))*(y \cap (x`*z)).
+Proof. rewrite <-(capI z) at 1. rewrite capA, capdotx, capxdot. ra. Qed.
+  
 (** algebraic properties of relations 
     we use typeclasses to infer those properties automatically whenever possible
     typically, [rewrite transitive] will rewrite the first occurrence of a
