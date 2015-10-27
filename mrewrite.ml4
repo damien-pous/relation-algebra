@@ -16,6 +16,7 @@ open Ra_common
 open Term
 open Names
 open Proof_type
+open Proofview.Notations
 
 DECLARE PLUGIN "mrewrite"
 
@@ -42,7 +43,7 @@ let rec lenght t =
     | _ -> 0
 
 let extend k dir h =
-  Proofview.Goal.nf_enter begin fun goal ->
+  Proofview.Goal.nf_enter { enter = begin fun goal ->
   let fst,snd = match dir with `LR -> 2,1 | `RL -> 1,2 in
   let ext_2 rel = match dir,rel with 
     | `LR,`Weq -> Ext.weq_2
@@ -62,7 +63,7 @@ let extend k dir h =
     | `LR,`Leq -> Ext.leq_4
     | `RL,`Leq -> Ext.leq_4'
   in
-  let sigma = ref (Proofview.Goal.sigma goal) in
+  let sigma = ref (Tacmach.New.project goal) in
   let rec dots env t =
     match kind_of_term (strip_outer_cast t) with
       | App(c,ca) when Constr.equal c (Lazy.force Monoid.dot0) ->
@@ -106,7 +107,7 @@ let extend k dir h =
   let h = ext (Proofview.Goal.env goal) (lenght t) h t in
   Tacticals.New.tclTHEN (Proofview.Unsafe.tclEVARS !sigma)
   (ltac_apply k [ltac_constr_arg h])
-  end
+  end }
 
 TACTIC EXTEND ra_extend_lr [ "ra_extend" tactic(k) "->" constr(h) ] -> [ extend k `LR h ] END
 TACTIC EXTEND ra_extend_rl [ "ra_extend" tactic(k) "<-" constr(h) ] -> [ extend k `RL h ] END
