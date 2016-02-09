@@ -59,7 +59,7 @@ verification:
 ## INSTALLATION
 
 Run 'make' to compile the library, and 'make install' to install
-it. Coq v8.5beta2 is required.
+it. Coq v8.5.0 is required; more recent versions might work.
 
 
 ## DOCUMENTATION
@@ -84,5 +84,5 @@ Public License version 3. See files LICENSE and COPYING.
   - Damien Pous (2012-), CNRS - LIP, ENS Lyon (UMR 5668), France
  
 * Additional authors
-  - Insa Stucke (2015), Dpt of CS, University of Kiel, Germany
+  - Insa Stucke (2015-), Dpt of CS, University of Kiel, Germany
   - Coq development team (2013-)

@@ -6,6 +6,8 @@
 (*  Copyright 2015: Damien Pous, Insa Stucke.                      *)
 (*******************************************************************)
 
+(** * relalg: standard relation algebra facts and definitions *)
+
 Require Export common lattice monoid kleene normalisation rewriting.
 
 Set Implicit Arguments.
