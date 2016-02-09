@@ -102,7 +102,7 @@ let extend k dir h =
       | Prod(x,s,t) -> mkLambda(x,s,ext (push x s env) (i-1) (mkApp(h,[|mkRel i|])) t)
       | _ -> error "the provided term does not end with a relation algebra (in)equation"
   in
-  let t = Tacmach.New.pf_type_of goal h in
+  let t = Tacmach.New.pf_unsafe_type_of goal h in
   let h = ext (Proofview.Goal.env goal) (lenght t) h t in
   Tacticals.New.tclTHEN (Proofview.Unsafe.tclEVARS !sigma)
   (ltac_apply k [ltac_constr_arg h])
