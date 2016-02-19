@@ -324,7 +324,7 @@ Lemma traces_deriv_itr a i (H: traces'):
 Proof.
   rewrite str_itr. apply antisym. 
   - intro w.
-    intros [n]. revert a i w; induction n; intros a i w Hn; simpl in Hn.
+    intros [n Hn]. induction n in a, i, w, Hn; simpl in Hn.
      repeat eexists; eauto. 2: apply tapp_x_nil. now left.
      destruct Hn as [[b|b j v] Hv [u Hu Hw]].
       apply tapp_nil_x_eq in Hw as [-> <-]. apply IHn, Hu. 
@@ -410,10 +410,8 @@ Lemma typed'_str n (x: traces'): typed' n n x -> typed' n n (x^*).
 Proof. intros Hx w [i Hw]. eapply typed'_iter in Hw; eauto using typed'_one. Qed.
 
 Lemma typed'_single i: typed' (src i) (tgt i) (tsingle i).
-Proof.
-intros [?|? ?].
-intros [].
-intros [?|] [].
+Proof. red.
+intros [?|? ? [|]] [].
 do 2 constructor.
 Qed.
 

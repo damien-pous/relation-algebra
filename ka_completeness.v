@@ -393,7 +393,7 @@ Proof.
  match goal with [|- ?P (_ ?x ?y) ?z ] => change (leq (x * y) z) end.
   setoid_rewrite <-andb_dot. apply ofbool_leq, le_bool_spec.
   setoid_rewrite Bool.andb_true_iff.  setoid_rewrite is_true_sumbool. 
-  intros [H]. exact (H nil). 
+  now intros [H H0%(H nil)].
 Qed.
 
 Lemma R_M: R * A^M^* <== B^M^* * R.

@@ -179,7 +179,7 @@ Lemma lang_deriv_str a (H: lang'):
   lang_deriv a (H^*) == lang_deriv a H * H^*.
 Proof.
   intro w. split. 
-  intros [n]. revert a w; induction n; intros a w Hn; simpl in Hn. 
+  intros [n Hn]. induction n in a, w, Hn; simpl in Hn. 
    discriminate. 
    destruct Hn as [[|b v] Hv [u Hu Hw]]; simpl in Hw.
     rewrite <- Hw in Hu. apply IHn, Hu. 

@@ -58,7 +58,7 @@ Qed.
 
 Lemma str_unique' `{laws} `{KA<<l} n (a x: X n n):
  1+a*x <== x -> (forall y: X n n, a*y<==y -> x*y<==y) -> a^* == x.
-Proof. rewrite cup_spec. intros []. apply str_unique. Qed.  
+Proof. rewrite cup_spec. intros []. now apply str_unique. Qed.  
 
 (** value of [str] on constants  *)
 Lemma str1 `{laws} `{STR<<l} n: 1^* == one n.
