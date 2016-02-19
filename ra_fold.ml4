@@ -17,6 +17,7 @@ open Term
 open Names
 open Proof_type
 open Sigma.Notations
+open Context.Named.Declaration
 
 DECLARE PLUGIN "ra_fold"
 
@@ -141,9 +142,9 @@ let ra_fold_concl ops ob goal =
   (try Proofview.V82.of_tactic (Tactics.convert_concl f DEFAULTcast) goal
    with e -> Pp.msg_warning (Printer.pr_lconstr f); raise e)
 
-let ra_fold_hyp' ops ob (id,body,typ) goal =
-  let typ,goal = ra_fold_term ops ob typ goal in
-  (try Proofview.V82.of_tactic (Tactics.convert_hyp ~check:false (id,body,typ)) goal
+let ra_fold_hyp' ops ob decl goal =
+  let typ,goal = ra_fold_term ops ob (get_type decl) goal in
+  (try Proofview.V82.of_tactic (Tactics.convert_hyp ~check:false decl) goal
    with e -> Pp.msg_warning (Printer.pr_lconstr typ); raise e)
 
 let ra_fold_hyp ops ob hyp goal =
