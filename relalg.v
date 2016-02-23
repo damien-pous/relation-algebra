@@ -62,8 +62,9 @@ Section props.
 Context {l: level} {X: ops}. 
 
 Class is_reflexive n (x: X n n) := reflexive: 1 <== x.
-Class is_irreflexive n (x: X n n) := irreflexive: x \cap 1 <== 0.
+Class is_irreflexive n (x: X n n) := irreflexive: x \cap 1 == 0.
 Class is_transitive n (x: X n n) := transitive: x * x <== x.
+Class is_linear n (x: X n n) := linear: x \cup x` == top.
 Class is_symmetric n (x: X n n) := symmetric_: x` <== x. (* see below for [symmetric] *)
 Class is_antisymmetric n (x: X n n) := antisymmetric: x`\cap x <== 1.
 Class is_univalent n m (x: X n m) := univalent: x` * x <== 1.
@@ -108,6 +109,8 @@ Global Instance is_irreflexive_weq {n} `{CAP<<l}: Proper (weq ==> iff) (@is_irre
 Proof. intros ? ? E. unfold is_irreflexive. now rewrite E. Qed.
 Global Instance is_transitive_weq {n}: Proper (weq ==> iff) (@is_transitive n).
 Proof. intros ? ? E. unfold is_transitive. now rewrite E. Qed.
+Global Instance is_linear_weq `{CUP+CNV<<l} {n}: Proper (weq ==> iff) (@is_linear n).
+Proof. intros ? ? E. unfold is_linear. now rewrite E. Qed.
 Global Instance is_symmetric_weq `{CNV<<l} {n}: Proper (weq ==> iff) (@is_symmetric n).
 Proof. intros ? ? E. unfold is_symmetric. now rewrite E. Qed.
 Global Instance is_antisymmetric_weq `{AL<<l} {n}: Proper (weq ==> iff) (@is_antisymmetric n).
@@ -162,7 +165,7 @@ Lemma symmetric `{CNV<<l} {n} {x: X n n} {Hx: is_symmetric x}: x`==x.
 Proof. apply antisym. assumption. now cnv_switch. Qed.
 
 Lemma irreflexive' `{BL<<l} {n} {x: X n n} {Hx: is_irreflexive x}: x <== !1.
-Proof. now rewrite <-leq_cap_neg'. Qed.
+Proof. now rewrite <-leq_cap_neg', Hx. Qed.
 
 Lemma vector' `{TOP<<l} {n m} {v: X n m} {Hv: is_vector v} x: v * x <== v.
 Proof. rewrite <-vector at 2. ra. Qed.
@@ -186,7 +189,7 @@ Global Instance is_symmetric_neg1 `{BL+CNV<<l} {n}: is_symmetric (!one n).
 Proof. unfold is_symmetric. rewrite <-dotx1. apply Schroeder_. rewrite negneg. ra. Qed.
 
 Global Instance irreflexive_cnv `{AL+BOT<<l} {n} {x: X n n} {H: is_irreflexive x}: is_irreflexive (x`).
-Proof. unfold is_irreflexive. cnv_switch. ra_normalise. apply irreflexive. Qed.
+Proof. unfold is_irreflexive. cnv_switch. now ra_normalise. Qed.
 
 Global Instance reflexive_cnv `{CNV<<l} {n} {x: X n n} {H: is_reflexive x}: is_reflexive (x`).
 Proof. unfold is_reflexive. cnv_switch. now ra_normalise. Qed.
@@ -261,6 +264,24 @@ Proof. intro. apply antisym. now apply itr_ind_l1. apply itr_ext. Qed.
 
 Lemma str_transitive `{KA<<l} n (x: X n n): is_transitive x -> x^* == 1+x.
 Proof. intro. now rewrite str_itr, itr_transitive. Qed.
+
+Lemma dot_mono `{AL<<l} n (x y: X n n): x <== 1 -> y <== 1 -> x*y == x \cap y. 
+Proof. 
+  intros Hx Hy. apply antisym. apply leq_xcap.
+   rewrite Hy; ra.
+   rewrite Hx; ra.
+  transitivity (x*1 \cap y). ra.
+  rewrite capdotx. rewrite Hx at 2.
+  ra_normalise. apply dot_leq; lattice. 
+Qed.
+
+Lemma kernel_refl_antisym `{laws} `{CAP+CNV<<l} {n} {x: X n n}
+  {Hr: is_reflexive x} {Ha: is_antisymmetric x}: x` \cap x == 1. 
+Proof. 
+  apply antisym. assumption.
+  apply cap_spec; split; trivial. 
+  now rewrite <-reflexive. 
+Qed. 
 
 Lemma dot_univalent_cap `{AL<<l} {n m p} {x: X n m} {y z: X m p}
   {E: is_univalent x}: x * (y ^ z) == (x*y) ^ (x*z).  
