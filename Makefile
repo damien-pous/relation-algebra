@@ -19,7 +19,6 @@
 
 .DEFAULT_GOAL := all
 
-# 
 # This Makefile may take arguments passed as environment variables:
 # COQBIN to specify the directory where Coq binaries resides;
 # TIMECMD set a command to log .v compilation time;
@@ -35,10 +34,14 @@ endef
 includecmdwithout@ = $(eval $(subst @,$(donewline),$(shell { $(1) | tr -d '\r' | tr '\n' '@'; })))
 $(call includecmdwithout@,$(COQBIN)coqtop -config)
 
-TIMED=
-TIMECMD=
-STDTIME?=/usr/bin/time -f "$* (user: %U mem: %M ko)"
+TIMED?=
+TIMECMD?=
+STDTIME=/usr/bin/time -f "$* (user: %U mem: %M ko)"
 TIMER=$(if $(TIMED), $(STDTIME), $(TIMECMD))
+
+vo_to_obj = $(addsuffix .o,\
+  $(filter-out Warning: Error:,\
+  $(shell $(COQBIN)coqtop -q -noinit -batch -quiet -print-mod-uid $(1))))
 
 ##########################
 #                        #
@@ -72,15 +75,15 @@ COQCHK?="$(COQBIN)coqchk"
 COQMKTOP?="$(COQBIN)coqmktop"
 
 COQSRCLIBS?=-I "$(COQLIB)kernel" -I "$(COQLIB)lib" \
-  -I "$(COQLIB)library" -I "$(COQLIB)parsing" -I "$(COQLIB)pretyping" \
+  -I "$(COQLIB)library" -I "$(COQLIB)parsing" -I "$(COQLIB)engine" -I "$(COQLIB)pretyping" \
   -I "$(COQLIB)interp" -I "$(COQLIB)printing" -I "$(COQLIB)intf" \
   -I "$(COQLIB)proofs" -I "$(COQLIB)tactics" -I "$(COQLIB)tools" \
   -I "$(COQLIB)toplevel" -I "$(COQLIB)stm" -I "$(COQLIB)grammar" \
   -I "$(COQLIB)config" \
-  -I "$(COQLIB)/plugins/Derive" \
   -I "$(COQLIB)/plugins/btauto" \
   -I "$(COQLIB)/plugins/cc" \
   -I "$(COQLIB)/plugins/decl_mode" \
+  -I "$(COQLIB)/plugins/derive" \
   -I "$(COQLIB)/plugins/extraction" \
   -I "$(COQLIB)/plugins/firstorder" \
   -I "$(COQLIB)/plugins/fourier" \
@@ -96,17 +99,18 @@ COQSRCLIBS?=-I "$(COQLIB)kernel" -I "$(COQLIB)lib" \
   -I "$(COQLIB)/plugins/xml"
 ZFLAGS=$(OCAMLLIBS) $(COQSRCLIBS) -I $(CAMLP4LIB)
 
-CAMLC?=$(OCAMLC) -c -rectypes -thread
-CAMLOPTC?=$(OCAMLOPT) -c -rectypes -thread
-CAMLLINK?=$(OCAMLC) -rectypes -thread
-CAMLOPTLINK?=$(OCAMLOPT) -rectypes -thread
+CAMLC?=$(OCAMLFIND) ocamlc -c -rectypes -thread
+CAMLOPTC?=$(OCAMLFIND) opt -c -rectypes -thread
+CAMLLINK?=$(OCAMLFIND) ocamlc -rectypes -thread
+CAMLOPTLINK?=$(OCAMLFIND) opt -rectypes -thread
+CAMLLIB?=$(shell $(OCAMLFIND) printconf stdlib)
 GRAMMARS?=grammar.cma
 ifeq ($(CAMLP4),camlp5)
 CAMLP4EXTEND=pa_extend.cmo q_MLast.cmo pa_macro.cmo unix.cma threads.cma
 else
-CAMLP4EXTEND=
+CAMLP4EXTEND=threads.cma
 endif
-PP?=-pp '$(CAMLP4O) -I $(CAMLLIB) -I $(CAMLLIB)threads/ $(COQSRCLIBS) compat5.cmo \
+PP?=-pp '$(CAMLP4O) -I $(CAMLLIB) -I $(CAMLLIB)/threads/ $(COQSRCLIBS) compat5.cmo \
   $(CAMLP4EXTEND) $(GRAMMARS) $(CAMLP4OPTIONS) -impl'
 
 ##################
@@ -131,55 +135,62 @@ endif
 #                    #
 ######################
 
-VFILES:=paterson.v\
-  imp.v\
-  compiler_opts.v\
-  kat_tac.v\
-  kat_reification.v\
-  kat_untyping.v\
-  ugregex_dec.v\
-  ugregex.v\
-  kat_completeness.v\
-  gregex.v\
-  glang.v\
-  traces.v\
-  atoms.v\
-  ka_completeness.v\
-  nfa.v\
-  dfa.v\
-  bmx.v\
-  rmx.v\
-  regex.v\
-  untyping.v\
-  matrix_ext.v\
-  matrix.v\
-  sums.v\
-  sups.v\
-  lset.v\
-  lang.v\
-  rel.v\
-  boolean.v\
-  prop.v\
-  normalisation.v\
-  syntax.v\
-  lsyntax.v\
-  move.v\
-  rewriting.v\
-  kat.v\
-  factors.v\
-  kleene.v\
-  monoid.v\
-  lattice.v\
-  level.v\
-  powerfix.v\
-  pair.v\
-  denum.v\
-  ordinal.v\
-  positives.v\
+VFILES:=common.v\
   comparisons.v\
-  common.v
+  positives.v\
+  ordinal.v\
+  denum.v\
+  pair.v\
+  powerfix.v\
+  level.v\
+  lattice.v\
+  monoid.v\
+  kleene.v\
+  factors.v\
+  kat.v\
+  rewriting.v\
+  move.v\
+  lsyntax.v\
+  syntax.v\
+  normalisation.v\
+  prop.v\
+  boolean.v\
+  rel.v\
+  lang.v\
+  lset.v\
+  sups.v\
+  sums.v\
+  matrix.v\
+  matrix_ext.v\
+  untyping.v\
+  regex.v\
+  rmx.v\
+  bmx.v\
+  dfa.v\
+  nfa.v\
+  ka_completeness.v\
+  atoms.v\
+  traces.v\
+  glang.v\
+  gregex.v\
+  kat_completeness.v\
+  ugregex.v\
+  ugregex_dec.v\
+  kat_untyping.v\
+  kat_reification.v\
+  kat_tac.v\
+  compiler_opts.v\
+  imp.v\
+  paterson.v
 
+ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(VFILES))
+else
+ifeq ($(MAKECMDGOALS),)
+-include $(addsuffix .d,$(VFILES))
+endif
+endif
+
 .SECONDARY: $(addsuffix .d,$(VFILES))
 
 VO=vo
@@ -188,28 +199,59 @@ GLOBFILES:=$(VFILES:.v=.glob)
 GFILES:=$(VFILES:.v=.g)
 HTMLFILES:=$(VFILES:.v=.html)
 GHTMLFILES:=$(VFILES:.v=.g.html)
-ML4FILES:=kat_reification.ml4\
-  ra_reification.ml4\
+OBJFILES=$(call vo_to_obj,$(VOFILES))
+ALLNATIVEFILES=$(OBJFILES:.o=.cmi) $(OBJFILES:.o=.cmo) $(OBJFILES:.o=.cmx) $(OBJFILES:.o=.cmxs)
+NATIVEFILES=$(foreach f, $(ALLNATIVEFILES), $(wildcard $f))
+ML4FILES:=ra_fold.ml4\
   mrewrite.ml4\
-  ra_fold.ml4
+  ra_reification.ml4\
+  kat_reification.ml4
 
+ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(ML4FILES))
+else
+ifeq ($(MAKECMDGOALS),)
+-include $(addsuffix .d,$(ML4FILES))
+endif
+endif
+
 .SECONDARY: $(addsuffix .d,$(ML4FILES))
 
-MLFILES:=kat_dec.ml\
-  ra_common.ml
+MLFILES:=ra_common.ml\
+  kat_dec.ml
 
+ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(MLFILES))
+else
+ifeq ($(MAKECMDGOALS),)
+-include $(addsuffix .d,$(MLFILES))
+endif
+endif
+
 .SECONDARY: $(addsuffix .d,$(MLFILES))
 
 MLLIBFILES:=kat_reification.mllib
 
+ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(MLLIBFILES))
+else
+ifeq ($(MAKECMDGOALS),)
+-include $(addsuffix .d,$(MLLIBFILES))
+endif
+endif
+
 .SECONDARY: $(addsuffix .d,$(MLLIBFILES))
 
 MLIFILES:=kat_dec.mli
 
+ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(MLIFILES))
+else
+ifeq ($(MAKECMDGOALS),)
+-include $(addsuffix .d,$(MLIFILES))
+endif
+endif
+
 .SECONDARY: $(addsuffix .d,$(MLIFILES))
 
 ALLCMOFILES:=$(ML4FILES:.ml4=.cmo) $(MLFILES:.ml=.cmo)
@@ -236,17 +278,17 @@ all: $(VOFILES) $(CMOFILES) $(CMAFILES) $(if $(HASNATDYNLINK_OR_EMPTY),$(CMXSFIL
 
 mlihtml: $(MLIFILES:.mli=.cmi)
 	 mkdir $@ || rm -rf $@/*
-	$(OCAMLDOC) -html -rectypes -d $@ -m A $(ZDEBUG) $(ZFLAGS) $(^:.cmi=.mli)
+	$(OCAMLFIND) ocamldoc -html -rectypes -d $@ -m A $(ZDEBUG) $(ZFLAGS) $(^:.cmi=.mli)
 
 all-mli.tex: $(MLIFILES:.mli=.cmi)
-	$(OCAMLDOC) -latex -rectypes -o $@ -m A $(ZDEBUG) $(ZFLAGS) $(^:.cmi=.mli)
+	$(OCAMLFIND) ocamldoc -latex -rectypes -o $@ -m A $(ZDEBUG) $(ZFLAGS) $(^:.cmi=.mli)
 
-quick:
-	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) all VO=vi
-vi2vo:
-	$(COQC) $(COQDEBUG) $(COQFLAGS) -schedule-vi2vo $(J) $(VOFILES:%.vo=%.vi)
+quick: $(VOFILES:.vo=.vio)
+
+vio2vo:
+	$(COQC) $(COQDEBUG) $(COQFLAGS) -schedule-vio2vo $(J) $(VOFILES:%.vo=%.vio)
 checkproofs:
-	$(COQC) $(COQDEBUG) $(COQFLAGS) -schedule-vi-checking $(J) $(VOFILES:%.vo=%.vi)
+	$(COQC) $(COQDEBUG) $(COQFLAGS) -schedule-vio-checking $(J) $(VOFILES:%.vo=%.vio)
 gallina: $(GFILES)
 
 html: $(GLOBFILES) $(VFILES)
@@ -277,7 +319,7 @@ beautify: $(VFILES:=.beautified)
 	@echo 'Do not do "make clean" until you are sure that everything went well!'
 	@echo 'If there were a problem, execute "for file in $$(find . -name \*.v.old -print); do mv $${file} $${file%.old}; done" in your shell/'
 
-.PHONY: all opt byte archclean clean install uninstall_me.sh uninstall userinstall depend html validate
+.PHONY: all archclean beautify byte clean cleanall gallina gallinahtml html install install-doc install-natdynlink install-toploop opt printenv quick uninstall userinstall validate vio2vo
 
 ####################
 #                  #
@@ -302,10 +344,10 @@ install-natdynlink:
 
 install-toploop: $(MLLIBFILES:.mllib=.cmxs)
 	 install -d "$(DSTROOT)"$(COQTOPINSTALL)/
-	 install -m 0644 $?  "$(DSTROOT)"$(COQTOPINSTALL)/
+	 install -m 0755 $?  "$(DSTROOT)"$(COQTOPINSTALL)/
 
 install:$(if $(HASNATDYNLINK_OR_EMPTY),install-natdynlink)
-	cd "." && for i in $(VOFILES) $(CMOFILES) $(CMIFILES) $(CMAFILES); do \
+	cd "." && for i in $(VOFILES) $(VFILES) $(GLOBFILES) $(NATIVEFILES) $(CMOFILES) $(CMIFILES) $(CMAFILES); do \
 	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/RelationAlgebra/$$i`"; \
 	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/RelationAlgebra/$$i; \
 	done
@@ -320,10 +362,10 @@ install-doc:
 	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/RelationAlgebra/$$i;\
 	done
 
-uninstall_me.sh:
-	echo '#!/bin/sh' > $@ 
+uninstall_me.sh: Makefile
+	echo '#!/bin/sh' > $@
 	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/RelationAlgebra && rm -f $(CMXSFILES) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "RelationAlgebra" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/RelationAlgebra && rm -f $(VOFILES) $(CMOFILES) $(CMIFILES) $(CMAFILES) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "RelationAlgebra" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/RelationAlgebra && rm -f $(VOFILES) $(VFILES) $(GLOBFILES) $(NATIVEFILES) $(CMOFILES) $(CMIFILES) $(CMAFILES) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "RelationAlgebra" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
 	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/RelationAlgebra \\\n' >> "$@"
 	printf '&& rm -f $(shell find "html" -maxdepth 1 -and -type f -print)\n' >> "$@"
 	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find RelationAlgebra/html -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
@@ -335,21 +377,25 @@ uninstall_me.sh:
 uninstall: uninstall_me.sh
 	sh $<
 
-clean:
+clean::
 	rm -f $(ALLCMOFILES) $(CMIFILES) $(CMAFILES)
 	rm -f $(ALLCMOFILES:.cmo=.cmx) $(CMXAFILES) $(CMXSFILES) $(ALLCMOFILES:.cmo=.o) $(CMXAFILES:.cmxa=.a)
 	rm -f $(addsuffix .d,$(MLFILES) $(MLIFILES) $(ML4FILES) $(MLLIBFILES) $(MLPACKFILES))
-	rm -f $(VOFILES) $(VOFILES:.vo=.vi) $(GFILES) $(VFILES:.v=.v.d) $(VFILES:=.beautified) $(VFILES:=.old)
+	rm -f $(OBJFILES) $(OBJFILES:.o=.native) $(NATIVEFILES)
+	find . -name .coq-native -type d -empty -delete
+	rm -f $(VOFILES) $(VOFILES:.vo=.vio) $(GFILES) $(VFILES:.v=.v.d) $(VFILES:=.beautified) $(VFILES:=.old)
 	rm -f all.ps all-gal.ps all.pdf all-gal.pdf all.glob $(VFILES:.v=.glob) $(VFILES:.v=.tex) $(VFILES:.v=.g.tex) all-mli.tex
 	- rm -rf html mlihtml uninstall_me.sh
 
-archclean:
+cleanall:: clean
+	rm -f $(patsubst %.v,.%.aux,$(VFILES))
+
+archclean::
 	rm -f *.cmx *.o
 
 printenv:
 	@"$(COQBIN)coqtop" -config
-	@echo 'CAMLC =	$(CAMLC)'
-	@echo 'CAMLOPTC =	$(CAMLOPTC)'
+	@echo 'OCAMLFIND =	$(OCAMLFIND)'
 	@echo 'PP =	$(PP)'
 	@echo 'COQFLAGS =	$(COQFLAGS)'
 	@echo 'COQLIBINSTALL =	$(COQLIBINSTALL)'
@@ -370,7 +416,7 @@ $(MLIFILES:.mli=.cmi): %.cmi: %.mli
 	$(CAMLC) $(ZDEBUG) $(ZFLAGS) $<
 
 $(addsuffix .d,$(MLIFILES)): %.mli.d: %.mli
-	$(OCAMLDEP) -slash $(OCAMLLIBS) "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
+	$(OCAMLFIND) ocamldep -slash $(OCAMLLIBS) "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
 $(ML4FILES:.ml4=.cmo): %.cmo: %.ml4
 	$(CAMLC) $(ZDEBUG) $(ZFLAGS) $(PP) -impl $<
@@ -379,7 +425,7 @@ $(filter-out $(addsuffix .cmx,$(foreach lib,$(MLPACKFILES:.mlpack=_MLPACK_DEPEND
 	$(CAMLOPTC) $(ZDEBUG) $(ZFLAGS) $(PP) -impl $<
 
 $(addsuffix .d,$(ML4FILES)): %.ml4.d: %.ml4
-	$(COQDEP) $(OCAMLLIBS) "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
+	$(OCAMLFIND) ocamldep -slash $(OCAMLLIBS) $(PP) -impl "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
 $(MLFILES:.ml=.cmo): %.cmo: %.ml
 	$(CAMLC) $(ZDEBUG) $(ZFLAGS) $<
@@ -388,7 +434,7 @@ $(filter-out $(addsuffix .cmx,$(foreach lib,$(MLPACKFILES:.mlpack=_MLPACK_DEPEND
 	$(CAMLOPTC) $(ZDEBUG) $(ZFLAGS) $<
 
 $(addsuffix .d,$(MLFILES)): %.ml.d: %.ml
-	$(OCAMLDEP) -slash $(OCAMLLIBS) "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
+	$(OCAMLFIND) ocamldep -slash $(OCAMLLIBS) "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
 $(filter-out $(MLLIBFILES:.mllib=.cmxs),$(MLFILES:.ml=.cmxs) $(ML4FILES:.ml4=.cmxs) $(MLPACKFILES:.mlpack=.cmxs)): %.cmxs: %.cmx
 	$(CAMLOPTLINK) $(ZDEBUG) $(ZFLAGS) -shared -o $@ $<
@@ -403,7 +449,7 @@ $(MLLIBFILES:.mllib=.cmxa): %.cmxa: | %.mllib
 	$(CAMLOPTLINK) $(ZDEBUG) $(ZFLAGS) -a -o $@ $^
 
 $(addsuffix .d,$(MLLIBFILES)): %.mllib.d: %.mllib
-	$(COQDEP) $(OCAMLLIBS) "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
+	$(COQDEP) $(OCAMLLIBS) -c "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
 $(VOFILES): %.vo: %.v
 	$(COQC) $(COQDEBUG) $(COQFLAGS) $*
@@ -411,7 +457,7 @@ $(VOFILES): %.vo: %.v
 $(GLOBFILES): %.glob: %.v
 	$(COQC) $(COQDEBUG) $(COQFLAGS) $*
 
-$(VFILES:.v=.vi): %.vi: %.v
+$(VFILES:.v=.vio): %.vio: %.v
 	$(COQC) -quick $(COQDEBUG) $(COQFLAGS) $*
 
 $(GFILES): %.g: %.v
