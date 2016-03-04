@@ -1,4 +1,8 @@
 
+== RelationAlgebra 1.5  (2016, March 4th) ==
+
+- few additions to the [relalg] and [lattice] modules
+
 == RelationAlgebra 1.4  (2016, February 9th) ==
 
 - distribution through opam, for Coq 8.5.0
