@@ -352,6 +352,25 @@ Proof.
   rewrite (leq_xt (top*p)). rewrite nonempty. now rewrite <-dotA, vector. 
 Qed.
 
+
+Lemma dot_neg_inj {Hl: BL+CNV<<l} {n m p} {x: X n m} {y: X m p} {Hy: is_injective y}: !x * y <== !(x*y).
+Proof. rewrite Schroeder_r, 2negneg. mrewrite injective. ra. Qed.
+
+Lemma dot_neg_surj {Hl: BL+CNV<<l} {n m p} {x: X n m} {y: X m p} {Hy: is_surjective y}: !(x*y) <== !x * y.
+Proof.
+  rewrite leq_cap_neg. rewrite <-negcup, <-dotplsx, cupneg. now rewrite surjective_tx, negtop.
+Qed.
+
+Lemma dot_neg_point {Hl: BL+CNV<<l} {n m k} {x: X n m} {p: X m k} {Hp: is_point p}: !x * p == !(x*p).
+Proof. apply antisym. apply dot_neg_inj. apply dot_neg_surj. Qed.
+
+Lemma disjoint_vect_ext {Hl: BL+CNV<<l} {n m k} {x y: X n m} {x' y': X m k}
+      {Hx: is_vector x}: x \cap y <== 0 -> (x * x') \cap (y * y') <== 0.
+Proof.
+  rewrite capC. intro H. apply disjoint_vect_iff in H.
+  rewrite capdotx. mrewrite H. ra.
+Qed.
+
 Lemma atom_of_points_aux `{AL+TOP<<l} {n m k} {p: X n m} {q: X k m} {Hp: is_point p} {Hq: is_point q}:
   p * q` * top * q * p` <== 1.
 Proof.

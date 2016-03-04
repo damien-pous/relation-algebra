@@ -333,6 +333,11 @@ Proof. intros. lattice. Qed.
 Lemma cupxt `{laws} `{CUP+TOP<<l}: forall x, x \cup top == top.
 Proof. intros. lattice. Qed.
 
+Lemma leq_cup_l `{laws} `{CUP<<l} x y: x <== x \cup y.
+Proof. lattice. Qed.
+Lemma leq_cup_r `{laws} `{CUP<<l} x y: y <== x \cup y.
+Proof. lattice. Qed.
+
 Instance cup_leq `{laws} `{CUP<<l}: Proper (leq ==> leq ==> leq) cup.
 Proof. intros x x' Hx y y' Hy. lattice. Qed.
 
@@ -369,6 +374,11 @@ Lemma capbx `{laws} `{CAP+BOT<<l}: forall x, bot \cap x == bot.
 Proof. dual @cuptx. Qed.
 Lemma capxb `{laws} `{CAP+BOT<<l}: forall x, x \cap bot == bot.
 Proof. dual @cupxt. Qed.
+
+Lemma leq_cap_l `{laws} `{CAP<<l} x y: x \cap y <== x.
+Proof. lattice. Qed.
+Lemma leq_cap_r `{laws} `{CAP<<l} x y: x \cap y <== y.
+Proof. lattice. Qed.
 
 Instance cap_leq `{laws} `{CAP<<l}: Proper (leq ==> leq ==> leq) cap.
 Proof. intros x x' Hx y y' Hy. lattice. Qed.
