@@ -95,8 +95,10 @@ let ltac_lcall tac args =
 				Misctypes.ArgVar(Loc.dummy_loc, id_of_string tac),args))
 let ltac_letin (x, e1) e2 =
   TacLetIn(false,[(Loc.dummy_loc,id_of_string x),e1],e2)
-let ltac_apply (f:glob_tactic_expr) (args:glob_tactic_arg list) =
-  Tacinterp.eval_tactic (ltac_letin ("F", Tacexp f) (ltac_lcall "F" args))
+let ltac_apply ist (f: Tacinterp.value) (args:glob_tactic_arg list) =
+  let open Geninterp in
+  let ist = { ist with lfun = Id.Map.add (Id.of_string "F") f ist.lfun } in
+  Tacinterp.eval_tactic_ist ist (ltac_lcall "F" args)
 
 (* converting a constr into a ltac argument *)
 let ltac_constr_arg x = 

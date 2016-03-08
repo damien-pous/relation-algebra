@@ -42,7 +42,7 @@ let rec lenght t =
     | Prod(_,_,t) -> 1+lenght t
     | _ -> 0
 
-let extend k dir h =
+let extend ist k dir h =
   Proofview.Goal.nf_enter { enter = begin fun goal ->
   let fst,snd = match dir with `LR -> 2,1 | `RL -> 1,2 in
   let ext_2 rel = match dir,rel with 
@@ -106,8 +106,8 @@ let extend k dir h =
   let t = Tacmach.New.pf_unsafe_type_of goal h in
   let h = ext (Proofview.Goal.env goal) (lenght t) h t in
   Tacticals.New.tclTHEN (Proofview.Unsafe.tclEVARS !sigma)
-  (ltac_apply k [ltac_constr_arg h])
+  (ltac_apply ist k [ltac_constr_arg h])
   end }
 
-TACTIC EXTEND ra_extend_lr [ "ra_extend" tactic(k) "->" constr(h) ] -> [ extend k `LR h ] END
-TACTIC EXTEND ra_extend_rl [ "ra_extend" tactic(k) "<-" constr(h) ] -> [ extend k `RL h ] END
+TACTIC EXTEND ra_extend_lr [ "ra_extend" tactic(k) "->" constr(h) ] -> [ extend ist k `LR h ] END
+TACTIC EXTEND ra_extend_rl [ "ra_extend" tactic(k) "<-" constr(h) ] -> [ extend ist k `RL h ] END
