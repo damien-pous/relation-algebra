@@ -118,7 +118,7 @@ Proof.
   intros ? i j. compute. tauto. 
   intros ? p q i j. split. 
    intros [E H']. setoid_rewrite Bool.andb_true_iff in H'. exists i; split; tauto. 
-   intros [k [ik Hi [kj Hk]]]. subst. split; trivial. setoid_rewrite Bool.andb_true_iff; now split.
+   intros [k [ik Hi] [kj Hk]]. subst. split; trivial. setoid_rewrite Bool.andb_true_iff; now split.
 Qed.
 
 

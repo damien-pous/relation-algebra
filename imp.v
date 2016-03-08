@@ -221,7 +221,7 @@ Proof.
   - intros H s s' HA Hp. case_eq (B s'). reflexivity. intro HB. 
     destruct (H s s'). exists s'. exists s. 
     now split. assumption. split. reflexivity. simpl. now rewrite HB. 
-  - intros H s s' (?&?&<-&HA). intros Hp (->&HB). simpl in HB. 
+  - intros H s s' [? [? [<- HA] Hp] [-> HB]]. simpl in HB. 
     rewrite (H _ _ HA Hp) in HB. discriminate. 
 Qed.
 

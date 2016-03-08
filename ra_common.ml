@@ -84,29 +84,15 @@ let get_fun_12 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 -> 
 let get_fun_13 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 q4 -> force_app v [|x;y;z;t;u;r;w;p;q;q1;q2;q3;q4|]
 let get_fun_14 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 q4 q5 -> force_app v [|x;y;z;t;u;r;w;p;q;q1;q2;q3;q4;q5|]
 
-
-(* Calling tactics (from newring.ml4)
-   TODO: simplify? *)
-let ltac_call tac (args:glob_tactic_arg list) =
-  TacArg(Loc.dummy_loc,TacCall(Loc.dummy_loc,
-				Misctypes.ArgArg(Loc.dummy_loc, Lazy.force tac),args))
-let ltac_lcall tac args =
-  TacArg(Loc.dummy_loc,TacCall(Loc.dummy_loc,
-				Misctypes.ArgVar(Loc.dummy_loc, id_of_string tac),args))
-let ltac_letin (x, e1) e2 =
-  TacLetIn(false,[(Loc.dummy_loc,id_of_string x),e1],e2)
-let ltac_apply ist (f: Tacinterp.value) (args:glob_tactic_arg list) =
+let ltac_apply ist (f: Tacinterp.value) (arg : constr) =
   let open Geninterp in
-  let ist = { ist with lfun = Id.Map.add (Id.of_string "F") f ist.lfun } in
-  Tacinterp.eval_tactic_ist ist (ltac_lcall "F" args)
-
-(* converting a constr into a ltac argument *)
-let ltac_constr_arg x = 
-  let x = Detyping.detype false [] (Global.env()) Evd.empty x in 
-  (* TODO: replace [] above by appropriate values? *)
-  ConstrMayEval (Genredexpr.ConstrTerm (x,None))
-
-
+  let loc = Loc.dummy_loc in
+  let f_ = Id.of_string "f" in
+  let x_ = Id.of_string "x" in
+  let arg = Tacinterp.Value.of_constr arg in
+  let mkvar id = Misctypes.ArgVar (loc, id) in
+  let ist = { ist with lfun = Id.Map.add f_ f (Id.Map.add x_ arg ist.lfun) } in
+  Tacinterp.eval_tactic_ist ist (TacArg (loc, TacCall (loc, mkvar f_, [Reference (mkvar x_)])))
 
 (* Coq constants *)
 module Coq = struct

@@ -106,7 +106,7 @@ let extend ist k dir h =
   let t = Tacmach.New.pf_unsafe_type_of goal h in
   let h = ext (Proofview.Goal.env goal) (lenght t) h t in
   Tacticals.New.tclTHEN (Proofview.Unsafe.tclEVARS !sigma)
-  (ltac_apply ist k [ltac_constr_arg h])
+  (ltac_apply ist k h)
   end }
 
 TACTIC EXTEND ra_extend_lr [ "ra_extend" tactic(k) "->" constr(h) ] -> [ extend ist k `LR h ] END
