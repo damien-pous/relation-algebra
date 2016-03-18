@@ -18,6 +18,7 @@ open Names
 open Proof_type
 open Sigma.Notations
 open Context.Named.Declaration
+open Constrarg
 
 DECLARE PLUGIN "ra_fold"
 
