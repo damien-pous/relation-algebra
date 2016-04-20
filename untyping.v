@@ -201,7 +201,7 @@ Qed.
 (** simple tactic to discriminate unsatisfiable constraints *)
 Ltac discr_levels Hl tac :=
   repeat match goal with 
-           | |- _ << _ -> _ => intro Hl'; try ((rewrite Hl in Hl'; discriminate Hl') || tac Hl')
+           | |- _ << _ -> _ => let Hl' := fresh "Hl" in intro Hl'; try ((rewrite Hl in Hl'; discriminate Hl') || tac Hl')
            | |- _ \/ _ => right
          end;
   unfold Reflexive, Transitive, Proper, respectful; simpl;
