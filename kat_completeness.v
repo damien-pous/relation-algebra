@@ -109,13 +109,13 @@ Proof. unfold g_one'. rewrite teval_prd. apply inj_top. Qed.
 (** a Kleene variable [i] is mapped to the sum of all [f*i*g], for f,g
    arbitrary atoms *)
 
-Definition g_var' i := \sup_(f<_) \sup_(g<_) [g_elem f (g_var i) g].
+Definition g_var' i := \sup_(f<_) \sup_(g<_) [g_elem f (g_var i) g]%list.
 
 Lemma sum_atoms n: \sup_(i<pow2 pred) g_atom n i == 1.
 Proof.
   rewrite <- teval_one. unfold g_one', g_prd'. rewrite sup_map.
   apply sup_weq. reflexivity. 
-  induction seq. reflexivity. now apply (cup_weq [_] [_]).
+  induction seq. reflexivity. now apply (cup_weq [_] [_])%list.
 Qed.
 
 Lemma teval_var i: teval (g_var' i) == g_var i.
@@ -145,7 +145,7 @@ Definition g_dot1 n m (x: guard n m): forall p, guard m p -> guards n p  :=
         | g_pred c => fun e => if eqb b c then [g_elem a e b] else []
         | g_elem c f d => fun e => if eqb b c then [g_elem a (e*g_atom _ b*f) d] else []
       end e
-  end.
+  end%list.
 
 (** [g_dot' h k] does the composition of two lists of externally guarded terms *)
 Definition g_dot' n m p (h: guards n m) (k: guards m p) := 
