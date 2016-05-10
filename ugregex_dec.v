@@ -98,7 +98,7 @@ Proof.
 Qed.
 
 (** Kleene variables of an expression *)
-Fixpoint vars (e: ugregex) :=
+Fixpoint vars (e: ugregex): list Sigma :=
   match e with
     | u_prd _ => []
     | u_var _ i => [i]
@@ -359,7 +359,7 @@ Qed.
 Definition eqb_kat (e f: ugregex) :=
   let atoms := map (@set.mem _) (seq _) in
   let vars := vars (e+f) in
-    loop vars atoms 1000 rel_empty [([e],[f])].
+    loop vars atoms 1000 rel_empty [([e],[f])%list].
 (* stated as this, the algorithm is not complete: we would need to
    replace 1000 with the size of [e+f]... bzzz *)
 
