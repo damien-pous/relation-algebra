@@ -58,8 +58,7 @@ verification:
 
 ## INSTALLATION
 
-Run 'make' to compile the library, and 'make install' to install
-it. Coq v8.5.0 is required; more recent versions might work.
+Run 'make' to compile the library, and 'make install' to install it. 
 
 
 ## DOCUMENTATION

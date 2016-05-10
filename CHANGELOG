@@ -1,4 +1,8 @@
 
+== RelationAlgebra 1.6  (2016, May 10th) ==
+
+- minor fix to make it compile with Coq 8.5pl1
+
 == RelationAlgebra 1.5  (2016, March 4th) ==
 
 - few additions to the [relalg] and [lattice] modules
