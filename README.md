@@ -1,18 +1,10 @@
 
-			   RelationAlgebra
-			   ===============
-
-			     Damien Pous
-	       CNRS - LIP, ENS Lyon (UMR 5668), France
-
-This library is distributed under the terms of the GNU Lesser General
-Public License version 3. See files LICENSE and COPYING.
+# Relation Algebra for Coq
 
 Webpage of the project: http://perso.ens-lyon.fr/damien.pous/ra
 
 
-DESCRIPTION.
-============
+## DESCRIPTION
 
 This Coq development is a modular library about relation algebra:
 those algebras admitting heterogeneous binary relations as a model,
@@ -47,8 +39,7 @@ avoid polluting decision algorithms with these additional typing
 constraints.
 
 
-APPLICATIONS.
-=============
+## APPLICATIONS
 
 We give a few examples of applications of this library to program
 verification:
@@ -65,19 +56,33 @@ verification:
   about 100 lines.
 
 
-INSTALLATION.
-=============
+## INSTALLATION
 
 Run 'make' to compile the library, and 'make install' to install
-it. Coq v8.4 is required.
+it. Coq v8.5.0 is required; more recent versions might work.
 
 
-DOCUMENTATION. 
-==============
+## DOCUMENTATION
 
 Each module is documented, see index.html or 
      http://perso.ens-lyon.fr/damien.pous/ra
 for:
- - a description of each module's role and dependencies
- - a list of the available user-end tactics
- - the coqdoc generated documentation.
+- a description of each module's role and dependencies
+- a list of the available user-end tactics
+- the coqdoc generated documentation.
+
+
+## LICENSE
+
+This library is distributed under the terms of the GNU Lesser General
+Public License version 3. See files LICENSE and COPYING.
+
+
+## AUTHORS
+
+* Main author
+  - Damien Pous (2012-), CNRS - LIP, ENS Lyon (UMR 5668), France
+ 
+* Additional authors
+  - Insa Stucke (2015-), Dpt of CS, University of Kiel, Germany
+  - Coq development team (2013-)

@@ -333,6 +333,11 @@ Proof. intros. lattice. Qed.
 Lemma cupxt `{laws} `{CUP+TOP<<l}: forall x, x \cup top == top.
 Proof. intros. lattice. Qed.
 
+Lemma leq_cup_l `{laws} `{CUP<<l} x y: x <== x \cup y.
+Proof. lattice. Qed.
+Lemma leq_cup_r `{laws} `{CUP<<l} x y: y <== x \cup y.
+Proof. lattice. Qed.
+
 Instance cup_leq `{laws} `{CUP<<l}: Proper (leq ==> leq ==> leq) cup.
 Proof. intros x x' Hx y y' Hy. lattice. Qed.
 
@@ -370,6 +375,11 @@ Proof. dual @cuptx. Qed.
 Lemma capxb `{laws} `{CAP+BOT<<l}: forall x, x \cap bot == bot.
 Proof. dual @cupxt. Qed.
 
+Lemma leq_cap_l `{laws} `{CAP<<l} x y: x \cap y <== x.
+Proof. lattice. Qed.
+Lemma leq_cap_r `{laws} `{CAP<<l} x y: x \cap y <== y.
+Proof. lattice. Qed.
+
 Instance cap_leq `{laws} `{CAP<<l}: Proper (leq ==> leq ==> leq) cap.
 Proof. intros x x' Hx y y' Hy. lattice. Qed.
 
@@ -382,17 +392,23 @@ Proof. split. intro. hlattice. intro E. rewrite <- E. lattice. Qed.
 Lemma capcup `{laws} `{DL<<l}: forall x y z, x \cap (y \cup z) == (x\cap y) \cup (x\cap z).
 Proof. dual @cupcap. Qed.
 
+Lemma cupcap' `{laws} `{DL<<l}: forall x y z, (y \cap z) \cup x == (y\cup x) \cap (z\cup x).
+Proof. intros. now rewrite cupC, cupcap, 2(cupC x). Qed.
+
+Lemma capcup' `{laws} `{DL<<l}: forall x y z, (y \cup z) \cap x == (y\cap x) \cup (z\cap x).
+Proof. dual @cupcap'. Qed.
+
 
 (** * Properties of negation *)
 
-Lemma neg_unique' `{laws} `{BL<<l} (x y: X): y \cap x == bot -> y <== !x.
+Lemma neg_unique' `{laws} `{BL<<l} (x y: X): y \cap x <== bot -> y <== !x.
 Proof.
   intros E. rewrite <-(capxt y). rewrite <-(cupneg x). 
   rewrite capcup. rewrite E. lattice. 
 Qed.
 
 Lemma neg_unique `{laws} `{BL<<l} (x y: X):
-  y \cup x == top -> y \cap x == bot -> y == !x.
+  top <== y \cup x -> y \cap x <== bot -> y == !x.
 Proof. 
   intros Ht Hb. apply antisym. 
   now apply neg_unique'. 
@@ -401,7 +417,7 @@ Qed.
 
 Instance neg_leq `{laws} `{BL<<l}: Proper (leq --> leq) neg.
 Proof.
-  intros x y E. apply neg_unique'. apply antisym. 2: lattice. 
+  intros x y E. apply neg_unique'. 
   rewrite <-E, capC. now rewrite capneg.
 Qed.
 
@@ -409,7 +425,7 @@ Instance neg_weq `{laws} `{BL<<l}: Proper (weq ==> weq) neg.
 Proof. intros x y. rewrite 2weq_spec. intro E; split; apply neg_leq, E. Qed.
 
 Lemma negneg `{laws} `{BL<<l} (x: X): !!x == x.
-Proof. symmetry. apply neg_unique. apply cupneg. apply capneg. Qed.
+Proof. symmetry. apply neg_unique. now rewrite cupneg. now rewrite capneg. Qed.
 
 Lemma negbot `{laws} `{BL<<l}: !bot == top.
 Proof. symmetry. apply neg_unique; lattice. Qed.
@@ -456,6 +472,20 @@ Ltac neg_switch := first [
   rewrite neg_weq_iff'' |
   rewrite <-neg_weq_iff ].
 
+Lemma leq_cap_neg `{laws} `{BL<<l} (x y: X): y <== x <-> y \cap !x <== bot.
+Proof.
+  split. intro E. now rewrite E, capneg.
+  intro E. now rewrite (neg_unique' _ _ E), negneg.
+Qed.
+
+Lemma leq_cap_neg' `{laws} `{BL<<l} (x y: X): y \cap x <== bot <-> y <== !x.
+Proof. rewrite <-(negneg x) at 1. symmetry. apply leq_cap_neg. Qed.
+
+Lemma leq_cup_neg `{laws} `{BL<<l} (x y: X): x <== y <-> top <== y \cup !x.
+Proof. dual @leq_cap_neg. Qed.
+
+Lemma leq_cup_neg' `{laws} `{BL<<l} (x y: X): top <== y \cup x -> !x <== y.
+Proof. dual @leq_cap_neg'. Qed.
 
 
 (** * Morphisms *)
