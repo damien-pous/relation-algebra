@@ -202,7 +202,7 @@ let reify_goal l goal =
     (mkApp (rel, [|lhs;rhs|]))))))))
   in	  
     (try Tacticals.tclTHEN (retype reified) (Proofview.V82.of_tactic (Tactics.convert_concl reified DEFAULTcast)) goal
-     with e -> Pp.msg_warning (Printer.pr_lconstr reified); raise e)
+     with e -> Feedback.msg_warning (Printer.pr_lconstr reified); raise e)
 
 	
 (* tactic grammar entries *)

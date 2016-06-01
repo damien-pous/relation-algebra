@@ -384,7 +384,7 @@ let reify_kat_goal ?kat check =
       (mkApp (rel, [|lhs;rhs|])))))))))
   in	  
   (try Proofview.V82.of_tactic (Tactics.convert_concl reified DEFAULTcast) goal
-   with e -> Pp.msg_warning (Printer.pr_lconstr reified); raise e))
+   with e -> Feedback.msg_warning (Printer.pr_lconstr reified); raise e))
   end
 
 
@@ -463,7 +463,7 @@ let get_kat_alphabet =
       (Tacmach.pf_concl goal)
   in	  
     (try Proofview.V82.of_tactic (Tactics.convert_concl reified DEFAULTcast) goal
-     with e -> (* Pp.msg_warning (Printer.pr_lconstr reified); *) raise e)
+     with e -> (* Feedback.msg_warning (Printer.pr_lconstr reified); *) raise e)
   end
 
 (* tactic grammar entries *)
