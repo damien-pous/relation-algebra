@@ -36,7 +36,7 @@ let time f x =
 let ra_path = ["RelationAlgebra"]
 
 (* raise an error in Coq *)
-let error s = Printf.kprintf Errors.error ("[RelationAlgebra] "^^s)
+let error s = Printf.kprintf CErrors.error ("[RelationAlgebra] "^^s)
 
 (* resolving a typeclass [cls] in a goal [gl] *)
 let tc_find gl cls = Typeclasses.resolve_one_typeclass (Tacmach.pf_env gl) (Tacmach.project gl) cls
