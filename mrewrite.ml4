@@ -40,7 +40,7 @@ end
 
 
 let rec lenght t = 
-  match kind_of_term (strip_outer_cast t) with
+  match kind_of_term (Termops.strip_outer_cast t) with
     | Prod(_,_,t) -> 1+lenght t
     | _ -> 0
 
@@ -67,7 +67,7 @@ let extend ist k dir h =
   in
   let sigma = ref (Tacmach.New.project goal) in
   let rec dots env t =
-    match kind_of_term (strip_outer_cast t) with
+    match kind_of_term (Termops.strip_outer_cast t) with
       | App(c,ca) when Constr.equal c (Lazy.force Monoid.dot0) ->
 	(match dots env ca.(4) with
 	  | None -> 
@@ -85,7 +85,7 @@ let extend ist k dir h =
       | _ -> None
   in
   let rec ext env i h t =
-    match kind_of_term (strip_outer_cast t) with
+    match kind_of_term (Termops.strip_outer_cast t) with
       | App(c,ca) ->
 	(match 
 	    if Constr.equal c (Lazy.force Lattice.weq) then Some `Weq

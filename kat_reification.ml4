@@ -250,7 +250,7 @@ let reify_kat_goal ?kat check =
 
   (* get the (in)equation *)
   let rel,ca = 
-    match kind_of_term (strip_outer_cast (Tacmach.pf_concl goal)) with
+    match kind_of_term (Termops.strip_outer_cast (Tacmach.pf_concl goal)) with
       | App(c,ca) ->
 	if Constr.equal c (Lazy.force Lattice.weq) then mkApp (c,[|ca.(0)|]), ca
 	else if Constr.equal c (Lazy.force Lattice.leq) then mkApp (c,[|ca.(0)|]), ca
@@ -260,13 +260,13 @@ let reify_kat_goal ?kat check =
 
   (* get the monoid operations and the domain/codomain types *)
   let mops,src',tgt' = 
-    match kind_of_term (strip_outer_cast ca.(0)) with
+    match kind_of_term (Termops.strip_outer_cast ca.(0)) with
       | App(c,ca) when Constr.equal c (Lazy.force Monoid.mor0) -> ca.(0),ca.(1),ca.(2)
       | _ -> error "could not find monoid operations"
   in
   (* get the kat operations *)
   let kops = 
-    match kind_of_term (strip_outer_cast mops) with
+    match kind_of_term (Termops.strip_outer_cast mops) with
       | App(c,ca) when Constr.equal c (Lazy.force KAT.kar) -> ca.(0)
       | _ -> error "could not find KAT operations"
   in
@@ -299,7 +299,7 @@ let reify_kat_goal ?kat check =
       else if convertible goal e (Lattice.bot (lops s')) then AST.Bot
       else AST.Tst (insert_pred e s s')
     in
-    match kind_of_term (strip_outer_cast e) with App(c,ca) -> 
+    match kind_of_term (Termops.strip_outer_cast e) with App(c,ca) -> 
       is_cup s' (fun x y -> AST.Cup (lreify ss x, lreify ss y)) (
       is_cap s' (fun x y -> AST.Cap (lreify ss x, lreify ss y)) (
       is_neg s' (fun x -> AST.Neg (lreify ss x)) (
@@ -315,7 +315,7 @@ let reify_kat_goal ?kat check =
       else if convertible goal e (Lattice.bot (Monoid.mor mops s' t')) then AST.Zer(s,t)
       else AST.Var (insert_atom mops e ss tt)
     in
-    match kind_of_term (strip_outer_cast e) with App(c,ca) -> 
+    match kind_of_term (Termops.strip_outer_cast e) with App(c,ca) -> 
       is_dot s s' (fun x r r' y -> 
 	AST.Dot (s, r, t, reify ss (r,r') x, reify (r,r') tt y)) (
       is_pls s' t' (fun x y -> AST.Pls(s, t, reify ss tt x, reify ss tt y)) (
@@ -400,7 +400,7 @@ let get_kat_alphabet =
 
   (* get the (in)equation *)
   let ca = 
-    match kind_of_term (strip_outer_cast (Tacmach.pf_concl goal)) with
+    match kind_of_term (Termops.strip_outer_cast (Tacmach.pf_concl goal)) with
       | App(c,ca) ->
 	if Constr.equal c (Lazy.force Lattice.weq) then ca
 	else if Constr.equal c (Lazy.force Lattice.leq) then ca
@@ -410,13 +410,13 @@ let get_kat_alphabet =
 
   (* get the monoid operations and the domain/codomain types *)
   let mops,src',tgt' = 
-    match kind_of_term (strip_outer_cast ca.(0)) with
+    match kind_of_term (Termops.strip_outer_cast ca.(0)) with
       | App(c,ca) when Constr.equal c (Lazy.force Monoid.mor0) -> ca.(0),ca.(1),ca.(2)
       | _ -> error "could not find monoid operations"
   in
   (* get the kat operations *)
   let kops = 
-    match kind_of_term (strip_outer_cast mops) with
+    match kind_of_term (Termops.strip_outer_cast mops) with
       | App(c,ca) when Constr.equal c (Lazy.force KAT.kar) -> ca.(0)
       | _ -> error "could not find KAT operations"
   in
@@ -439,7 +439,7 @@ let get_kat_alphabet =
       else if convertible goal e (Lattice.bot (Monoid.mor mops s' t')) then acc
       else insert e acc
     in
-    match kind_of_term (strip_outer_cast e) with App(c,ca) -> 
+    match kind_of_term (Termops.strip_outer_cast e) with App(c,ca) -> 
       is_dot s' (fun x () r' y -> alphabet (alphabet acc s' r' x) r' t' y) (
       is_pls s' t' (fun x y -> alphabet (alphabet acc s' t' x) s' t' y) (
       is_itr s' (alphabet acc s' s') (
