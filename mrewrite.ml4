@@ -17,7 +17,7 @@ open Term
 open Names
 open Proof_type
 open Proofview.Notations
-open Constrarg
+open Stdarg
 open Tacarg
 
 DECLARE PLUGIN "mrewrite"
