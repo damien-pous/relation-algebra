@@ -12,6 +12,7 @@
 (** Simple helper to define basic rewriting modulo A (associativity) tactics:
     (see the comments in [rewriting.v]) *)
 
+open Ltac_plugin
 open Ra_common
 open Term
 open Names

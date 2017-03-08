@@ -8,6 +8,7 @@
 
 (** Small library used by all ML plugins we define for [ar] *)
 
+open Ltac_plugin
 open Tacexpr
 open Term
 open Names

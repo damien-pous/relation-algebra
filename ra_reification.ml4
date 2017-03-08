@@ -13,6 +13,7 @@
     [ra] tactics: we reify [monoid] and [lattice]
     operations into [syntax.expr] expressions *)
 
+open Ltac_plugin
 open Ra_common
 open Term
 open Names
