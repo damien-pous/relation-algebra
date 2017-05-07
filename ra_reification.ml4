@@ -16,6 +16,7 @@
 open Ltac_plugin
 open Ra_common
 open Term
+open EConstr
 open Names
 open Proof_type
 
@@ -105,20 +106,22 @@ let reify_goal l goal =
     ))
   in
 
+  let sigma = Tacmach.project goal in
+
   (* get the (in)equation *)
   let rel,lops,lhs,rhs = 
-    match kind_of_term (Termops.strip_outer_cast (Tacmach.pf_concl goal)) with
-      | App(c,ca) when Constr.equal c (Lazy.force Lattice.leq_or_weq)
+    match kind sigma (Termops.strip_outer_cast sigma (Tacmach.pf_concl goal)) with
+      | App(c,ca) when EConstr.eq_constr sigma c (Lazy.force Lattice.leq_or_weq)
 		  -> mkApp (c,[|ca.(0);ca.(1)|]), ca.(1), ca.(2), ca.(3)
-      | App(c,ca) when Constr.equal c (Lazy.force Lattice.leq) || Constr.equal c (Lazy.force Lattice.weq)
+      | App(c,ca) when EConstr.eq_constr sigma c (Lazy.force Lattice.leq) || EConstr.eq_constr sigma c (Lazy.force Lattice.weq)
 		  -> mkApp (c,[|ca.(0)|]), ca.(0), ca.(1), ca.(2)
       | _ -> error "unrecognised goal"
   in
 
   (* get the monoid.ops and the domain/codomain types *)
   let ops,src',tgt' = 
-    match kind_of_term (Termops.strip_outer_cast lops) with
-      | App(c,ca) when Constr.equal c (Lazy.force Monoid.mor0) -> ca.(0),ca.(1),ca.(2)
+    match kind sigma (Termops.strip_outer_cast sigma lops) with
+      | App(c,ca) when EConstr.eq_constr sigma c (Lazy.force Monoid.mor0) -> ca.(0),ca.(1),ca.(2)
       | _ -> error "could not find monoid operations"
   in
   let src = insert_type src' in	
@@ -151,7 +154,7 @@ let reify_goal l goal =
       else
         Syntax.var src_ tgt_ (insert_atom ops e s s' t)
     in
-    match kind_of_term (Termops.strip_outer_cast e) with App(c,ca) -> 
+    match kind sigma (Termops.strip_outer_cast sigma e) with App(c,ca) -> 
       (* note that we give priority to dot/one over cap/top 
          (they coincide on flat structures) *)
       is_dot s s' (fun x r r' y -> 
@@ -203,7 +206,7 @@ let reify_goal l goal =
     (mkApp (rel, [|lhs;rhs|]))))))))
   in	  
     (try Tacticals.tclTHEN (retype reified) (Proofview.V82.of_tactic (Tactics.convert_concl reified DEFAULTcast)) goal
-     with e -> Feedback.msg_warning (Printer.pr_lconstr reified); raise e)
+     with e -> Feedback.msg_warning (Printer.pr_leconstr reified); raise e)
 
 	
 (* tactic grammar entries *)

@@ -15,6 +15,7 @@
 open Ltac_plugin
 open Ra_common
 open Term
+open EConstr
 open Names
 open Proof_type
 open Sigma.Notations
@@ -32,9 +33,9 @@ let ra_fold_term ops ob t goal =
   let env = Tacmach.pf_env goal in
   let tops = Tacmach.pf_unsafe_type_of goal ops in
   let sigma,gl = Refiner.unpackage goal in
-  let rec fill ops tops = 
-    if Constr.equal tops (Lazy.force Monoid.ops) then ops 
-    else match kind_of_term (Termops.strip_outer_cast tops) with
+  let rec fill ops tops =
+    if EConstr.eq_constr !sigma tops (Lazy.force Monoid.ops) then ops
+    else match kind !sigma (Termops.strip_outer_cast !sigma tops) with
       | Prod(_,s,t) -> 
 	let x = e_new_evar env sigma s in
 	fill (mkApp(ops,[|x|])) t
@@ -71,7 +72,7 @@ let ra_fold_term ops ob t goal =
       if convertible' (env,!sigma) e x then x else
       gen_fold env e
     in
-    match kind_of_term (Termops.strip_outer_cast e) with App(c,ca) -> 
+    match kind !sigma (Termops.strip_outer_cast !sigma e) with App(c,ca) -> 
       (* note that we give priority to dot/one over cap/top 
          (they coincide on flat structures) *)
       is_dot env s' (fun x () r' y -> Monoid.dot ops s' r' t' (ra_fold env s' r' x) (ra_fold env r' t' y)) (
@@ -87,7 +88,7 @@ let ra_fold_term ops ob t goal =
       | _ -> k' ()
 
   and gen_fold env e =
-    match kind_of_term (Termops.strip_outer_cast e) with 
+    match kind !sigma (Termops.strip_outer_cast !sigma e) with 
       | App(c,ca) -> mkApp(c,Array.map (fold env) ca)
       | Prod(x,e,f) -> mkProd(x, fold env e, fold (push x e env) f)
       | Lambda(x,t,e) -> mkLambda(x, t, fold (push x t env) e)
@@ -99,8 +100,8 @@ let ra_fold_term ops ob t goal =
     let t = Typing.unsafe_type_of env !sigma e in
     match ob with
       | Some o when convertible' (env,!sigma) t (Lattice.car (Monoid.mor ops o o)) -> ra_fold env o o e
-      | Some o when Constr.equal t mkProp ->
-	(match kind_of_term (Termops.strip_outer_cast e) with
+      | Some o when EConstr.eq_constr !sigma t mkProp ->
+	(match kind !sigma (Termops.strip_outer_cast !sigma e) with
 	  | App(c,ca) when 2 <= Array.length ca ->
 	    let n = Array.length ca in 
 	    let rel = (partial_app (n-2) c ca) in
@@ -113,8 +114,8 @@ let ra_fold_term ops ob t goal =
 	      mkApp(leq,[|ra_fold env o o ca.(n-2);ra_fold env o o ca.(n-1)|]) else
 	    gen_fold env e
 	  | _ -> gen_fold env e)
-      | _ when Constr.equal t mkProp ->
-	(match kind_of_term (Termops.strip_outer_cast e) with
+      | _ when EConstr.eq_constr !sigma t mkProp ->
+	(match kind !sigma (Termops.strip_outer_cast !sigma e) with
 	  | App(c,ca) when 2 <= Array.length ca ->
 	    let n = Array.length ca in 
 	    let rel = (partial_app (n-2) c ca) in
@@ -142,12 +143,12 @@ let ra_fold_term ops ob t goal =
 let ra_fold_concl ops ob goal =
   let f,goal = ra_fold_term ops ob (Tacmach.pf_concl goal) goal in
   (try Proofview.V82.of_tactic (Tactics.convert_concl f DEFAULTcast) goal
-   with e -> Feedback.msg_warning (Printer.pr_lconstr f); raise e)
+   with e -> Feedback.msg_warning (Printer.pr_leconstr f); raise e)
 
 let ra_fold_hyp' ops ob decl goal =
   let typ,goal = ra_fold_term ops ob (get_type decl) goal in
   (try Proofview.V82.of_tactic (Tactics.convert_hyp ~check:false decl) goal
-   with e -> Feedback.msg_warning (Printer.pr_lconstr typ); raise e)
+   with e -> Feedback.msg_warning (Printer.pr_leconstr typ); raise e)
 
 let ra_fold_hyp ops ob hyp goal =
   ra_fold_hyp' ops ob (Tacmach.pf_get_hyp goal hyp) goal

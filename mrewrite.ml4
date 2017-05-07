@@ -15,6 +15,7 @@
 open Ltac_plugin
 open Ra_common
 open Term
+open EConstr
 open Names
 open Proof_type
 open Proofview.Notations
@@ -40,9 +41,9 @@ module Ext = struct
 end
 
 
-let rec lenght t = 
-  match kind_of_term (Termops.strip_outer_cast t) with
-    | Prod(_,_,t) -> 1+lenght t
+let rec length sigma t = 
+  match kind sigma (Termops.strip_outer_cast sigma t) with
+    | Prod(_,_,t) -> 1+length sigma t
     | _ -> 0
 
 let extend ist k dir h =
@@ -68,8 +69,8 @@ let extend ist k dir h =
   in
   let sigma = ref (Tacmach.New.project goal) in
   let rec dots env t =
-    match kind_of_term (Termops.strip_outer_cast t) with
-      | App(c,ca) when Constr.equal c (Lazy.force Monoid.dot0) ->
+    match kind !sigma (Termops.strip_outer_cast !sigma t) with
+      | App(c,ca) when EConstr.eq_constr !sigma c (Lazy.force Monoid.dot0) ->
 	(match dots env ca.(4) with
 	  | None -> 
   	    let ops = ca.(0) in
@@ -86,11 +87,11 @@ let extend ist k dir h =
       | _ -> None
   in
   let rec ext env i h t =
-    match kind_of_term (Termops.strip_outer_cast t) with
+    match kind !sigma (Termops.strip_outer_cast !sigma t) with
       | App(c,ca) ->
 	(match 
-	    if Constr.equal c (Lazy.force Lattice.weq) then Some `Weq
-	    else if Constr.equal c (Lazy.force Lattice.leq) then Some `Leq
+	    if EConstr.eq_constr !sigma c (Lazy.force Lattice.weq) then Some `Weq
+	    else if EConstr.eq_constr !sigma c (Lazy.force Lattice.leq) then Some `Leq
 	    else None
 	 with
 	   | None -> error "the provided term does not end with a relation algebra (in)equation"
@@ -107,7 +108,7 @@ let extend ist k dir h =
       | _ -> error "the provided term does not end with a relation algebra (in)equation"
   in
   let t = Tacmach.New.pf_unsafe_type_of goal h in
-  let h = ext (Proofview.Goal.env goal) (lenght t) h t in
+  let h = ext (Proofview.Goal.env goal) (length !sigma t) h t in
   Tacticals.New.tclTHEN (Proofview.Unsafe.tclEVARS !sigma)
   (ltac_apply ist k h)
   end }

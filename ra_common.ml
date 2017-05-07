@@ -11,6 +11,7 @@
 open Ltac_plugin
 open Tacexpr
 open Term
+open EConstr
 open Names
 open Proof_type
 
@@ -61,7 +62,7 @@ let fresh_name n goal =
 
 (* access to Coq constants *)
 let get_const dir s = 
-  lazy (Universes.constr_of_global (Coqlib.find_reference "RelationAlgebra.reification" dir s))
+  lazy (EConstr.of_constr (Universes.constr_of_global (Coqlib.find_reference "RelationAlgebra.reification" dir s)))
 
 (* make an application using a lazy value *)
 let force_app f = fun x -> mkApp (Lazy.force f,x)

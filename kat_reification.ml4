@@ -21,6 +21,7 @@
 open Ltac_plugin
 open Ra_common
 open Term
+open EConstr
 open Names
 open Proof_type
 
@@ -220,7 +221,7 @@ let reify_kat_goal ?kat check =
   Proofview.V82.tactic begin fun goal ->
   let msg = 
     match kat with 
-      | Some b when Constr.equal b (Lazy.force Coq.true_) -> "KAT"
+      | Some b when EConstr.eq_constr (Tacmach.project goal) b (Lazy.force Coq.true_) -> "KAT"
       | _ -> "KA"
   in
 
@@ -249,26 +250,28 @@ let reify_kat_goal ?kat check =
     in Tbl.insert goal t x x ()
   in
 
+  let sigma = Tacmach.project goal in
+
   (* get the (in)equation *)
   let rel,ca = 
-    match kind_of_term (Termops.strip_outer_cast (Tacmach.pf_concl goal)) with
+    match kind sigma (Termops.strip_outer_cast sigma (Tacmach.pf_concl goal)) with
       | App(c,ca) ->
-	if Constr.equal c (Lazy.force Lattice.weq) then mkApp (c,[|ca.(0)|]), ca
-	else if Constr.equal c (Lazy.force Lattice.leq) then mkApp (c,[|ca.(0)|]), ca
+	if EConstr.eq_constr sigma c (Lazy.force Lattice.weq) then mkApp (c,[|ca.(0)|]), ca
+	else if EConstr.eq_constr sigma c (Lazy.force Lattice.leq) then mkApp (c,[|ca.(0)|]), ca
 	else error "unrecognised goal"
       | _ -> error "unrecognised goal"
   in
 
   (* get the monoid operations and the domain/codomain types *)
   let mops,src',tgt' = 
-    match kind_of_term (Termops.strip_outer_cast ca.(0)) with
-      | App(c,ca) when Constr.equal c (Lazy.force Monoid.mor0) -> ca.(0),ca.(1),ca.(2)
+    match kind sigma (Termops.strip_outer_cast sigma ca.(0)) with
+      | App(c,ca) when EConstr.eq_constr sigma c (Lazy.force Monoid.mor0) -> ca.(0),ca.(1),ca.(2)
       | _ -> error "could not find monoid operations"
   in
   (* get the kat operations *)
   let kops = 
-    match kind_of_term (Termops.strip_outer_cast mops) with
-      | App(c,ca) when Constr.equal c (Lazy.force KAT.kar) -> ca.(0)
+    match kind sigma (Termops.strip_outer_cast sigma mops) with
+      | App(c,ca) when EConstr.eq_constr sigma c (Lazy.force KAT.kar) -> ca.(0)
       | _ -> error "could not find KAT operations"
   in
   let lops = KAT.tst kops in
@@ -300,7 +303,7 @@ let reify_kat_goal ?kat check =
       else if convertible goal e (Lattice.bot (lops s')) then AST.Bot
       else AST.Tst (insert_pred e s s')
     in
-    match kind_of_term (Termops.strip_outer_cast e) with App(c,ca) -> 
+    match kind sigma (Termops.strip_outer_cast sigma e) with App(c,ca) -> 
       is_cup s' (fun x y -> AST.Cup (lreify ss x, lreify ss y)) (
       is_cap s' (fun x y -> AST.Cap (lreify ss x, lreify ss y)) (
       is_neg s' (fun x -> AST.Neg (lreify ss x)) (
@@ -316,7 +319,7 @@ let reify_kat_goal ?kat check =
       else if convertible goal e (Lattice.bot (Monoid.mor mops s' t')) then AST.Zer(s,t)
       else AST.Var (insert_atom mops e ss tt)
     in
-    match kind_of_term (Termops.strip_outer_cast e) with App(c,ca) -> 
+    match kind sigma (Termops.strip_outer_cast sigma e) with App(c,ca) -> 
       is_dot s s' (fun x r r' y -> 
 	AST.Dot (s, r, t, reify ss (r,r') x, reify (r,r') tt y)) (
       is_pls s' t' (fun x y -> AST.Pls(s, t, reify ss tt x, reify ss tt y)) (
@@ -335,7 +338,7 @@ let reify_kat_goal ?kat check =
   (match if check then AST.equiv lhs_v rhs_v else None with Some t -> 
     let t = AST.parse_trace kops mops lops env penv (src,src') (tgt,tgt') t in
     Tacticals.tclFAIL 0 (Pp.(++) (Pp.str (" not a "^msg^" theorem:\n"))
-  			   (Printer.pr_lconstr t)) goal
+			   (Printer.pr_leconstr t)) goal
     | None -> 
   	 
   (* turning the ast in to coq constr *)
@@ -385,7 +388,7 @@ let reify_kat_goal ?kat check =
       (mkApp (rel, [|lhs;rhs|])))))))))
   in	  
   (try Proofview.V82.of_tactic (Tactics.convert_concl reified DEFAULTcast) goal
-   with e -> Feedback.msg_warning (Printer.pr_lconstr reified); raise e))
+   with e -> Feedback.msg_warning (Printer.pr_leconstr reified); raise e))
   end
 
 
@@ -399,26 +402,28 @@ let get_kat_alphabet =
     | x'::q as l -> if convertible goal x x' then l else x'::insert x q
   in
 
+  let sigma = Tacmach.project goal in
+
   (* get the (in)equation *)
   let ca = 
-    match kind_of_term (Termops.strip_outer_cast (Tacmach.pf_concl goal)) with
+    match kind sigma (Termops.strip_outer_cast sigma (Tacmach.pf_concl goal)) with
       | App(c,ca) ->
-	if Constr.equal c (Lazy.force Lattice.weq) then ca
-	else if Constr.equal c (Lazy.force Lattice.leq) then ca
+	if EConstr.eq_constr sigma c (Lazy.force Lattice.weq) then ca
+	else if EConstr.eq_constr sigma c (Lazy.force Lattice.leq) then ca
 	else error "unrecognised goal"
       | _ -> error "unrecognised goal"
   in
 
   (* get the monoid operations and the domain/codomain types *)
   let mops,src',tgt' = 
-    match kind_of_term (Termops.strip_outer_cast ca.(0)) with
-      | App(c,ca) when Constr.equal c (Lazy.force Monoid.mor0) -> ca.(0),ca.(1),ca.(2)
+    match kind sigma (Termops.strip_outer_cast sigma ca.(0)) with
+      | App(c,ca) when EConstr.eq_constr sigma c (Lazy.force Monoid.mor0) -> ca.(0),ca.(1),ca.(2)
       | _ -> error "could not find monoid operations"
   in
   (* get the kat operations *)
   let kops = 
-    match kind_of_term (Termops.strip_outer_cast mops) with
-      | App(c,ca) when Constr.equal c (Lazy.force KAT.kar) -> ca.(0)
+    match kind sigma (Termops.strip_outer_cast sigma mops) with
+      | App(c,ca) when EConstr.eq_constr sigma c (Lazy.force KAT.kar) -> ca.(0)
       | _ -> error "could not find KAT operations"
   in
 
@@ -440,7 +445,7 @@ let get_kat_alphabet =
       else if convertible goal e (Lattice.bot (Monoid.mor mops s' t')) then acc
       else insert e acc
     in
-    match kind_of_term (Termops.strip_outer_cast e) with App(c,ca) -> 
+    match kind sigma (Termops.strip_outer_cast sigma e) with App(c,ca) -> 
       is_dot s' (fun x () r' y -> alphabet (alphabet acc s' r' x) r' t' y) (
       is_pls s' t' (fun x y -> alphabet (alphabet acc s' t' x) s' t' y) (
       is_itr s' (alphabet acc s' s') (
