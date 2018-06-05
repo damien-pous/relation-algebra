@@ -54,7 +54,7 @@ let convertible = Tacmach.pf_conv_x
 
 (* creating a name a reference to that name *)
 let fresh_name n goal =
-  let vname = Tactics.fresh_id [] (Id.of_string n) goal in
+  let vname = Tactics.fresh_id Id.Set.empty (Id.of_string n) goal in
     vname, mkVar vname     
 
 (* access to Coq constants *)
@@ -88,7 +88,7 @@ let ltac_apply ist (f: Tacinterp.value) (arg : constr) =
   let f_ = Id.of_string "f" in
   let x_ = Id.of_string "x" in
   let arg = Tacinterp.Value.of_constr arg in
-  let mkvar id = Misctypes.ArgVar (None, id) in
+  let mkvar id = Misctypes.ArgVar (CAst.make id) in
   let ist = { ist with lfun = Id.Map.add f_ f (Id.Map.add x_ arg ist.lfun) } in
   Tacinterp.eval_tactic_ist ist (TacArg (None, TacCall (None,(mkvar f_, [Reference (mkvar x_)]))))
 

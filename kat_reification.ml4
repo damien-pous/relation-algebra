@@ -18,6 +18,7 @@
       to a given goal, to ease elimination of Hoare hypotheses in the
       [hkat] tactic. *)
 
+open Stdarg
 open Ltac_plugin
 open Ra_common
 open Term
