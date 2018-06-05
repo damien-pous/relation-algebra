@@ -11,8 +11,7 @@
 Require Import List.
 Require Import common comparisons.
 
-Set Standard Proposition Elimination Names.
-Local Unset Injection On Proofs.
+
 Set Implicit Arguments.
 
 (** * Boolean strict order on natural numbers *)
@@ -172,7 +171,7 @@ Inductive split_case n m (i: ord (n+m)): ord n + ord m -> Set :=
 Lemma split_spec n m (i: ord (n+m)): split_case i (split i).
 Proof. 
   unfold split. case lt_ge_dec; constructor; apply eq_ord; simpl. reflexivity. 
-  destruct i as [j Hj]. simpl in *. revert n m H Hj.
+  destruct i as [j Hj]. simpl in *. revert n m e Hj.
   induction j; destruct n; simpl; auto. discriminate.
   intros. f_equal. eapply IHj; eassumption.
 Qed.

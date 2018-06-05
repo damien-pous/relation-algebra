@@ -15,7 +15,6 @@ open EConstr
 open Names
 open Proof_type
 
-
 (* pick an element in an hashtbl *)
 let hashtbl_pick t = Hashtbl.fold (fun i x -> function None -> Some (i,x) | acc -> acc) t None
 
@@ -38,14 +37,14 @@ let time f x =
 let ra_path = ["RelationAlgebra"]
 
 (* raise an error in Coq *)
-let error s = Printf.kprintf CErrors.error ("[RelationAlgebra] "^^s)
+let error s = Printf.kprintf (fun s -> CErrors.user_err (Pp.str s)) ("[RelationAlgebra] "^^s)
 
 (* resolving a typeclass [cls] in a goal [gl] *)
 let tc_find gl cls = Typeclasses.resolve_one_typeclass (Tacmach.pf_env gl) (Tacmach.project gl) cls
 
 (* creating new evars *)
-let e_new_evar = Evarutil.e_new_evar ~src:(Loc.dummy_loc,Evar_kinds.GoalEvar)
-let new_evar = Evarutil.new_evar ~src:(Loc.dummy_loc,Evar_kinds.GoalEvar)
+let e_new_evar = Evarutil.e_new_evar ~src:(None,Evar_kinds.GoalEvar)
+let new_evar = Evarutil.new_evar ~src:(None,Evar_kinds.GoalEvar)
 
 (* push a variable on the environment *)
 let push x t env = Termops.push_rel_assum (x,t) env
@@ -57,7 +56,7 @@ let convertible = Tacmach.pf_conv_x
 
 (* creating a name a reference to that name *)
 let fresh_name n goal =
-  let vname = Tactics.fresh_id [] (Names.id_of_string n) goal in
+  let vname = Tactics.fresh_id [] (Id.of_string n) goal in
     vname, mkVar vname     
 
 (* access to Coq constants *)
@@ -88,13 +87,12 @@ let get_fun_14 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 q4 
 
 let ltac_apply ist (f: Tacinterp.value) (arg : constr) =
   let open Geninterp in
-  let loc = Loc.dummy_loc in
   let f_ = Id.of_string "f" in
   let x_ = Id.of_string "x" in
   let arg = Tacinterp.Value.of_constr arg in
-  let mkvar id = Misctypes.ArgVar (loc, id) in
+  let mkvar id = Misctypes.ArgVar (None, id) in
   let ist = { ist with lfun = Id.Map.add f_ f (Id.Map.add x_ arg ist.lfun) } in
-  Tacinterp.eval_tactic_ist ist (TacArg (loc, TacCall (loc, mkvar f_, [Reference (mkvar x_)])))
+  Tacinterp.eval_tactic_ist ist (TacArg (None, TacCall (None,(mkvar f_, [Reference (mkvar x_)]))))
 
 (* Coq constants *)
 module Coq = struct

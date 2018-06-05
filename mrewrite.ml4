@@ -47,7 +47,7 @@ let rec length sigma t =
     | _ -> 0
 
 let extend ist k dir h =
-  Proofview.Goal.nf_enter { enter = begin fun goal ->
+  Proofview.Goal.nf_enter (fun goal ->
   let fst,snd = match dir with `LR -> 2,1 | `RL -> 1,2 in
   let ext_2 rel = match dir,rel with 
     | `LR,`Weq -> Ext.weq_2
@@ -109,9 +109,9 @@ let extend ist k dir h =
   in
   let t = Tacmach.New.pf_unsafe_type_of goal h in
   let h = ext (Proofview.Goal.env goal) (length !sigma t) h t in
-  Tacticals.New.tclTHEN (Proofview.Unsafe.tclEVARS !sigma)
+  (* Tacticals.New.tclTHEN (Proofview.Unsafe.tclEVARS !sigma) *)
   (ltac_apply ist k h)
-  end }
+    )
 
 TACTIC EXTEND ra_extend_lr [ "ra_extend" tactic(k) "->" constr(h) ] -> [ extend ist k `LR h ] END
 TACTIC EXTEND ra_extend_rl [ "ra_extend" tactic(k) "<-" constr(h) ] -> [ extend ist k `RL h ] END

@@ -18,16 +18,10 @@ open Term
 open EConstr
 open Names
 open Proof_type
-open Sigma.Notations
 open Context.Named.Declaration
 open Stdarg
 
 DECLARE PLUGIN "ra_fold"
-
-let new_evar env sigma t =
-  let sigma = Sigma.Unsafe.of_evar_map sigma in
-  let Sigma (r, sigma, _) = new_evar env sigma t in
-  (Sigma.to_evar_map sigma, r)
 
 let ra_fold_term ops ob t goal =
   let env = Tacmach.pf_env goal in
