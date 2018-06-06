@@ -16,15 +16,19 @@ kleene.v
 factors.v
 kat.v
 ra_fold.ml4
+ra_fold.mllib
 
 mrewrite.ml4
+mrewrite.mllib
 rewriting.v
 move.v
 
 lsyntax.v
 syntax.v
 ra_common.ml
+ra_common.mllib
 ra_reification.ml4
+ra_reification.mllib
 normalisation.v
 
 prop.v
