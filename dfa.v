@@ -31,9 +31,9 @@ Record t := mk {
   v: ord n -> bool;
   vars: list positive
 }.
-Notation "x ^u" := (u x) (at level 2, left associativity).
-Notation "x ^M" := (M x) (at level 2, left associativity).
-Notation "x ^v" := (v x) (at level 2, left associativity).
+Notation "x ^u" := (u x) (at level 2, left associativity, format "x ^u").
+Notation "x ^M" := (M x) (at level 2, left associativity, format "x ^M").
+Notation "x ^v" := (v x) (at level 2, left associativity, format "x ^v").
 
 (** changing the initial state *)
 Definition reroot A i := mk i A^M A^v (vars A).

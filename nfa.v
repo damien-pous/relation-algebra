@@ -23,9 +23,9 @@ Record t := mk {
   M: rmx n n;
   v: rmx n 1 
 }.
-Notation "x ^u" := (u x) (at level 2, left associativity).
-Notation "x ^M" := (M x) (at level 2, left associativity).
-Notation "x ^v" := (v x) (at level 2, left associativity).
+Notation "x ^u" := (u x) (at level 2, left associativity, format "x ^u").
+Notation "x ^M" := (M x) (at level 2, left associativity, format "x ^M").
+Notation "x ^v" := (v x) (at level 2, left associativity, format "x ^v").
 
 (** formal evaluation of matricial automata into regular expressions *)
 Definition eval A := mx_scal (A^u * A^M^* * A^v).

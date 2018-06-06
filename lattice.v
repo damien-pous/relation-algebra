@@ -61,7 +61,7 @@ Infix "<=="  := leq (at level 79): ra_scope.
 Infix "=="   := weq (at level 79): ra_scope.
 Infix "\cup" := cup (left associativity, at level 50): ra_terms.
 Infix "\cap" := cap (left associativity, at level 40): ra_terms.
-Notation "! x" := (neg x) (right associativity, at level 20): ra_terms.
+Notation "! x" := (neg x) (right associativity, at level 20, format "! x"): ra_terms.
 
 (** * Lattice laws (axioms) *)
 
@@ -501,7 +501,7 @@ Class morphism l {X Y: ops} (f: X -> Y) := {
   fn_cap {Hl:CAP<<l}: forall x y, f (x \cap y) == f x \cap f y;
   fn_bot {Hl:BOT<<l}: f bot == bot;
   fn_top {Hl:TOP<<l}: f top == top;
-  fn_neg {Hl:NEG<<l}: forall x, f (!x) == ! f x
+  fn_neg {Hl:NEG<<l}: forall x, f (!x) == !(f x)
 }.
 
 (** generating a structure by injective embedding *)
