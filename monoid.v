@@ -36,7 +36,7 @@ Class ops := mk_ops {
   rdv: forall n m p, mor m n -> mor p n -> mor p m  (** right residual/factor/division *)
 }.
 Coercion mor: ops >-> Funclass.
-Implicit Arguments ob [].       (* TO REPORT *)
+Arguments ob : clear implicits.
 
 (** Hints for simpl *)
 Arguments mor {ops} n m / : simpl nomatch.

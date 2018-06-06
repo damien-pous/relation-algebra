@@ -16,9 +16,6 @@ open Ltac_plugin
 open Ra_common
 open Term
 open EConstr
-open Names
-open Proof_type
-open Proofview.Notations
 open Stdarg
 open Tacarg
 

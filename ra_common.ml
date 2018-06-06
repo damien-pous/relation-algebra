@@ -10,10 +10,8 @@
 
 open Ltac_plugin
 open Tacexpr
-open Term
 open EConstr
 open Names
-open Proof_type
 
 (* pick an element in an hashtbl *)
 let hashtbl_pick t = Hashtbl.fold (fun i x -> function None -> Some (i,x) | acc -> acc) t None

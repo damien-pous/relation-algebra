@@ -189,7 +189,7 @@ Qed.
 
 End l.
 
-Implicit Arguments lang_deriv [[X]].
+Arguments lang_deriv {X}.
 Notation lang' X := ((lang_ops X) lang_tt lang_tt).
 
 Ltac fold_lang := ra_fold lang_ops lang_tt.

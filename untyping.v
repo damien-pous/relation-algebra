@@ -335,7 +335,7 @@ Inductive eval: forall n m, uexpr -> expr n m -> Prop :=
 | ev_str: forall x n x', @eval n n x x' -> eval (x^* ) (x'^* )
 | ev_cnv: forall x n m x', @eval n m x x' -> eval (x`) (x'`)
 | ev_var: forall a, eval (e_var a) (e_var a).
-Implicit Arguments eval [].
+Arguments eval : clear implicits.
 
 (** inversion lemmas for [eval], for all operations
    

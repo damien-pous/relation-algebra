@@ -43,7 +43,7 @@ Class ops := mk_ops {
   bot: car;                     (** bottom element *)
   top: car                      (** top element *)
 }.
-Implicit Arguments car [].
+Arguments car : clear implicits.
 Coercion car: ops >-> Sortclass.
 Bind Scope ra_terms with car.
 

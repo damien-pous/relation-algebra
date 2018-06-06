@@ -15,8 +15,6 @@
 Require Import kat normalisation rewriting move kat_tac comparisons rel.
 Set Implicit Arguments.
 
-Unset Injection On Proofs.
-
 (** * Memory model  *)
 
 (** we need only five memory locations: the [y_i] are temporary
