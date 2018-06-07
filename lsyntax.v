@@ -51,8 +51,8 @@ Fixpoint eval e: X :=
   match e with
     | e_bot => bot
     | e_top => top
-    | e_cup x y => eval x \cup eval y
-    | e_cap x y => eval x \cap eval y
+    | e_cup x y => eval x ⊔ eval y
+    | e_cap x y => eval x ⊓ eval y
     | e_neg x => ! eval x
     | e_var a => f a
   end.
@@ -74,8 +74,8 @@ Variable l: level.
    wants to interpret the expressions: this allows us to capture once
    and for all the equational theories of each flat structure. *)
 
-Definition e_leq (x y: expr) := forall X (L: laws l X) (f: A -> X), eval f x <== eval f y.
-Definition e_weq (x y: expr) := forall X (L: laws l X) (f: A -> X), eval f x == eval f y.
+Definition e_leq (x y: expr) := forall X (L: laws l X) (f: A -> X), eval f x ≦ eval f y.
+Definition e_weq (x y: expr) := forall X (L: laws l X) (f: A -> X), eval f x ≡ eval f y.
 
 (** by packing syntactic expressions and the above predicates into a
    canonical structure, we get all notations for free *)
@@ -147,8 +147,8 @@ Notation expr_ l := (car (expr_ops _ l)).
 Notation "x <==_[ l ] y" := (@leq (expr_ops _ l) x%last y%last) (at level 79): ra_scope.
 Notation "x ==_[ l ] y" := (@weq (expr_ops _ l) x%last y%last) (at level 79): ra_scope.
 
-Infix "\cup" := e_cup: last_scope.
-Infix "\cap" := e_cap: last_scope.
+Infix "⊔" := e_cup: last_scope.
+Infix "⊓" := e_cap: last_scope.
 Notation "! x"  := (e_neg x): last_scope.
 
 

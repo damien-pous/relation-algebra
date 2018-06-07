@@ -165,7 +165,7 @@ Variable distribute: bool.
 Ltac case_distribute :=
   match goal with |- context[distribute] => case distribute | _ => idtac end.
 
-(* [dot_l x y == x*y] *)
+(* [dot_l x y ≡ x*y] *)
 Fixpoint dot_l n m (x: expr n m): forall p, expr m p -> expr n p :=
   match x in syntax.expr _ _ n m return forall p, expr m p -> expr n p with
     | e_zer _ _ => fun p y => 0
@@ -176,7 +176,7 @@ Fixpoint dot_l n m (x: expr n m): forall p, expr m p -> expr n p :=
     | x => fun p y => x * y 
   end%ast.
 
-(* [dot_r y x == x*y] *)
+(* [dot_r y x ≡ x*y] *)
 Fixpoint dot_r m p (y: expr m p): forall n, expr n m -> expr n p :=
   match y in syntax.expr _ _ m p return forall n, expr n m -> expr n p with
     | e_zer _ _ => fun n x => 0
@@ -411,7 +411,7 @@ Qed.
 
 (** * partial decision procedure for expressions containment [<==]
 
-   The following function tries to prove [x <== y], for some
+   The following function tries to prove [x ≦ y], for some
    expressions [x] and [y].
    - this function always terminates, but using powerfix allows us to
      write a clean code, without bothering about termination
@@ -617,7 +617,7 @@ Qed.
    
    In case of an inequality, the above comparison function is used, so
    that [apply antisym; ra] might solve goals which are
-   not solved by [ra]. (e.g., [a+a^*+b^* == b+a^*+b^*]) *)
+   not solved by [ra]. (e.g., [a+a^*+b^* ≡ b+a^*+b^*]) *)
 
 Ltac ra :=
   let go h L tac :=

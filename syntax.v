@@ -114,9 +114,9 @@ Variable l: level.
    given expressions. *)
 
 Definition e_leq n m (x y: expr n m) := 
-  forall X (L:laws l X) f' (f: forall a, X (f' (s a)) (f' (t a))), eval f x <== eval f y.
+  forall X (L:laws l X) f' (f: forall a, X (f' (s a)) (f' (t a))), eval f x ≦ eval f y.
 Definition e_weq n m (x y: expr n m) := 
-  forall X (L:laws l X) f' (f: forall a, X (f' (s a)) (f' (t a))), eval f x == eval f y.
+  forall X (L:laws l X) f' (f: forall a, X (f' (s a)) (f' (t a))), eval f x ≡ eval f y.
 
 (** by packing syntactic expressions and the above predicates into a
    canonical structure for flat operations, and another one for the

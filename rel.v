@@ -76,7 +76,7 @@ Proof.
    intros x y E i j. apply E.
    intros i j E. exists O. exact E.
    intros i k [j Hij [u Hjk]]. exists (S u). firstorder. 
-   assert (E: forall i, (iter n x i: rel n n) * z <== z).
+   assert (E: forall i, (iter n x i: rel n n) * z ≦ z).
     induction i. simpl. firstorder now subst.
     rewrite <-H0 at 2. transitivity (x*((iter n x i: rel n n)*z)). 
      simpl. firstorder congruence. now apply dot_leq. 
@@ -126,7 +126,7 @@ Qed.
 
 Definition frel {A B: Set} (f: A -> B): rel A B := fun x y => y = f x. 
 
-Lemma frel_comp {A B C: Set} (f: A -> B) (g: B -> C): frel f * frel g == frel (fun x => g (f x)).
+Lemma frel_comp {A B C: Set} (f: A -> B) (g: B -> C): frel f * frel g ≡ frel (fun x => g (f x)).
 Proof.
   apply antisym. intros x z [y -> ->]. reflexivity. 
   simpl. intros x z ->. eexists; reflexivity. 

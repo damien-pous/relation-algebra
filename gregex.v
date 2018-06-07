@@ -85,9 +85,9 @@ End e.
 
 (** (in)equalitiy on [gregex] is defined as a smallest fixed-point, impredicatevely *)
 Definition g_leq n m (x y: gregex n m) :=
-  forall X (L: kat.laws X) fo fp fa, @eval X fo fp fa n m x <== @eval X fo fp fa n m y.
+  forall X (L: kat.laws X) fo fp fa, @eval X fo fp fa n m x ≦ @eval X fo fp fa n m y.
 Definition g_weq n m (x y: gregex n m) :=
-  forall X (L: kat.laws X) fo fp fa, @eval X fo fp fa n m x == @eval X fo fp fa n m y.
+  forall X (L: kat.laws X) fo fp fa, @eval X fo fp fa n m x ≡ @eval X fo fp fa n m y.
 
 (** packing all operations using canonical structures *)
 Canonical Structure gregex_lattice_ops n m := {|
@@ -172,7 +172,7 @@ Definition inj_top := @inj_top _ gregex_kat_laws.
 Definition inj_weq := @inj_weq _ gregex_kat_laws.
 Definition inj_leq := @inj_leq _ gregex_kat_laws.
 
-Lemma inj_sup n I J (f: I -> expr_ BL): @g_prd n (sup f J) == \sup_(i\in J) g_prd (f i).
+Lemma inj_sup n I J (f: I -> expr_ BL): @g_prd n (sup f J) ≡ \sup_(i\in J) g_prd (f i).
 Proof. apply f_sup_weq. apply inj_bot. apply inj_cup. Qed.
 
 
@@ -200,7 +200,7 @@ Global Instance lang_weq n m: Proper (weq ==> weq) (@lang n m) := op_leq_weq_1.
 Lemma lang_0 n m: @lang n m 0 = 0.
 Proof. reflexivity. Qed.
 
-Lemma lang_1 n: @lang n n 1 == 1.
+Lemma lang_1 n: @lang n n 1 ≡ 1.
 Proof. intros [|]; simpl; intuition. Qed.
 
 Lemma lang_pls n m (e f: gregex n m): lang (e+f) = lang e + lang f.
@@ -218,7 +218,7 @@ Proof. apply f_sup_eq; now f_equal. Qed.
 
 (** languages of atoms *)
 
-Lemma lang_atom n a: lang (g_atom n a) == tatom n a.
+Lemma lang_atom n a: lang (g_atom n a) ≡ tatom n a.
 Proof.
   (* TODO: voir si on peut faire mieux *)
   intros [b|]. 2: intros; compute; intuition discriminate.

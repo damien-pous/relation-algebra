@@ -25,10 +25,10 @@ Fixpoint bmx_str n: bmx n n -> bmx n n :=
       blk_mx 1 (b*d) (d*c) (d+d*c*(b*d))
   end.
 
-Lemma bmx_top_1: top == (1: bmx 1%nat 1%nat).
+Lemma bmx_top_1: top ≡ (1: bmx 1%nat 1%nat).
 Proof. intros i j. now setoid_rewrite ord0_unique. Qed.
 
-Lemma bmx_str_str n (M: bmx n n): M^* == bmx_str M.
+Lemma bmx_str_str n (M: bmx n n): M^* ≡ bmx_str M.
 Proof.
   induction n as [|n IHn]. intro i. elim (ord_0_empty i).
   change (M^*) with (mx_str _ _ _ M).
@@ -58,7 +58,7 @@ Proof. induction 1. constructor. eapply clot_cons; eassumption. Qed.
 Theorem bmx_str_clot n (M: bmx n n) i j: M^* i j <-> rt_clot M i j. 
 Proof.
 split.
-- assert (M^* i j == bmx_str M i j). (*MS: FIXME, why is it needed now ? *)
+- assert (M^* i j ≡ bmx_str M i j). (*MS: FIXME, why is it needed now ? *)
   apply bmx_str_str. rewrite H. clear H. revert i j. 
   induction n as [|n IH]; intros i' j'. 
    simpl. intro. eapply clot_cons. eassumption. constructor. 

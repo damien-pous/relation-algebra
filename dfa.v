@@ -59,15 +59,15 @@ Variables A B: t.
 Definition diff := mk 
   (pair.mk (u A) (u B))
   (fun p a => pair.mk (M A (pair.pi1 p) a) (M B (pair.pi2 p) a))
-  (fun p => v A (pair.pi1 p) \cap ! v B (pair.pi2 p))
+  (fun p => v A (pair.pi1 p) ⊓ ! v B (pair.pi2 p))
   (vars A).
 
 (** specification of its language *)
-Lemma diff_spec: vars A <== vars B -> 
-  forall i j, lang A i <== lang B j <-> lang diff (pair.mk i j) <== bot. 
+Lemma diff_spec: vars A ≦ vars B -> 
+  forall i j, lang A i ≦ lang B j <-> lang diff (pair.mk i j) ≦ bot. 
 Proof.
   intro H. 
-  cut (forall w i j, lang A i w <== lang B j w <-> ~ lang diff (pair.mk i j) w).
+  cut (forall w i j, lang A i w ≦ lang B j w <-> ~ lang diff (pair.mk i j) w).
    intros G i j. split. intros Hij w Hw. apply G in Hw as []. apply Hij.
    intros Hij w. apply G. intro Hw. elim (Hij _ Hw).  
   induction w; intros i j; simpl lang; rewrite pair.pi1mk, pair.pi2mk. 
@@ -123,7 +123,7 @@ Fixpoint Ms i w := match w with nil => i | cons a w => Ms (M A i a) w end.
 
 (** each unlabelled path in the erased graph corresponds to a labelled
    path (word) in the DFA *)
-Lemma steps_least: forall j, steps i j -> exists w, w <== vars A /\ j = Ms i w. 
+Lemma steps_least: forall j, steps i j -> exists w, w ≦ vars A /\ j = Ms i w. 
 Proof.
   intros j H. apply bmx_str_clot in H. induction H as [i|i j k Hij _ [w [Hw ->]]]. 
    exists nil. split. lattice. reflexivity.
@@ -139,7 +139,7 @@ Definition empty := \inf_(j<_) (steps i j <<< !v A j).
    prouvant directement l'équivalence *)
 
 (** if not, all states reachable from [i] map to the empty language *)
-Lemma empty_lang1 j: steps i j -> empty -> lang A j <== bot.
+Lemma empty_lang1 j: steps i j -> empty -> lang A j ≦ bot.
 Proof.
   intros Hj He. setoid_rewrite is_true_inf in He. setoid_rewrite le_bool_spec in He. 
   pose proof (fun i => He i (ordinal.in_seq _)) as H. clear He. 
@@ -150,7 +150,7 @@ Qed.
 
 (** conversely, if [i] maps to them empty language, then there is no
    reachable accepting state *)
-Lemma empty_lang2: lang A i <== bot -> empty.
+Lemma empty_lang2: lang A i ≦ bot -> empty.
 Proof.
   intro H. setoid_rewrite is_true_inf. intros j _. 
   rewrite le_bool_spec. intro Hj. apply steps_least in Hj as [w [Hw ->]].
@@ -161,7 +161,7 @@ Proof.
 Qed.
 
 (** decidability of language emptiness follows *)
-Theorem empty_dec: {lang A i <== bot} + {~ (lang A i <== bot)}.
+Theorem empty_dec: {lang A i ≦ bot} + {~ (lang A i ≦ bot)}.
 Proof.
   case_eq empty; [left|right]. 
    apply (empty_lang1 _ steps_refl H). 
@@ -173,6 +173,6 @@ End empty_dec.
 
 (** * Decidability of DFA language inclusion *)
 
-Corollary lang_incl_dec A B: vars A <== vars B -> 
-  forall i j, {lang A i <== lang B j} + {~(lang A i <== lang B j)}.
+Corollary lang_incl_dec A B: vars A ≦ vars B -> 
+  forall i j, {lang A i ≦ lang B j} + {~(lang A i ≦ lang B j)}.
 Proof. intros. eapply sumbool_iff. symmetry. now apply diff_spec. apply empty_dec. Qed.

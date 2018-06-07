@@ -65,7 +65,7 @@ Definition pderiv' a i (l: list ugregex): list ugregex :=
 
 
 (** specification of [epsilon'] *)
-Lemma epsilon'_eq a l: epsilon a (sup id l) == epsilon' a l.
+Lemma epsilon'_eq a l: epsilon a (sup id l) ≡ epsilon' a l.
 Proof.
   induction l. reflexivity. simpl.
   rewrite <- IHl. unfold id. 
@@ -73,13 +73,13 @@ Proof.
 Qed.
 
 (** correctness of partial derivatives *)
-Lemma deriv_eq a i e: deriv a i e == sup id (pderiv (set.mem a) i e).
+Lemma deriv_eq a i e: deriv a i e ≡ sup id (pderiv (set.mem a) i e).
 Proof.
   induction e; simpl; fold_ugregex.
    case eqb_pos. 2: reflexivity. now rewrite sup_singleton. 
    reflexivity.
    rewrite union_app, sup_app. now apply cup_weq.
-   assert (H: deriv a i e1 * e2 == sup id (map (tod e2) (pderiv (set.mem a) i e1))).
+   assert (H: deriv a i e1 * e2 ≡ sup id (map (tod e2) (pderiv (set.mem a) i e1))).
     rewrite sup_map. setoid_rewrite <-(dotsumx (X:=ugregex_monoid_ops _)).
     now apply dot_weq.
    case epsilon.
@@ -90,7 +90,7 @@ Proof.
     now apply dot_weq.
 Qed.
 
-Lemma deriv'_eq a i l: deriv a i (sup id l) == sup id (pderiv' (set.mem a) i l).
+Lemma deriv'_eq a i l: deriv a i (sup id l) ≡ sup id (pderiv' (set.mem a) i l).
 Proof.
   induction l. reflexivity. simpl (sup _ _).
   rewrite union_app, sup_app.
@@ -107,14 +107,14 @@ Fixpoint vars (e: ugregex): list Sigma :=
   end.
 
 (** partial derivatives do not increase the set of Kleene variables *)
-Lemma deriv_vars a i (e: ugregex): \sup_(x\in pderiv a i e) vars x <== vars e. 
+Lemma deriv_vars a i (e: ugregex): \sup_(x\in pderiv a i e) vars x ≦ vars e. 
 Proof.
   induction e; simpl pderiv; simpl vars. 
    case eqb_pos; apply leq_bx. 
    apply leq_bx. 
    rewrite 2union_app, sup_app. now apply cup_leq.
    setoid_rewrite union_app at 2.
-   assert (H: \sup_(x\in map (tod e2) (pderiv a i e1)) vars x <== vars e1 ++ vars e2).
+   assert (H: \sup_(x\in map (tod e2) (pderiv a i e1)) vars x ≦ vars e1 ++ vars e2).
     rewrite sup_map. simpl vars. setoid_rewrite union_app. rewrite supcup. 
     apply cup_leq. assumption. now apply leq_supx.
    case epsilon. rewrite union_app, sup_app, H. hlattice. assumption. 
@@ -122,7 +122,7 @@ Proof.
     apply leq_cupx. assumption. now apply leq_supx.
 Qed.
  
-Lemma deriv'_vars a i l: \sup_(x\in pderiv' a i l) vars x <== sup vars l.
+Lemma deriv'_vars a i l: \sup_(x\in pderiv' a i l) vars x ≦ sup vars l.
 Proof.
   induction l. reflexivity. setoid_rewrite union_app. rewrite sup_app. 
   apply cup_leq. apply deriv_vars. assumption.
@@ -130,7 +130,7 @@ Qed.
 
 
 (** deriving an expression w.r.t. a letter it does not contain necessarily gives [0] *)
-Lemma deriv_out a i e I: vars e <== I -> ~In i I -> deriv a i e == 0. 
+Lemma deriv_out a i e I: vars e ≦ I -> ~In i I -> deriv a i e ≡ 0. 
 Proof.
   intros He Hi. induction e; simpl deriv; simpl vars in He; fold_ugregex. 
    case eqb_spec. 2: reflexivity. intros <-. apply Hi in He as []. now left. 
@@ -225,20 +225,20 @@ Definition loop n := powerfix n (fun loop rel todo =>
    [prog rel (rel++todo)] is the invariant of the main loop *)
 
 Definition prog R S :=
-  forall e f, In (e,f) R -> sup vars (e++f) <== I /\
+  forall e f, In (e,f) R -> sup vars (e++f) ≦ I /\
     forall a, In a A -> epsilon' a e = epsilon' a f /\ 
       forall i, In i I -> In (pderiv' a i e, pderiv' a i f) S.
 
 Lemma prog_cup_x R R' S: prog R S -> prog R' S -> prog (R++R') S.
 Proof. intros H H' e f Hef. apply in_app_iff in Hef as [?|?]. now apply H. now apply H'. Qed.
 
-Lemma prog_x_leq R S S': prog R S -> S <== S' -> prog R S'.
+Lemma prog_x_leq R S S': prog R S -> S ≦ S' -> prog R S'.
 Proof. 
   intros H H' e f Hef. apply H in Hef as [? Hef]. 
   split. assumption. split. now apply Hef. intros. now apply H', Hef. 
 Qed.
 
-Definition below_I todo := forall e f, In (e,f) todo -> sup vars (e++f) <== I.
+Definition below_I todo := forall e f, In (e,f) todo -> sup vars (e++f) ≦ I.
 
 (** specification of the inner loop *)
 
@@ -246,7 +246,7 @@ Lemma loop_aux_spec e f a todo todo':
   below_I ((e,f)::todo) ->
   loop_aux e f a todo = Some todo' -> 
   epsilon' a e = epsilon' a f /\
-  todo <== todo' /\
+  todo ≦ todo' /\
   below_I todo' /\
   forall i, In i I -> In (pderiv' a i e, pderiv' a i f) todo'.
 Proof.
@@ -266,7 +266,7 @@ Qed.
 Lemma fold_loop_aux_spec e f todo: forall todo',
   below_I ((e,f)::todo) ->
   ofold (loop_aux e f) A todo = Some todo' -> 
-  todo <== todo' /\
+  todo ≦ todo' /\
   below_I todo' /\
   forall a, In a A -> epsilon' a e = epsilon' a f /\
   forall i, In i I -> In (pderiv' a i e, pderiv' a i f) todo'.
@@ -287,7 +287,7 @@ Proof.
   intros ? ? [E|?]. injection E; intros <- <-. apply Hvars; now left. now apply Hvars'.
 Qed.
 
-Lemma In_cons X (a: X) l: In a l -> [a]++l <== l. 
+Lemma In_cons X (a: X) l: In a l -> [a]++l ≦ l. 
 Proof. now intros ? ? [<-|?]. Qed.
 
 (** specification of the outer loop *)
@@ -296,7 +296,7 @@ Lemma prog_loop n: forall rel todo,
   loop n rel todo = Some true ->
   prog rel (rel++todo) -> 
   below_I todo ->
-  exists rel', rel++todo <== rel' /\ prog rel' rel'.
+  exists rel', rel++todo ≦ rel' /\ prog rel' rel'.
 Proof.
   (* TODO: use powerfix_invariant *)
   unfold loop. rewrite powerfix_linearfix. generalize (pow2 n). clear n. intro n.
@@ -332,7 +332,7 @@ Existing Instance lang'_weq.
 Lemma prog_correct I l rel: 
   (forall a, In (set.mem a) l) ->
   prog I l rel rel -> below_I I rel -> 
-  forall e f, In (e,f) rel -> sup lang e == sup lang f.
+  forall e f, In (e,f) rel -> sup lang e ≡ sup lang f.
 Proof.
   intros Hl Hrel Hvars e f Hef. 
   rewrite <-2lang_sup, 2lang_lang'. 
@@ -365,7 +365,7 @@ Definition eqb_kat (e f: ugregex) :=
 
 (** correctness of the algorithm *)
 
-Theorem eqb_kat_correct e f: eqb_kat e f = Some true -> e == f. 
+Theorem eqb_kat_correct e f: eqb_kat e f = Some true -> e ≡ f. 
 Proof.
   unfold eqb_kat. intro H. apply prog_loop in H as [rel [Hef Hrel]]. 
   2: intros _ _ []. 

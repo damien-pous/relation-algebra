@@ -32,34 +32,34 @@ Context {I: Type}.
    which intuitively corresponds to [fold_right cup (map f J) bot],
    we redefine it to get a better behaviour with [simpl] *)
 
-(** sup f [j1;...;jn] = f j1 \cup ... \cup f jn *)
+(** sup f [j1;...;jn] = f j1 ⊔ ... ⊔ f jn *)
 Fixpoint sup (f: I -> X) J := 
   match J with
     | nil => bot
-    | cons i J => f i \cup sup f J
+    | cons i J => f i ⊔ sup f J
   end.
 
 (** sup specification *)
-Lemma sup_spec f J x: sup f J <== x <-> forall i, In i J -> f i <== x.
+Lemma sup_spec f J x: sup f J ≦ x <-> forall i, In i J -> f i ≦ x.
 Proof. 
   induction J; simpl. split. tauto. intro. lattice. 
   rewrite cup_spec, IHJ. clear IHJ. intuition. now subst. 
 Qed.
 
 (** ** basic facts about [sup] *)
-Lemma sup_app f h k: sup f (h++k) == sup f h \cup sup f k.
+Lemma sup_app f h k: sup f (h++k) ≡ sup f h ⊔ sup f k.
 Proof. induction h; simpl. lattice. rewrite IHh. hlattice. Qed.
 
-Lemma sup_singleton f i: sup f (i::nil) == f i.
+Lemma sup_singleton f i: sup f (i::nil) ≡ f i.
 Proof. simpl. lattice. Qed.
 
-Lemma leq_supx f J x: (forall i, In i J -> f i <== x) -> sup f J <== x.
+Lemma leq_supx f J x: (forall i, In i J -> f i ≦ x) -> sup f J ≦ x.
 Proof. apply sup_spec. Qed.
 
-Lemma leq_xsup f J i: In i J -> f i <== sup f J.
+Lemma leq_xsup f J i: In i J -> f i ≦ sup f J.
 Proof. now apply sup_spec. Qed.
 
-Lemma leq_xsup' f J i x: In i J -> x <== f i -> x <== sup f J.
+Lemma leq_xsup' f J i x: In i J -> x ≦ f i -> x ≦ sup f J.
 Proof. intros ? E. rewrite E. now apply leq_xsup. Qed.
 
 (** [sup] is monotone, w.r.t, both the function [f] and the set [J] *)
@@ -73,13 +73,13 @@ Qed.
 Global Instance sup_weq: Proper (pwr weq ==> weq ==> weq) sup.
 Proof. simpl. setoid_rewrite weq_spec. split; apply sup_leq; firstorder. Qed.
 
-Lemma supcup f g J: sup (fun i => f i \cup g i) J == sup f J \cup sup g J.
+Lemma supcup f g J: sup (fun i => f i ⊔ g i) J ≡ sup f J ⊔ sup g J.
 Proof. induction J; simpl. lattice. rewrite IHJ. lattice. Qed.
 
 (** refined monotonicity result: the functions have to be pointwise
    comparable only on the elements of [J] *)
 Lemma sup_leq' J J' (f f': I -> X):
-  J<==J' -> (forall i, In i J -> f i <== f' i) -> sup f J <== sup f' J'.
+  J ≦J' -> (forall i, In i J -> f i ≦ f' i) -> sup f J ≦ sup f' J'.
 Proof. 
   induction J; intros HJ Hf. apply leq_bx. 
   simpl. apply leq_cupx. 
@@ -88,11 +88,11 @@ Proof.
 Qed.
 
 Lemma sup_weq' J J' (f f': I -> X):
-  J==J' -> (forall i, In i J -> f i == f' i) -> sup f J == sup f' J'.
+  J ≡J' -> (forall i, In i J -> f i ≡ f' i) -> sup f J ≡ sup f' J'.
 Proof. setoid_rewrite weq_spec. split; apply sup_leq'; firstorder. Qed.
 
 (** the sup of empty elements is still empty *)
-Lemma sup_b J (f: I -> X) (Hf: forall i, In i J -> f i == bot): sup f J == bot.  
+Lemma sup_b J (f: I -> X) (Hf: forall i, In i J -> f i ≡ bot): sup f J ≡ bot.  
 Proof.
   apply antisym. 2: apply leq_bx. 
   apply leq_supx. intros. now rewrite Hf. 
@@ -103,7 +103,7 @@ End i.
 (** ** swapping and reindexing indices *)
 
 Theorem sup_swap I J (f: I -> J -> X) I' J':
-  sup (fun i => sup (fun j => f i j) J') I' ==
+  sup (fun i => sup (fun j => f i j) J') I' ≡
   sup (fun j => sup (fun i => f i j) I') J'.
 Proof.
   induction I'; simpl. apply antisym. apply leq_bx. apply leq_supx; trivial.
@@ -137,9 +137,9 @@ Notation "\sup_ ( i < n ) f" := (\sup_(i \in seq n) f)
 (** two "meta" results, to prove that some operation commutes with supremums *)
 
 Lemma f_sup_weq {X: ops} {Y l} {L: laws l Y} `{Hl: CUP<<l} (f: X -> Y):
-  (f bot == bot) ->
-  (forall x y, f (x\cup y) == f x \cup f y) ->
-  forall I J (g: I -> X), f (sup g J) == \sup_(i\in J) f (g i).
+  (f bot ≡ bot) ->
+  (forall x y, f (x ⊔ y) ≡ f x ⊔ f y) ->
+  forall I J (g: I -> X), f (sup g J) ≡ \sup_(i\in J) f (g i).
 Proof.
   intros Hbot Hcup I J g. induction J. apply Hbot. 
   simpl. rewrite Hcup. now apply cup_weq.
@@ -147,7 +147,7 @@ Qed.
 
 Lemma f_sup_eq {X Y: ops} (f: X -> Y):
   (f bot = bot) ->
-  (forall x y, f (x\cup y) = f x \cup f y) ->
+  (forall x y, f (x ⊔ y) = f x ⊔ f y) ->
   forall I J (g: I -> X), f (sup g J) = \sup_(i\in J) f (g i).
 Proof.
   intros Hbot Hcup I J g. induction J. apply Hbot.
@@ -158,7 +158,7 @@ Qed.
 
 Lemma P_sup {X: ops} {P: X -> Prop} I J (f: I -> X):
   P bot -> 
-  (forall x y, P x -> P y -> P (x \cup y)) ->
+  (forall x y, P x -> P y -> P (x ⊔ y)) ->
   (forall i, In i J -> P (f i)) -> 
   P (sup f J).
 Proof.
@@ -171,12 +171,12 @@ Qed.
 
 (** cutting a supremum over ordinals of size [n+m] *)
 Lemma sup_cut `{L:laws} `{BSL<<l} n m f:
-  \sup_(i<n+m) f i == \sup_(i<n) f (lshift i) \cup \sup_(i<m) f (rshift i).
+  \sup_(i<n+m) f i ≡ \sup_(i<n) f (lshift i) ⊔ \sup_(i<m) f (rshift i).
 Proof. now rewrite seq_cut, sup_app, 2sup_map. Qed.
 
 (** supremums where the indices come from a supremum *)
 Lemma sup_sup `{L: laws} `{BSL<<l} I (f: I -> X) A (J: A -> list I) h: 
-  sup f (sup J h) == sup (fun a => sup f (J a)) h.
+  sup f (sup J h) ≡ sup (fun a => sup f (J a)) h.
 Proof. induction h. reflexivity. simpl. now rewrite sup_app, IHh. Qed.
 
 (** belonging to a finite union *)
@@ -193,11 +193,11 @@ Proof. induction J; simpl; congruence. Qed.
 
 (** distribution of meets over supremums *)
 Lemma capxsup `{laws} `{BSL+CAP<<l} I J (f: I -> X) (x: X): 
-  x \cap (\sup_(i\in J) f i) == \sup_(i\in J) (x \cap f i).
+  x ⊓ (\sup_(i\in J) f i) ≡ \sup_(i\in J) (x ⊓ f i).
 Proof. apply f_sup_weq. apply capxb. intros; apply capcup. Qed.
 
 Lemma capsupx `{laws} `{BSL+CAP<<l} I J (f: I -> X) (x: X): 
-  (\sup_(i\in J) f i) \cap x == \sup_(i\in J) (f i \cap x).
+  (\sup_(i\in J) f i) ⊓ x ≡ \sup_(i\in J) (f i ⊓ x).
 Proof. rewrite capC, capxsup. now setoid_rewrite capC at 1. Qed.
 
 
@@ -223,19 +223,19 @@ Global Instance inf_leq:
 Proof. intros ? ? ? ? ?. now dual @sup_leq. Qed.
 
 Lemma inf_spec (f: I -> X) J (x: X): 
-  x <== \inf_(i\in J) f i <-> forall i, In i J -> x <== f i.
+  x ≦ \inf_(i\in J) f i <-> forall i, In i J -> x ≦ f i.
 Proof. dual @sup_spec. Qed.
 
-Lemma inf_singleton (f: I -> X) i: inf f (i::nil) == f i.
+Lemma inf_singleton (f: I -> X) i: inf f (i::nil) ≡ f i.
 Proof. dual @sup_singleton. Qed.
 
-Lemma leq_xinf (f: I -> X) J x: (forall i, In i J -> x <== f i) -> x <== inf f J.
+Lemma leq_xinf (f: I -> X) J x: (forall i, In i J -> x ≦ f i) -> x ≦ inf f J.
 Proof. dual @leq_supx. Qed.
 
 Lemma leq_infx (f: I -> X) J i: In i J -> @leq X (inf f J) (f i).
 Proof. dual @leq_xsup. Qed.
 
-Lemma leq_infx' (f: I -> X) J i x: In i J -> f i <== x -> @leq X (inf f J) x.
+Lemma leq_infx' (f: I -> X) J i x: In i J -> f i ≦ x -> @leq X (inf f J) x.
 Proof. dual @leq_xsup'. Qed.
 
 End inf.

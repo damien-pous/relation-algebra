@@ -46,7 +46,7 @@ Fixpoint gerase n m (e: gregex n m): ugregex :=
 (** charaterisation of the guarded string language of erased epressions *)
 
 Lemma uglang_gerase n m (e: gregex n m): 
-  uglang (gerase e) == eval (fun _ => traces_tt) (fun _ => @lsyntax.e_var _) tsingle e.
+  uglang (gerase e) ≡ eval (fun _ => traces_tt) (fun _ => @lsyntax.e_var _) tsingle e.
 Proof. 
   induction e; simpl gerase. 
    apply lang_0. 
@@ -79,7 +79,7 @@ Qed.
 
 Notation restrict := (restrict src tgt).
 
-Theorem untype_glang n m (e: gregex n m): glang e == restrict n m (uglang (gerase e)).
+Theorem untype_glang n m (e: gregex n m): glang e ≡ restrict n m (uglang (gerase e)).
 Proof.
   symmetry. induction e.
    setoid_rewrite lang_0. apply restrict_0.

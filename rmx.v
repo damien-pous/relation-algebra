@@ -26,21 +26,21 @@ Instance rmx_laws: laws BKA (mx_ops regex_ops regex_tt) := mx_laws regex_tt.
 
 Definition mx_vars n m (M: rmx n m) := \sup_(i<n) \sup_(j<m) vars (M i j). 
 
-Lemma mx_vars_full n m (M: rmx n m) i j: vars (M i j) <== mx_vars M. 
+Lemma mx_vars_full n m (M: rmx n m) i j: vars (M i j) ≦ mx_vars M. 
 Proof. unfold mx_vars. do 2 erewrite <-leq_xsup by apply in_seq. reflexivity. Qed.
   
 
 (** * Pointwise extension of [epsilon] to matrices  *)
 Definition epsilon_mx := (mx_map (fun e => eps e)).
 
-Lemma epsilon_mx_pls n m (M N: rmx n m): epsilon_mx (M+N) == epsilon_mx M + epsilon_mx N.
+Lemma epsilon_mx_pls n m (M N: rmx n m): epsilon_mx (M+N) ≡ epsilon_mx M + epsilon_mx N.
 Proof. intros i j. apply orb_pls. Qed.
 
-Lemma epsilon_sup I J (f: I -> regex'): eps (\sup_(i\in J) f i) == \sup_(i\in J) eps (f i).
+Lemma epsilon_sup I J (f: I -> regex'): eps (\sup_(i\in J) f i) ≡ \sup_(i\in J) eps (f i).
 Proof. induction J. reflexivity. simpl. fold_regex. now rewrite <-IHJ, orb_pls. Qed.
 
 Lemma epsilon_mx_dot n m p (M: rmx n m) (N: rmx m p): 
-  epsilon_mx (M*N) == epsilon_mx M * epsilon_mx N.
+  epsilon_mx (M*N) ≡ epsilon_mx M * epsilon_mx N.
 Proof.
   intros i j. simpl. unfold epsilon_mx, mx_map, mx_dot. 
   rewrite epsilon_sup. now setoid_rewrite andb_dot. 
@@ -50,9 +50,9 @@ Instance epsilon_mx_weq n m: Proper (weq ==> weq) (@epsilon_mx n m).
 Proof. intros M N H i j. unfold epsilon_mx, mx_map. now rewrite (H i j). Qed.
 
 (** [epsilon_mx] commutes with Kleene star on matrices *)
-Lemma epsilon_mx_str: forall n (M: rmx n n), epsilon_mx (M^*) == epsilon_mx M ^*.
+Lemma epsilon_mx_str: forall n (M: rmx n n), epsilon_mx (M^*) ≡ epsilon_mx M ^*.
 Proof.
-  apply (mx_str_ind' (fun n M sM => epsilon_mx sM == epsilon_mx M ^*)).
+  apply (mx_str_ind' (fun n M sM => epsilon_mx sM ≡ epsilon_mx M ^*)).
   - intros n ? ? H ? ? H'. now rewrite H, H'.  
   - intros ? i. elim (ord_0_empty i).
   - intro M. rewrite mx_str_1. intros i j.
@@ -61,7 +61,7 @@ Proof.
     unfold epsilon_mx. rewrite 2mx_map_blk, mx_str_blk. 
     fold (epsilon_mx). 
     assert (H1: epsilon_mx (a+be*c) ^*
-             == (epsilon_mx a + epsilon_mx b * epsilon_mx d ^* * epsilon_mx c) ^*)
+             ≡ (epsilon_mx a + epsilon_mx b * epsilon_mx d ^* * epsilon_mx c) ^*)
       by (unfold be; rewrite epsilon_mx_pls, 2epsilon_mx_dot, He; reflexivity). 
     apply blk_mx_weq.
     + rewrite Hf. exact H1.
@@ -74,11 +74,11 @@ Qed.
 (** * Pointwise extension of derivatives to matrices  *)
 Notation deriv_mx a M := (mx_map (deriv a) M).
 
-Lemma deriv_mx_pls a n m (M N: rmx n m): deriv_mx a (M+N) == deriv_mx a M + deriv_mx a N. 
+Lemma deriv_mx_pls a n m (M N: rmx n m): deriv_mx a (M+N) ≡ deriv_mx a M + deriv_mx a N. 
 Proof. reflexivity. Qed.
 
 Lemma deriv_mx_dot a n m p (M: rmx n m) (N: rmx m p): 
-  deriv_mx a (M*N) == deriv_mx a M * N + epsilon_mx M * deriv_mx a N. 
+  deriv_mx a (M*N) ≡ deriv_mx a M * N + epsilon_mx M * deriv_mx a N. 
 Proof. intros i j. setoid_rewrite deriv_sup. simpl deriv; fold_regex. apply supcup. Qed.
 
 Instance deriv_mx_weq a n m: Proper (weq ==> weq) (@mx_map _ _ (deriv a) n m).
@@ -87,21 +87,21 @@ Proof. apply mx_map_weq. Qed.
 (** [deriv_mx] commutes with Kleene star on "strict" matrices, 
    those whose epsilon matrix is empty *)
 Lemma deriv_mx_str_strict a: forall n (M: rmx n n), 
-  epsilon_mx M == 0 -> deriv_mx a (M^*) == deriv_mx a M * M^*.
+  epsilon_mx M ≡ 0 -> deriv_mx a (M^*) ≡ deriv_mx a M * M^*.
 Proof.
   refine (mx_str_ind' (fun n M sM => 
-    epsilon_mx M == 0 -> deriv_mx a sM == deriv_mx a M * sM) _ _ _ _).
+    epsilon_mx M ≡ 0 -> deriv_mx a sM ≡ deriv_mx a M * sM) _ _ _ _).
    intros n ? ? H ? ? H'. now rewrite H, H'. 
    intros M _ i. elim (ord_0_empty i).
    intros M _ i j. setoid_rewrite ord0_unique. symmetry. apply cupxb. 
    rename a into l. intros n m a b c d e be ec f fbe ecf He Hf HM.
    rewrite 2mx_map_blk, mx_dot_blk. 
    unfold epsilon_mx in HM. rewrite mx_map_blk in HM. apply blk_mx_0 in HM as (Ha&Hb&Hc&Hd).
-   assert (Hf': epsilon_mx (a+be*c) == 0).
+   assert (Hf': epsilon_mx (a+be*c) ≡ 0).
      rewrite epsilon_mx_pls, epsilon_mx_dot, Ha, Hc; ra. 
    specialize (He Hd). specialize (Hf Hf'). 
    unfold be in Hf. rewrite deriv_mx_pls, <-dotA, deriv_mx_dot, Hb, dot0x, cupxb in Hf.
-   assert (Hecf: deriv_mx l ecf == deriv_mx l c * f + deriv_mx l d * ecf). 
+   assert (Hecf: deriv_mx l ecf ≡ deriv_mx l c * f + deriv_mx l d * ecf). 
      unfold ecf at 1, ec. rewrite <-dotA, deriv_mx_dot.
      rewrite He. unfold e at 2. rewrite epsilon_mx_str, Hd. 
      rewrite deriv_mx_dot, Hc. unfold ecf, ec. ra. 
@@ -257,20 +257,20 @@ Hint Resolve is_pure_mx_zer is_pure_mx_var is_pure_mx_pls is_pure_mx_dot is_pure
 
 (** ** deriving and expanding various classes of matrices *)
 
-Lemma deriv_01_mx a n m (M: rmx n m): is_01_mx M -> deriv_mx a M == 0.
+Lemma deriv_01_mx a n m (M: rmx n m): is_01_mx M -> deriv_mx a M ≡ 0.
 Proof. intros HM i j. apply deriv_01, HM. Qed.
 
-Lemma expand_01_mx n m (M: rmx n m): is_01_mx M -> M == epsilon_mx M.
+Lemma expand_01_mx n m (M: rmx n m): is_01_mx M -> M ≡ epsilon_mx M.
 Proof. intros H i j. now apply expand_01. Qed.
 
-Lemma expand_simple_mx n m (M: rmx n m): is_simple_mx M -> M == epsilon_mx M + pure_part_mx M.
+Lemma expand_simple_mx n m (M: rmx n m): is_simple_mx M -> M ≡ epsilon_mx M + pure_part_mx M.
 Proof. intros H i j. now apply expand_simple. Qed.
 
-Lemma epsilon_mx_pure n m (M: rmx n m): is_pure_mx M -> epsilon_mx M == 0.
+Lemma epsilon_mx_pure n m (M: rmx n m): is_pure_mx M -> epsilon_mx M ≡ 0.
 Proof. intros HM i j. unfold epsilon_mx, mx_map. rewrite epsilon_pure. reflexivity. apply HM. Qed.
 
 Lemma epsilon_deriv_pure_mx a n m (M: rmx n m): is_pure_mx M -> 
-  epsilon_mx (deriv_mx a M) == deriv_mx a M.
+  epsilon_mx (deriv_mx a M) ≡ deriv_mx a M.
 Proof. intros H i j. apply epsilon_deriv_pure, H. Qed.
 
 
@@ -280,7 +280,7 @@ Definition of_row n (u: rmx 1 n): ord (pow2 n) := set.of_fun (fun i => epsilon (
 Definition to_row n (x: ord (pow2 n)): rmx 1 n := fun _ i => ofbool (set.mem x i). 
 
 Lemma mem_of_row n i (u: rmx 1 n): is_01_mx u -> 
-  forall j, ofbool (set.mem (of_row u) j) == u i j.
+  forall j, ofbool (set.mem (of_row u) j) ≡ u i j.
 Proof.
   intros Hu j. unfold of_row. rewrite set.mem_of_fun. 
   symmetry. setoid_rewrite ord0_unique. apply expand_01, Hu.

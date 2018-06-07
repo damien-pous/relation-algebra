@@ -80,7 +80,7 @@ Inductive bstep': prog -> rel state state :=
 
 (** ** equivalence between the two definitions *)
 
-Lemma bstep_eq p: bstep' p == bstep p.
+Lemma bstep_eq p: bstep' p ≡ bstep p.
 Proof.
   apply antisym. 
   - intros s s'. induction 1. 
@@ -111,7 +111,7 @@ Qed.
 (** * Some program equivalences *)
 
 (** two programs are said to be equivalent if they have the same semantics *)
-Notation "p ~ q" := (bstep p == bstep q) (at level 80). 
+Notation "p ~ q" := (bstep p ≡ bstep q) (at level 80). 
 
 (** ad-hoc simplification tactic *)
 Ltac simp := unfold bstep; fold bstep.
@@ -135,8 +135,8 @@ Lemma dead_code b p q r:
 Proof. simp. kat. Qed.
 
 Lemma dead_code' a b p q r: 
-  (whl (a \cup b) p ;; ite b q r)  ~ 
-  (whl (a \cup b) p ;; r).
+  (whl (a ⊔ b) p ;; ite b q r)  ~ 
+  (whl (a ⊔ b) p ;; r).
 Proof. simp. kat. Qed.
 
 
@@ -199,7 +199,7 @@ Lemma aff_ite x e t p q:
   (ite (subst x e t) (x <- e ;; p) (x <- e ;; q)).
 Proof.
   simp. 
-  assert (H: upd x e * [t] == [subst x e t] * upd x e)
+  assert (H: upd x e * [t] ≡ [subst x e t] * upd x e)
    by (cbv; firstorder; subst; eauto). 
   hkat.
 Qed.
@@ -210,7 +210,7 @@ Qed.
 
 (** Hoare triples for partial correctness can be expressed really
    easily using KAT: *)
-Notation Hoare A p B := ([A] * bstep p * [!B] <== 0).
+Notation Hoare A p B := ([A] * bstep p * [!B] ≦ 0).
 
 (** ** correspondence w.r.t. the standard interpretation of Hoare triples  *)
 Lemma Hoare_eq A p B: 
@@ -229,7 +229,7 @@ Qed.
 
 (** ** deriving Hoare logic rules using the [hkat] tactic *)
 
-(** Hoare triples are encoded as propositions of the shape [x <== 0] ;
+(** Hoare triples are encoded as propositions of the shape [x ≦ 0] ;
    therefore, they can always be eliminated by [hkat], so that all
    rules of Hoare logic can be proved automatically (except for the
    assignation rule, of course) 
@@ -242,7 +242,7 @@ Qed.
    formalise it. *)
 
 Lemma weakening (A A' B B': dset state) p: 
-  A' <== A -> Hoare A p B -> B <== B' -> Hoare A' p B'.
+  A' ≦ A -> Hoare A p B -> B ≦ B' -> Hoare A' p B'.
 Proof. hkat. Qed.
 
 Lemma rule_skp A: Hoare A skp A.
@@ -255,14 +255,14 @@ Lemma rule_seq A B C p q:
 Proof. simp. hkat. Qed.
 
 Lemma rule_ite A B t p q: 
-  Hoare (A \cap t) p B -> 
-  Hoare (A \cap !t) q B -> 
+  Hoare (A ⊓ t) p B -> 
+  Hoare (A ⊓ !t) q B -> 
   Hoare A (ite t p q) B.
 Proof. simp. hkat. Qed.
 
 Lemma rule_whl A t p: 
-  Hoare (A \cap t) p A -> 
-  Hoare A (whl t p) (A \cap neg t).
+  Hoare (A ⊓ t) p A -> 
+  Hoare A (whl t p) (A ⊓ neg t).
 Proof. simp. hkat. Qed.
 
 Lemma rule_aff x v (A: dset state): Hoare (subst x v A) (x <- v) A.
@@ -272,13 +272,13 @@ Proof.
 Qed.
 
 Lemma wrong_rule_whl A t p: 
-  Hoare (A \cap !t) p A -> 
-  Hoare A (whl t p) (A \cap !t).
+  Hoare (A ⊓ !t) p A -> 
+  Hoare A (whl t p) (A ⊓ !t).
 Proof. simp. Fail hkat. Abort.
 
 Lemma rule_whl' (I A: dset state) t p: 
-  Hoare (I \cap t) p I -> 
-  I \cap !t <== A -> 
+  Hoare (I ⊓ t) p I -> 
+  I ⊓ !t ≦ A -> 
   Hoare I (whl t p) A.
 Proof. eauto 3 using weakening, rule_whl. Qed.
 

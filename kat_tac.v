@@ -18,7 +18,7 @@ Notation Sigma := positive.
 Variable Pred: nat.
 Variables src tgt: Sigma -> positive.
 
-Corollary kat_untype_weq n m (e f: gregex Pred src tgt n m): gerase e == gerase f <-> e == f. 
+Corollary kat_untype_weq n m (e f: gregex Pred src tgt n m): gerase e ≡ gerase f <-> e ≡ f. 
 Proof.
   split.
    intro H. apply kat_complete_weq. 
@@ -34,7 +34,7 @@ Corollary kat_weq_dec `{L: laws} f' fs fp n m (e f: @kat_expr X f' fs n m):
   e_level e + e_level f << BKA ->
   (let v := vars (e_pls e f) in 
     eqb_kat (gerase (to_gregex v n m e)) (gerase (to_gregex v n m f)) = Some true) -> 
-  eval fp n m e == eval fp n m f.
+  eval fp n m e ≡ eval fp n m f.
 Proof.
   intros Hl H. apply to_gregex_weq. assumption. 
   apply kat_untype_weq, eqb_kat_correct, H.
@@ -64,7 +64,7 @@ Qed.
       since the equation was already checked in OCaml) *)
 
 Lemma catch_kat_weq {X} {L: laws X} n m (x y: X n m): 
-  (let L:=L in x == y) -> x == y.
+  (let L:=L in x ≡ y) -> x ≡ y.
 Proof. trivial. Qed.
 
 (** parametrised tactic to do the work share by [ka], [kat], and [hkat]
@@ -115,7 +115,7 @@ End bka_to_kat.
 (** the tactic is really similar to [kat], except that we catch the
    KAT laws using the lemma below, exploiting the above embedding *)
 Lemma catch_ka_weq {X l} {L: monoid.laws l X} {Hl: BKA<<l} n m (x y: X n m): 
-  (let L:=@bka_to_kat.laws l X L Hl in @weq (@kar (bka_to_kat.ops X) n m) x y) -> x == y.
+  (let L:=@bka_to_kat.laws l X L Hl in @weq (@kar (bka_to_kat.ops X) n m) x y) -> x ≡ y.
 Proof. trivial. Qed.
 
 Ltac ka := 
@@ -127,7 +127,7 @@ Ltac ka :=
 
 (** * [hkat] tactic, for KAT with Hoare hypotheses *)
 
-(** Hypotheses of the shape [x == 0], called "Hoare hypotheses", can
+(** Hypotheses of the shape [x ≡ 0], called "Hoare hypotheses", can
    be eliminated in KAT.
 
    In other words, the Horn theory of KAT restricted to the clauses
@@ -135,7 +135,7 @@ Ltac ka :=
    theory of KAT, and is thus decidable.
 
    Moreover, some other kinds of hypotheses can be transformed into
-   Hoare ones, and hypotheses of the shape [[c];p == [c]] can also be
+   Hoare ones, and hypotheses of the shape [[c];p ≡ [c]] can also be
    eliminated.
 
    All in all, a non-trivial class of hypotheses can be handled in
@@ -152,27 +152,27 @@ Ltac ka :=
 
 
 (** converting various kinds of hypotheses to Hoare ones *)
-Lemma ab_to_hoare `{L: laws} {n} (b c: tst n): b == c -> [b\cap !c \cup !b\cap c] <== 0.
+Lemma ab_to_hoare `{L: laws} {n} (b c: tst n): b ≡ c -> [b ⊓ !c ⊔ !b ⊓ c] ≦ 0.
 Proof. intro H. rewrite H. kat. Qed.
 
-Lemma ab'_to_hoare `{L: laws} {n} (b c: tst n): b <== c -> [b\cap !c] <== 0.
+Lemma ab'_to_hoare `{L: laws} {n} (b c: tst n): b ≦ c -> [b ⊓ !c] ≦ 0.
 Proof. intro H. rewrite H. kat. Qed.
 
 (* note: les quatre implications suivantes ne sont complètes que pour p=q *)
 Lemma bpqc_to_hoare `{L: laws} {n m} (b: tst n) (c: tst m) p q: 
-  [b]*p <== q*[c] -> [b]*p*[!c] <== 0.
+  [b]*p ≦ q*[c] -> [b]*p*[!c] ≦ 0.
 Proof. intro H. rewrite H. kat. Qed.
 
 Lemma pbcq_to_hoare `{L: laws} {n m} (b: tst n) (c: tst m) p q: 
-  p*[b] <== [c]*q -> [!c]*p*[b] <== 0.
+  p*[b] ≦ [c]*q -> [!c]*p*[b] ≦ 0.
 Proof. rewrite <-dotA. dual @bpqc_to_hoare. Qed.
 
 Lemma qpc_to_hoare `{L: laws} {n m} (c: tst m) (p q: X n m): 
-  q <== p*[c] -> q*[!c] <== 0.
+  q ≦ p*[c] -> q*[!c] ≦ 0.
 Proof. intro H. rewrite H. kat. Qed.
 
 Lemma qcp_to_hoare `{L: laws} {n m} (c: tst m) (p q: X m n):
-  q <== [c]*p -> [!c]*q <== 0.
+  q ≦ [c]*p -> [!c]*q ≦ 0.
 Proof. dual @qpc_to_hoare. Qed.
 
 (* TOTHINK: comprendre modulo A, et peut-être revenir aux cas complets
@@ -180,26 +180,26 @@ Proof. dual @qpc_to_hoare. Qed.
           mais pas prises dans le cas complet) *)
 
 Lemma cp_c `{L: laws} {n} (c: tst n) (p: X n n): 
-  [c]*p == [c] -> p == [!c]*p+[c].
+  [c]*p ≡ [c] -> p ≡ [!c]*p+[c].
 Proof. intro H. rewrite <-H. kat. Qed.
 
 Lemma pc_c `{L: laws} {n} (c: tst n) (p: X n n): 
-  p*[c] == [c] -> p == p*[!c]+[c].
+  p*[c] ≡ [c] -> p ≡ p*[!c]+[c].
 Proof. dual @cp_c. Qed.
 
 
 (** merging Hoare hypotheses *)
-Lemma join_leq `{lattice.laws} `{CUP<<l} (x y z: X):  x<==z -> y<==z -> x\cup y<==z. 
+Lemma join_leq `{lattice.laws} `{CUP<<l} (x y z: X):  x ≦z -> y ≦z -> x ⊔ y ≦z. 
 Proof. rewrite cup_spec. tauto. Qed.
 
 (** eliminating Hoare hypotheses ; [u] and [v] are intended to be the
    universal expressions of the appropriate type *)
 Lemma elim_hoare_hypotheses_weq `{L: laws} {n m p q} (u: X n p) (v: X q m) (z: X p q) (x y: X n m):
-  z <== 0 -> x+u*z*v == y+u*z*v -> x==y.
+  z ≦ 0 -> x+u*z*v ≡ y+u*z*v -> x ≡y.
 Proof. rewrite leq_xb_iff. intro Hz. now rewrite Hz, dotx0, dot0x, 2cupxb. Qed.
 
 Lemma elim_hoare_hypotheses_leq `{L: laws} {n m p q} (u: X n p) (v: X q m) (z: X p q) (x y: X n m):
-  z <== 0 -> x <== y+u*z*v -> x<==y.
+  z ≦ 0 -> x ≦ y+u*z*v -> x ≦y.
 Proof. intro Hz. now rewrite Hz, dotx0, dot0x, cupxb. Qed.
 
 (** tactic used to aggregate Hoare hypotheses: convert hypotheses into
@@ -207,7 +207,7 @@ Proof. intro Hz. now rewrite Hz, dotx0, dot0x, cupxb. Qed.
 Ltac aggregate_hoare_hypotheses :=
   repeat 
     match goal with
-      | H: _ == _ |- _ => 
+      | H: _ ≡ _ |- _ => 
         apply ab_to_hoare in H || 
         (rewrite (cp_c _ _ H); clear H) || 
         (rewrite (pc_c _ _ H); clear H) || 
@@ -215,13 +215,13 @@ Ltac aggregate_hoare_hypotheses :=
     end;
   repeat
     match goal with
-      | H: _ <== _ |- _ => 
+      | H: _ ≦ _ |- _ => 
         apply ab'_to_hoare in H || 
         apply bpqc_to_hoare in H || 
         apply pbcq_to_hoare in H || 
         apply qcp_to_hoare in H ||
         apply qpc_to_hoare in H
-      | H: _ <== 0,  H': _ <== 0 |- _ => 
+      | H: _ ≦ 0,  H': _ ≦ 0 |- _ => 
         apply (join_leq _ _ _ H') in H; clear H'
     end.
 

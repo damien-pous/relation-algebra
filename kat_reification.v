@@ -186,8 +186,8 @@ Qed.
    residuals and converse, for instance), we have to check that the
    expression does not use such constructions, whence the first
    hypothesis. *)
-Lemma to_gregex_eval {L: laws X} v n m e fp: e_level e << BKA -> vars e <== v -> 
-  eval fp n m e ==
+Lemma to_gregex_eval {L: laws X} v n m e fp: e_level e << BKA -> vars e ≦ v -> 
+  eval fp n m e ≡
   gregex.eval f' (fun n i => fp n (nth i v xH)) (fun i => val (fs i)) (to_gregex v n m e).
 Proof.
   induction e; simpl e_level; simpl (vars _); intros Hl Hv;
@@ -224,8 +224,8 @@ Qed.
 
 Corollary to_gregex_weq {L: laws X} n m e f fp: 
   e_level e + e_level f << BKA ->
-  (let v := vars (e_pls e f) in to_gregex v n m e == to_gregex v n m f) -> 
-  eval fp n m e == eval fp n m f.
+  (let v := vars (e_pls e f) in to_gregex v n m e ≡ to_gregex v n m f) -> 
+  eval fp n m e ≡ eval fp n m f.
 Proof.
   intros Hl H. rewrite 2(to_gregex_eval (vars (e_pls e f))) 
     by (solve_lower' || simpl (vars _); rewrite union_app; lattice). 

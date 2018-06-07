@@ -50,7 +50,7 @@ Qed.
 
 (** characterisation of derivatives for NFA *)
 Lemma deriv_eval a n u (M: rmx n n) v: is_01_mx u -> is_pure_mx M -> is_01_mx v ->
- deriv a (mx_scal (u*M^**v))  ==  mx_scal (u*epsilon_mx (deriv_mx a M)*M^**v).
+ deriv a (mx_scal (u*M^**v))  ≡  mx_scal (u*epsilon_mx (deriv_mx a M)*M^**v).
  (* NB: we use epsilon_mx because [deriv_mx a M] is not necessarily a 01 matrix, 
         even if it is equal to such a matrix *)
 Proof.
@@ -74,7 +74,7 @@ Fixpoint lang n (M: rmx n n) v u w: Prop :=
 
 (** the language of the NFA is that obtained by evaluation into regular expressions *)
 Theorem eval_lang n u M v (H: is_nfa (@mk n u M v)):
-  regex.lang (mx_scal (u * M^* * v)) == lang M v u.
+  regex.lang (mx_scal (u * M^* * v)) ≡ lang M v u.
 Proof.
   unfold regex.lang. intro w. revert u H. induction w; intros u H. 
    unfold derivs. now rewrite epsilon_eval by apply H.
@@ -97,7 +97,7 @@ Instance lang_weq n (M: rmx n n) v: Proper (weq ==> weq) (lang M v) := op_leq_we
 Instance lang_weq' n (M: rmx n n) v: Proper (weq ==> eq ==> iff) (lang M v).
 Proof. intros ? ? H ? ? <-. now apply lang_weq. Qed.
 
-Lemma lang_empty n (u: rmx 1 n) M v: u==0 -> lang M v u == bot.
+Lemma lang_empty n (u: rmx 1 n) M v: u ≡0 -> lang M v u ≡ bot.
 Proof. 
   intros Hu w. revert Hu. induction w; intro Hu. simpl; fold_regex. 
   rewrite Hu, dot0x. intuition. 
@@ -129,7 +129,7 @@ Notation "A @ i" := (eval (to_nfa (dfa.reroot A i))) (at level 1).
 
 
 (** the language of a DFA coincides with that of the underlying NFA *)
-Theorem nfa_lang A i: dfa.lang A i == 
+Theorem nfa_lang A i: dfa.lang A i ≡ 
   lang ((to_nfa A)^M) ((to_nfa A)^v) (mx_fun (fun _ => i) 1).
 Proof.
   intro w. revert i. induction w; intro i; simpl. 
@@ -158,7 +158,7 @@ Proof.
 Qed.
 
 (** the language of the DFA is that obtained by evaluation into regular expressions *)
-Corollary eval_lang A i: regex.lang A@i == dfa.lang A i.
+Corollary eval_lang A i: regex.lang A@i ≡ dfa.lang A i.
 Proof. setoid_rewrite eval_lang. 2: apply is_nfa_nfa. now rewrite nfa_lang. Qed.
 
 End dfa.

@@ -37,7 +37,7 @@ Definition e_top' n: expr_ BL := \sup_(a<pow2 n) atom a.
    there is at least one variable, it can be partioned into to sets,
    those which assign [true] to that variable, and those which assign
    [false] to it *)
-Lemma seq_double n: seq (double n) == map (@set.xO _) (seq n) ++ map (@set.xI _) (seq n).
+Lemma seq_double n: seq (double n) ≡ map (@set.xO _) (seq n) ++ map (@set.xI _) (seq n).
 Proof.
   induction n. reflexivity. 
   simpl double. simpl seq. fold_cons.
@@ -50,7 +50,7 @@ Proof.
 Qed.
 
 Lemma atom_xO n (f: ord (pow2 n)): 
-  @atom (S n) (set.xO f) == ! e_var ord0 \cap eval (fun i => e_var (ordS i)) (atom f).
+  @atom (S n) (set.xO f) ≡ ! e_var ord0 ⊓ eval (fun i => e_var (ordS i)) (atom f).
 Proof.
   unfold atom. simpl. rewrite set.mem_xO_0. apply cap_weq. reflexivity.
   setoid_rewrite eval_inf with (g := fun i => e_var (ordS i)). rewrite sup_map.
@@ -59,7 +59,7 @@ Proof.
 Qed.
 
 Lemma atom_xI n (f: ord (pow2 n)): 
-  @atom (S n) (set.xI f) == e_var ord0 \cap eval (fun i => e_var (ordS i)) (atom f).
+  @atom (S n) (set.xI f) ≡ e_var ord0 ⊓ eval (fun i => e_var (ordS i)) (atom f).
 Proof.
   unfold atom. simpl. rewrite set.mem_xI_0. apply cap_weq. reflexivity.
   setoid_rewrite eval_inf with (g := fun i => e_var (ordS i)). rewrite sup_map.
@@ -68,7 +68,7 @@ Proof.
 Qed.
   
 (** the deomposition of [top] into atoms follow by induction *)
-Theorem decomp_top n: top == e_top' n.
+Theorem decomp_top n: top ≡ e_top' n.
 Proof.
   unfold e_top'. induction n. symmetry. apply cupxb. 
   simpl pow2. rewrite seq_double, sup_app.
@@ -89,7 +89,7 @@ Notation Atom := (ord (pow2 n)).
 
 (** auxiliary lemmas *)
 Lemma cap_var_atom (a: Atom) b: 
-  e_var b \cap atom a == (if set.mem a b then atom a else bot).
+  e_var b ⊓ atom a ≡ (if set.mem a b then atom a else bot).
 Proof. 
   generalize (in_seq b). unfold atom. induction (seq n). intros []. 
   simpl (sup _ _). intros [->|Hl]. 
@@ -99,7 +99,7 @@ Proof.
 Qed.
 
 Lemma cup_var_atom (a: Atom) b: 
-  e_var b \cup !atom a == (if set.mem a b then top else !atom a).
+  e_var b ⊔ !atom a ≡ (if set.mem a b then top else !atom a).
 Proof. 
   generalize (in_seq b). unfold atom. induction (seq n). intros []. 
   simpl (sup _ _). intros [->|Hl]. 
@@ -109,15 +109,15 @@ Proof.
   case (set.mem a b). apply cupxt. now rewrite negcap.
 Qed.
 
-Lemma eval_mem_cap (a: Atom) e: e\cap atom a == if eval (set.mem a) e then atom a else bot
-with eval_mem_cup (a: Atom) e: e\cup !atom a == if eval (set.mem a) e then top else !atom a.
+Lemma eval_mem_cap (a: Atom) e: e ⊓ atom a ≡ if eval (set.mem a) e then atom a else bot
+with eval_mem_cup (a: Atom) e: e ⊔ !atom a ≡ if eval (set.mem a) e then top else !atom a.
 Proof.
 - destruct e; simpl eval.
    apply capbx.  
    apply captx. 
    rewrite capC, capcup, capC, eval_mem_cap, capC, eval_mem_cap.
     case (eval (set.mem a) e1); case (eval (set.mem a) e2); lattice.
-   transitivity ((e1\cap atom a)\cap (e2\cap atom a)). lattice. rewrite 2eval_mem_cap. 
+   transitivity ((e1 ⊓ atom a) ⊓ (e2 ⊓ atom a)). lattice. rewrite 2eval_mem_cap. 
     case (eval (set.mem a) e1); case (eval (set.mem a) e2); lattice.
    neg_switch. rewrite negcap, negneg, eval_mem_cup. 
     case (eval (set.mem a) e). now rewrite <-negbot. reflexivity. 
@@ -125,7 +125,7 @@ Proof.
 - destruct e; simpl eval.
    apply cupbx.  
    apply cuptx. 
-   transitivity ((e1\cup !atom a)\cup (e2\cup !atom a)). lattice. rewrite 2eval_mem_cup. 
+   transitivity ((e1 ⊔ !atom a) ⊔ (e2 ⊔ !atom a)). lattice. rewrite 2eval_mem_cup. 
     case (eval (set.mem a) e1); case (eval (set.mem a) e2); lattice.
    rewrite cupC, cupcap, cupC, eval_mem_cup, cupC, eval_mem_cup.
     case (eval (set.mem a) e1); case (eval (set.mem a) e2); lattice.
@@ -154,7 +154,7 @@ Proof.
   destruct (set.mem b i). assumption. apply Bool.negb_true_iff. assumption. 
 Qed.
 
-Lemma empty_atom_cap (a b: Atom): a<>b -> atom a \cap atom b == bot.
+Lemma empty_atom_cap (a b: Atom): a<>b -> atom a ⊓ atom b ≡ bot.
 Proof.
   intro E. rewrite eval_mem_cap. generalize (eval_atom b a). 
   case (eval (set.mem b) (atom a)). 2: reflexivity. 

@@ -206,7 +206,7 @@ Qed.
 (** auxiliary lemmas, to establish that traces form a residuated Kleene lattice *)
 
 Lemma traces_dotA n m p q x y z: 
-  traces_dot n m q x (traces_dot m p q y z) == traces_dot n p q (traces_dot n m p x y) z.
+  traces_dot n m q x (traces_dot m p q y z) ≡ traces_dot n p q (traces_dot n m p x y) z.
 Proof.
   intro w. simpl. split. 
   intros [? ? [? [? ? [? ? E]] E']]. 
@@ -221,7 +221,7 @@ Proof.
   exists u. apply H, Hu. exists v. apply H', Hv. assumption.
 Qed.
 
-Lemma traces_dotx1 x: traces_dot tt tt tt x (traces_one tt) == x.
+Lemma traces_dotx1 x: traces_dot tt tt tt x (traces_one tt) ≡ x.
 Proof.
   intro w. split. 
     intros [u Hu [[|] Hv E]]. 2: elim Hv. now apply tapp_x_nil_eq in E as [? ->].
@@ -229,7 +229,7 @@ Proof.
     apply tapp_x_nil.
 Qed.
 
-Lemma traces_dot1x x: traces_dot tt tt tt (traces_one tt) x == x.
+Lemma traces_dot1x x: traces_dot tt tt tt (traces_one tt) x ≡ x.
 Proof.
   intro w. split.
    intros [u Hu [v Hv E]]. destruct u as [?|]. 2: elim Hu. inversion E; subst; assumption.
@@ -237,7 +237,7 @@ Proof.
    apply tapp_nil_x.
 Qed.
 
-Lemma traces_iter_S i x: traces_iter x x i == traces_iter (traces_one tt) x (S i).
+Lemma traces_iter_S i x: traces_iter x x i ≡ traces_iter (traces_one tt) x (S i).
 Proof. 
   induction i; simpl traces_iter. symmetry. apply traces_dotx1. 
   now apply (op_leq_weq_2 (Hf:=@traces_dot_leq _ _ _)).
@@ -245,7 +245,7 @@ Qed.
 
 (** traces form a residuated Kleene lattice 
    (we do not have an allegory, since the converse operation does not
-   satisfy the law [x<==x*x`*x]) *)
+   satisfy the law [x ≦x*x`*x]) *)
 (* TODO: include a weak converse? *)
 Global Instance traces_monoid_laws: monoid.laws (BDL+STR+DIV) traces_monoid_ops.
 Proof.
@@ -287,18 +287,18 @@ Qed.
 Definition traces_deriv a i (L: traces'): traces' := 
   fun w => L (tcons a i w). 
 
-Lemma traces_deriv_0 a i: traces_deriv a i 0 == 0. 
+Lemma traces_deriv_0 a i: traces_deriv a i 0 ≡ 0. 
 Proof. firstorder. Qed.
 
-Lemma traces_deriv_1 a i: traces_deriv a i 1 == 0. 
+Lemma traces_deriv_1 a i: traces_deriv a i 1 ≡ 0. 
 Proof. compute. intuition discriminate. Qed.
 
 Lemma traces_deriv_pls a i (H K: traces'): 
-  traces_deriv a i (H+K) == traces_deriv a i H + traces_deriv a i K.
+  traces_deriv a i (H+K) ≡ traces_deriv a i H + traces_deriv a i K.
 Proof. intro. now apply cup_weq. Qed.
 
 Lemma traces_deriv_dot_1 a i (H K: traces'): H (tnil a) ->
-  traces_deriv a i (H*K) == traces_deriv a i H * K + traces_deriv a i K.
+  traces_deriv a i (H*K) ≡ traces_deriv a i H * K + traces_deriv a i K.
 Proof.
   intros Hnil w; simpl; unfold traces_deriv, traces_dot, pw2.
    split. 
@@ -309,7 +309,7 @@ Proof.
 Qed.
 
 Lemma traces_deriv_dot_2 a i (H K: traces'): ~ (H (tnil a)) ->
-  traces_deriv a i (H*K) == traces_deriv a i H * K.
+  traces_deriv a i (H*K) ≡ traces_deriv a i H * K.
 Proof.
   intros Hnil w; simpl; unfold traces_deriv, traces_dot, pw2.
    split. 
@@ -320,7 +320,7 @@ Proof.
 Qed.
 
 Lemma traces_deriv_itr a i (H: traces'): 
-  traces_deriv a i (H^+) == traces_deriv a i H * H^*.
+  traces_deriv a i (H^+) ≡ traces_deriv a i H * H^*.
 Proof.
   rewrite str_itr. apply antisym. 
   - intro w.
@@ -345,10 +345,10 @@ Definition tinj (p: State -> Prop): traces :=
 Definition tsingle (i: Sigma): traces := 
   fun w => match w with tcons _ j (tnil _) => i=j | _ => False end.
 
-Lemma traces_deriv_inj a i p: traces_deriv a i (tinj p) == 0. 
+Lemma traces_deriv_inj a i p: traces_deriv a i (tinj p) ≡ 0. 
 Proof. now intro. Qed.
 
-Lemma traces_deriv_single a i j: traces_deriv a i (tsingle j) == ofbool (eqb i j).
+Lemma traces_deriv_single a i j: traces_deriv a i (tsingle j) ≡ ofbool (eqb i j).
 Proof.
   intros [b|???]. 
     unfold traces_deriv. simpl. case eqb_spec; simpl; intuition; discriminate.
@@ -376,10 +376,10 @@ Definition typed' n m (L: trace -> Prop) := forall u, L u -> typed n m u.
 Lemma typed'_bot n m: typed' n m bot.
 Proof. intros ? []. Qed.
 
-Lemma typed'_cup n m (x y: traces): typed' n m x -> typed' n m y -> typed' n m (x \cup y).
+Lemma typed'_cup n m (x y: traces): typed' n m x -> typed' n m y -> typed' n m (x ⊔ y).
 Proof. intros ? ? ? [|]; eauto. Qed.
 
-Lemma typed'_cap n m (x y: traces): typed' n m x -> typed' n m y -> typed' n m (x \cap y).
+Lemma typed'_cap n m (x y: traces): typed' n m x -> typed' n m y -> typed' n m (x ⊓ y).
 Proof. intros ? ? ? []; eauto. Qed.
 
 Lemma tapp_typed (u v w: trace): tapp u v w -> 
@@ -439,11 +439,11 @@ Implicit Types x y: ttraces n m.
 
 (** *** lattice structure *)
 
-Definition ttraces_leq x y := proj1_sig x <== proj1_sig y.
-Definition ttraces_weq x y := proj1_sig x == proj1_sig y.
-Program Definition ttraces_cup x y: ttraces n m := proj1_sig x \cup proj1_sig y. 
+Definition ttraces_leq x y := proj1_sig x ≦ proj1_sig y.
+Definition ttraces_weq x y := proj1_sig x ≡ proj1_sig y.
+Program Definition ttraces_cup x y: ttraces n m := proj1_sig x ⊔ proj1_sig y. 
 Next Obligation. apply typed'_cup; apply proj2_sig. Qed. 
-Program Definition ttraces_cap x y: ttraces n m := proj1_sig x \cap proj1_sig y. 
+Program Definition ttraces_cap x y: ttraces n m := proj1_sig x ⊓ proj1_sig y. 
 Next Obligation. apply typed'_cap; apply proj2_sig. Qed. 
 Program Definition ttraces_neg x: ttraces n m := restrict n m (! proj1_sig x). 
 Program Definition ttraces_bot: ttraces n m := fun _ => False.
@@ -546,7 +546,7 @@ Next Obligation. apply typed'_single. Qed.
 Program Definition tsingle' a i b: ttraces (src i) (tgt i) := eq (tcons a i (tnil b)).
 Next Obligation. intros ? <-. do 2 constructor. Qed.
 
-Lemma atom_single_atom a i b: tatom _ a * ttsingle i * tatom _ b == tsingle' a i b.
+Lemma atom_single_atom a i b: tatom _ a * ttsingle i * tatom _ b ≡ tsingle' a i b.
 Proof.
   intro x. split. 
   - intros [uv [u <- [v Hv Huvw]] [w <- Huvw']]. destruct v as [|c j [d|]]; try elim Hv. 
@@ -564,18 +564,18 @@ Global Instance restrict_leq n m: Proper (leq ==> leq) (restrict n m).
 Proof. intros x y H w [? ?]. split. assumption. now apply H. Qed.
 Global Instance restrict_weq n m: Proper (weq ==> weq) (restrict n m) := op_leq_weq_1.
 
-Lemma restrict_0 n m: restrict n m (zer tt tt) == 0. 
+Lemma restrict_0 n m: restrict n m (zer tt tt) ≡ 0. 
 Proof. intros [|]; simpl; tauto. Qed.
 
-Lemma restrict_1 n: restrict n n (one tt) == 1. 
+Lemma restrict_1 n: restrict n n (one tt) ≡ 1. 
 Proof. intros [b|]; simpl. 2: tauto. intuition constructor. Qed.
 
-Lemma restrict_pls n m (x y: traces'): restrict n m (x + y) == restrict n m x + restrict n m y. 
+Lemma restrict_pls n m (x y: traces'): restrict n m (x + y) ≡ restrict n m x + restrict n m y. 
 Proof. intros w; simpl; unfold pw2. tauto. Qed.
 
 Lemma restrict_dot n m p (x y: traces'):
   typed' n m x -> typed' m p y -> 
-  restrict n p (x * y) == restrict n m x * restrict m p y. 
+  restrict n p (x * y) ≡ restrict n m x * restrict m p y. 
 Proof. 
   intros Hx Hy w; simpl. split. 
    intros [Hw [u Hu [v Hv H]]]. repeat eexists; eauto. 
@@ -585,14 +585,14 @@ Proof.
 Qed.
 
 Lemma restrict_iter n (x y: traces') i: typed' n n x -> typed' n n y ->
-  restrict n n (traces_iter y x i) == ttraces_iter (restrict n n y) (restrict n n x) i.
+  restrict n n (traces_iter y x i) ≡ ttraces_iter (restrict n n y) (restrict n n x) i.
 Proof.
   intros Hx Hy. induction i. simpl. now unfold ttraces_weq.
   simpl. setoid_rewrite restrict_dot. now setoid_rewrite IHi.
   assumption. now apply typed'_iter.
 Qed.
 
-Lemma restrict_itr n (x: traces'): typed' n n x -> restrict n n (x^+) == restrict n n x^+. 
+Lemma restrict_itr n (x: traces'): typed' n n x -> restrict n n (x^+) ≡ restrict n n x^+. 
 Proof.
   intros Hx w. simpl. split.
    intros [H [i Hw]]. exists i. apply restrict_iter; trivial. now split. 
@@ -600,14 +600,14 @@ Proof.
    exists i. eapply restrict_iter; eassumption. 
 Qed.
 
-Lemma restrict_inj n p: restrict n n (tinj p) == ttinj n p.
+Lemma restrict_inj n p: restrict n n (tinj p) ≡ ttinj n p.
 Proof.
   intros [b|b i w]; simpl. 2: simpl; lattice.
    split. now intros [_ H]. 
    intros ?. split. constructor. assumption.
 Qed.
 
-Lemma restrict_single i: restrict _ _ (tsingle i) == ttsingle i.
+Lemma restrict_single i: restrict _ _ (tsingle i) ≡ ttsingle i.
 Proof.
   intros [a|a j [b|???]]; simpl; try lattice.
    split. now intros [_ H]. 

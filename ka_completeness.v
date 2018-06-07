@@ -97,51 +97,51 @@ Fixpoint enfa (e: regex'): t :=
 
 (** algebraic correcteness of each construction *)
 
-Lemma eval_zer: eval zer == 0.
+Lemma eval_zer: eval zer ≡ 0.
 Proof. reflexivity. Qed.
 
-Lemma eval_cst e: eval (cst e) == e.
+Lemma eval_cst e: eval (cst e) ≡ e.
 Proof. 
   set (o:=eval (cst e)). vm_compute in o; subst o. ra_normalise. 
   rewrite str1. ra.
 Qed.
 
-Lemma eval_one: eval one == 1.
+Lemma eval_one: eval one ≡ 1.
 Proof. set (o:=eval one). vm_compute in o; subst o. ra. Qed.
 
-Lemma eval_pls e f: eval (pls e f) == eval e + eval f.
+Lemma eval_pls e f: eval (pls e f) ≡ eval e + eval f.
 Proof.
   destruct e as [n u M v]. destruct f as [m s N t].
-  change (mx_scal (row_mx u s * blk_mx M 0 0 N ^* * col_mx v t) == mx_scal (u * M ^* * v) + mx_scal (s * N ^* * t)).
+  change (mx_scal (row_mx u s * blk_mx M 0 0 N ^* * col_mx v t) ≡ mx_scal (u * M ^* * v) + mx_scal (s * N ^* * t)).
   rewrite <-mx_scal_pls. apply mx_scal_weq.
   rewrite mx_str_diagonal.
   setoid_rewrite mx_dot_rowcol. rewrite dotplsx. 
   rewrite <-2dotA, 2mx_dot_rowcol. ra.
 Qed.
 
-Lemma eval_dot e f: eval (dot e f) == eval e * eval f.
+Lemma eval_dot e f: eval (dot e f) ≡ eval e * eval f.
 Proof.
   destruct e as [n u M v]. destruct f as [m s N t].
-  change (mx_scal (row_mx u 0 * blk_mx M (v * s) 0 N ^* * col_mx 0 t) == mx_scal (u * M ^* * v) * mx_scal (s * N ^* * t)).
+  change (mx_scal (row_mx u 0 * blk_mx M (v * s) 0 N ^* * col_mx 0 t) ≡ mx_scal (u * M ^* * v) * mx_scal (s * N ^* * t)).
   rewrite <-mx_scal_dot. apply mx_scal_weq.
   rewrite mx_str_trigonal. setoid_rewrite mx_dot_rowcol. rewrite dotplsx. 
   rewrite <-dotA, mx_dot_rowcol. ra. 
 Qed.
 
-Lemma eval_itr e: eval (itr e) == eval e ^+.
+Lemma eval_itr e: eval (itr e) ≡ eval e ^+.
 Proof.
   rewrite itr_str_l. destruct e as [n u M v].
-  change (mx_scal (u * (M + v * u) ^* * v) == mx_scal (u * M ^* * v) * mx_scal (u * M ^* * v) ^*).
+  change (mx_scal (u * (M + v * u) ^* * v) ≡ mx_scal (u * M ^* * v) * mx_scal (u * M ^* * v) ^*).
   rewrite <-mx_scal_str, <-mx_scal_dot. apply mx_scal_weq. 
   rewrite str_pls. rewrite <-3dotA, <-str_dot. ra. 
 Qed.
 
-Lemma eval_str e: eval (str e) == eval e ^*.
+Lemma eval_str e: eval (str e) ≡ eval e ^*.
 Proof. unfold str. now rewrite eval_pls, eval_one, eval_itr, str_itr. Qed.
 
 (** algebraic correcteness of the global construction *)
 
-Theorem correct e: eval (enfa e) == e.
+Theorem correct e: eval (enfa e) ≡ e.
 Proof.
   induction e; simpl enfa.
    apply eval_zer.
@@ -179,13 +179,13 @@ Definition nfa e :=
 
 (** ** correctness *)
 
-Theorem eval_nfa e: eval (nfa e) == e.
+Theorem eval_nfa e: eval (nfa e) ≡ e.
 Proof.
   rewrite <- (Thompson.correct e) at 2. unfold nfa.
   change (mx_scal
     ((Thompson.enfa e) ^u *
      (epsilon_mx (Thompson.enfa e) ^M ^* * pure_part_mx (Thompson.enfa e) ^M)
-     ^* * (epsilon_mx (Thompson.enfa e) ^M ^* * (Thompson.enfa e) ^v)) ==
+     ^* * (epsilon_mx (Thompson.enfa e) ^M ^* * (Thompson.enfa e) ^v)) ≡
     eval (Thompson.enfa e)).
   set (f := Thompson.enfa e). set (J := epsilon_mx f^M). apply mx_scal_weq.
   rewrite (@expand_simple_mx _ _ f^M) at 2 by apply Thompson.is_enfa.
@@ -233,7 +233,7 @@ Notation v := nfa^v.
 
 (** alphabet of the generated DFA: those appearing in [M], plus the
    imposed ones *)
-Notation vars := (mx_vars M \cup vars').
+Notation vars := (mx_vars M ⊔ vars').
 
 (** (unlabelled) transition matrix of the NFA, restricted to [a] *)
 Let T_ a := epsilon_mx (deriv_mx a M).
@@ -266,16 +266,16 @@ Definition det := dfa.mk
 (** the correctness is establish by using the bisimulation rule, to
    let the decoding matrix [X] go through [u * M^* * v]:
    denoting by [(u',M',v')] the determinised automaton, 
-   we easily deduce [u*M^**v == u'*M'^**v']
-   from [u==u'*X], [X*M == M'*X], and [X*v == v']. *)
+   we easily deduce [u*M^**v ≡ u'*M'^**v']
+   from [u ≡u'*X], [X*M ≡ M'*X], and [X*v ≡ v']. *)
 
-Lemma det_uX: u == det^u * X.
+Lemma det_uX: u ≡ det^u * X.
 Proof.
   intros i j. cbn. rewrite mx_dot_fun, dot1x. 
   symmetry. apply mem_of_row, Hnfa. 
 Qed.
 
-Lemma M_sum: M == \sum_(a\in vars) M_(a). 
+Lemma M_sum: M ≡ \sum_(a\in vars) M_(a). 
 Proof.
   intros i j. simpl. rewrite (@expand' (M i j) (mx_vars M ++vars')).
     2: apply leq_xcup; left; apply mx_vars_full.
@@ -285,7 +285,7 @@ Proof.
   intro a. now rewrite <-epsilon_deriv_pure by apply Hnfa.
 Qed.
 
-Lemma det_MX: X * M^* == det^M^* * X.
+Lemma det_MX: X * M^* ≡ det^M^* * X.
 Proof.
   apply str_move.
   rewrite M_sum. cbn. rewrite dotxsum, dotsumx. apply sup_weq. 2: reflexivity. 
@@ -298,14 +298,14 @@ Proof.
   now rewrite 2dotA, dot_ofboolx.
 Qed.
 
-Lemma det_Xv: X*v == det^v.
+Lemma det_Xv: X*v ≡ det^v.
 Proof. 
   intros x j. setoid_rewrite ord0_unique. apply expand_01.
   apply is_01_mx_dot. intros ? ?. apply is_01_ofbool. apply Hnfa.
 Qed.
 
 (** algebraic correctness of determinisation *)
-Theorem eval_det: eval det == eval nfa.
+Theorem eval_det: eval det ≡ eval nfa.
 Proof.
   apply mx_scal_weq. 
   rewrite det_uX. 
@@ -323,7 +323,7 @@ End det.
 
 Definition dfa vars e := det vars (nfa e).
 
-Corollary eval_dfa vars e: nfa.eval (dfa vars e) == e.
+Corollary eval_dfa vars e: nfa.eval (dfa vars e) ≡ e.
 Proof. setoid_rewrite eval_det. apply eval_nfa. apply is_nfa_nfa. Qed.
 
 (** since the Kleene algebra of matrices allows us to compute a
@@ -334,7 +334,7 @@ Proof. setoid_rewrite eval_det. apply eval_nfa. apply is_nfa_nfa. Qed.
   recognised by a (deterministic) finite automaton''.  *)
 
 Theorem Kleene: forall l: lang' sigma, 
-  (exists e: regex, l == regex.lang e) <-> (exists A: dfa.t, l == dfa.lang A (dfa.u A)).
+  (exists e: regex, l ≡ regex.lang e) <-> (exists A: dfa.t, l ≡ dfa.lang A (dfa.u A)).
 Proof.
   intro l. setoid_rewrite <-nfa.dfa.eval_lang. setoid_rewrite <-dfa.reroot_id. 
   split. 
@@ -352,7 +352,7 @@ Qed.
 
    Our goal is to prove that for any two DFA [A] and [B], 
    
-     [dfa.lang A <== dfa.lang B] entails [eval A <== eval B]
+     [dfa.lang A ≦ dfa.lang B] entails [eval A ≦ eval B]
 
    (The premisse is a language inclusion, while the conclusion is a KA
    derivation.) The corresponding result on language equivalence and KA
@@ -367,27 +367,27 @@ Section E.
 Variables A B: dfa.t.
 
 (** thanks to the previous generalisation of the determinisation
- construction, we can assume w.l.o.g. that [vars A <== vars B]. This
+ construction, we can assume w.l.o.g. that [vars A ≦ vars B]. This
  is required by our reduction of language inclusion to language
  emptiness ([dfa.lang_incl_dec]), but also to prove Lemma [R_M] below *)
-Hypothesis Hvars: dfa.vars A <== dfa.vars B.
+Hypothesis Hvars: dfa.vars A ≦ dfa.vars B.
 
 (** language inclusion matrix: 
-   [R_(j,i)] holds iff [dfa.lang A i <== dfa.lang B j] 
+   [R_(j,i)] holds iff [dfa.lang A i ≦ dfa.lang B j] 
    (Note that this matrix goes from [B] to [A].) *)
 Definition R: rmx (n B) (n A) := fun j i => ofbool (dfa.lang_incl_dec _ _ Hvars i j).
 
 (** the algebraic proof is quite similar to that of determinisation: we use the
    bisimulation rule for inclusions, with [R]:
-   from [A^u <== B^u * R], [R * A^M <== B^M * R], and [R * A^v <== B^v],
-   we deduce [A^u*A^M^**A^v <== B^u*B^M^**B^v] 
+   from [A^u ≦ B^u * R], [R * A^M ≦ B^M * R], and [R * A^v ≦ B^v],
+   we deduce [A^u*A^M^**A^v ≦ B^u*B^M^**B^v] 
 
    the second and third hypotheses always hold, while the first one
    holds only if the language of [A] is contained in that of [B].
 
 *)
 
-Lemma R_v: R * A^v <== B^v. 
+Lemma R_v: R * A^v ≦ B^v. 
 Proof.
   intros j i'. apply leq_supx. intros i _. unfold dot; simpl. clear i'. 
  match goal with [|- ?P (_ ?x ?y) ?z ] => change (leq (x * y) z) end.
@@ -396,7 +396,7 @@ Proof.
   now intros [H H0%(H nil)].
 Qed.
 
-Lemma R_M: R * A^M^* <== B^M^* * R.
+Lemma R_M: R * A^M^* ≦ B^M^* * R.
 Proof.                          (* this proof also requires Hvars *)
   apply str_move_l.
   setoid_rewrite dotxsum. setoid_rewrite dotsumx. apply sup_leq'. exact Hvars.
@@ -407,8 +407,8 @@ Proof.                          (* this proof also requires Hvars *)
   setoid_rewrite is_true_sumbool. intros H w Hw. apply (H (cons a w)). now split. 
 Qed.
 
-Hypothesis HAB: regex.lang (eval A) <== regex.lang (eval B).
-Lemma R_u: A^u <== B^u * R. 
+Hypothesis HAB: regex.lang (eval A) ≦ regex.lang (eval B).
+Lemma R_u: A^u ≦ B^u * R. 
 Proof. 
   intros z i. cbn. rewrite mx_dot_fun, dot1x. unfold mx_fun. clear z. 
   case eqb_ord_spec. 2: intro; apply leq_bx. 
@@ -418,7 +418,7 @@ Proof.
 Qed.
 
 (** algebraic correctness of language inclusion test *)
-Theorem dfa_complete_leq: eval A <== eval B.
+Theorem dfa_complete_leq: eval A ≦ eval B.
 Proof. 
   apply mx_scal_leq. 
   rewrite R_u. 
@@ -434,7 +434,7 @@ End E.
 (** summing up all together, we obtain completeness of KA for language
    inclusion *)
 
-Corollary ka_complete_leq: forall e f, lang e <== lang f -> e <== f.
+Corollary ka_complete_leq: forall e f, lang e ≦ lang f -> e ≦ f.
 Proof. 
   intros e f. 
   rewrite <-(eval_dfa nil e), <-(eval_dfa (dfa.vars (dfa nil e)) f). 
@@ -443,16 +443,16 @@ Qed.
 
 (** and thus for language equivalence *)
 
-Corollary ka_complete_weq: forall e f, lang e == lang f -> e == f.
+Corollary ka_complete_weq: forall e f, lang e ≡ lang f -> e ≡ f.
 Proof. intros e f. rewrite 2weq_spec. now split; apply ka_complete_leq. Qed. 
 
 (** since languages form a model of KA, the converse directions
    trivially hold, so that we actually have equivalences *)
 
-Corollary ka_correct_complete_leq: forall e f, lang e <== lang f <-> e <== f.
+Corollary ka_correct_complete_leq: forall e f, lang e ≦ lang f <-> e ≦ f.
 Proof. split. apply ka_complete_leq. apply lang_leq. Qed. 
 
-Corollary ka_correct_complete_weq: forall e f, lang e == lang f <-> e == f.
+Corollary ka_correct_complete_weq: forall e f, lang e ≡ lang f <-> e ≡ f.
 Proof. split. apply ka_complete_weq. apply lang_weq. Qed. 
 
 (** * Decidability of KA *)
@@ -460,12 +460,12 @@ Proof. split. apply ka_complete_weq. apply lang_weq. Qed.
 (** as additional corollaries, we obtain decidability of (in)equations
    in Kleene algebra *)
 
-Corollary ka_leq_dec: forall e f: regex', {e<==f} + {~(e<==f)}.
+Corollary ka_leq_dec: forall e f: regex', {e ≦f} + {~(e ≦f)}.
 Proof.
   assert(G: forall e f: regex',
     let A := dfa [] e in
     let B := dfa (dfa.vars A) f in
-      dfa.lang A (dfa.u A) <== dfa.lang B (dfa.u B) <-> e<==f).
+      dfa.lang A (dfa.u A) ≦ dfa.lang B (dfa.u B) <-> e ≦f).
    intros e f A B. 
    rewrite <-2nfa.dfa.eval_lang, <-2dfa.reroot_id.
    rewrite ka_correct_complete_leq. 
@@ -473,7 +473,7 @@ Proof.
   intros. eapply sumbool_iff. apply G. apply dfa.lang_incl_dec. lattice.
 Qed.  
 
-Corollary ka_weq_dec: forall e f: regex', {e==f} + {~(e==f)}.
+Corollary ka_weq_dec: forall e f: regex', {e ≡f} + {~(e ≡f)}.
 Proof.
   intros e f. destruct (ka_leq_dec e f). destruct (ka_leq_dec f e). 
    left. now apply antisym.

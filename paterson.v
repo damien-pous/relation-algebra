@@ -195,8 +195,8 @@ Qed.
 
 Canonical Structure expr_lattice_ops: lattice.ops := {|
   car := expr bool;
-  leq := fun x y => eval x <== eval y;
-  weq := fun x y => eval x == eval y;
+  leq := fun x y => eval x ≦ eval y;
+  weq := fun x y => eval x ≡ eval y;
   cup := e_cup;
   cap := e_cap;
   bot := e_bot;
@@ -206,8 +206,8 @@ Canonical Structure expr_lattice_ops: lattice.ops := {|
 
 Canonical Structure prog_lattice_ops: lattice.ops := {|
   car := prog;
-  leq := fun x y => bstep x <== bstep y;
-  weq := fun x y => bstep x == bstep y;
+  leq := fun x y => bstep x ≦ bstep y;
+  weq := fun x y => bstep x ≡ bstep y;
   cup := p_pls;
   cap := assert_false p_pls;
   bot := p_tst e_bot;
@@ -291,7 +291,7 @@ Arguments rel_lattice_ops : simpl never.
 
 (** (the numbering corresponds to Angus and Kozen's paper)  *)
 Lemma eq_6 (x y: loc) (s t: expr nat): 
-  negb (eqb x y) &&& free y s -> x<-s;y<-t == y<-subst x s t; x<-s. 
+  negb (eqb x y) &&& free y s -> x<-s;y<-t ≡ y<-subst x s t; x<-s. 
 Proof.
   rewrite landb_spec, neqb_spec. intros [D H]. cbn. 
   rewrite 2frel_comp. apply frel_weq. intro m. 
@@ -301,7 +301,7 @@ Proof.
 Qed.
 
 Lemma eq_7 (x y: loc) (s t: expr nat): 
-  negb (eqb x y) &&& free x s -> x<-s;y<-t == x<-s;y<-subst x s t. 
+  negb (eqb x y) &&& free x s -> x<-s;y<-t ≡ x<-s;y<-subst x s t. 
 Proof.
   rewrite landb_spec, neqb_spec. intros [D H]. cbn. 
   rewrite 2frel_comp. apply frel_weq. intro m. 
@@ -310,13 +310,13 @@ Proof.
   now apply free_subst.
 Qed.
 
-Lemma eq_8 (x: loc) (s t: expr nat): x<-s;x<-t == x<-subst x s t. 
+Lemma eq_8 (x: loc) (s t: expr nat): x<-s;x<-t ≡ x<-subst x s t. 
 Proof.
   cbn. rewrite frel_comp. apply frel_weq. intro m. 
   unfold update. rewrite set_set. f_equal. apply eval_update. 
 Qed.
 
-Lemma eq_9 (x: loc) (t: expr nat) (phi: test): [subst x t phi: test];x<-t == x<-t;[phi].
+Lemma eq_9 (x: loc) (t: expr nat) (phi: test): [subst x t phi: test];x<-t ≡ x<-t;[phi].
 Proof.
   Transparent rel_lattice_ops. intros m m'. split. Opaque rel_lattice_ops. 
    intros [m0 [<- H] ->]. eexists. reflexivity. split; trivial. now rewrite eval_update.
@@ -325,18 +325,18 @@ Qed.
 
 
 Lemma eq_6' (x y: loc) (s t: expr nat): free x t &&& negb (eqb x y) &&& free y s -> 
-  x<-s;y<-t == y<-t; x<-s. 
+  x<-s;y<-t ≡ y<-t; x<-s. 
 Proof. rewrite landb_spec. intros [? ?]. now rewrite eq_6, subst_free. Qed.
 
-Lemma eq_9' (x: loc) (t: expr nat) (phi: test): free x phi -> [phi];x<-t == x<-t;[phi].
+Lemma eq_9' (x: loc) (t: expr nat) (phi: test): free x phi -> [phi];x<-t ≡ x<-t;[phi].
 Proof. intro. now rewrite <-eq_9, subst_free. Qed.
 
 Transparent rel_lattice_ops.
 Arguments rel_lattice_ops : simpl never.
 
 Lemma same_value (f: state -> state) (p: prog') (a b: test):
-  bstep p == frel f -> (forall m, eval a (f m) = eval b (f m)) -> 
-  p;[a\cap !b \cup !a\cap b] <== 0.
+  bstep p ≡ frel f -> (forall m, eval a (f m) = eval b (f m)) -> 
+  p;[a ⊓ !b ⊔ !a ⊓ b] ≦ 0.
 Proof.
   intros Hp H. cbn. rewrite Hp. 
    intros m m' [? -> [<- E]]. 
@@ -360,7 +360,7 @@ Arguments prog_monoid_ops : simpl never.
 Arguments prog_lattice_ops : simpl never.
 Arguments prog_kat_ops : simpl never.
 
-Lemma gc_correct y p: dont_read y p -> gc y p; del y == p; del y.
+Lemma gc_correct y p: dont_read y p -> gc y p; del y ≡ p; del y.
 Proof.
   intro H. transitivity (del y; gc y p).
   induction p; cbn. 
@@ -392,7 +392,7 @@ Ltac solve_rmov ::=
     | apply rmov_inj
     | apply rmov_x_1
     | apply rmov_x_0 ]; 
-    match goal with |- ?x == ?y => solve_rmov end.
+    match goal with |- ?x ≡ ?y => solve_rmov end.
   
 (** * Paterson's equivalence *)
 Theorem Paterson: 
@@ -420,36 +420,36 @@ Theorem Paterson:
   let r22 := y2<-f' (f' y2) in
   let rhs := s2;[a2];q222;([!a2];r22;[a2];q222)^*;[a2];z2 in
   x1;p41;p11;q214;q311;([!a1];p11;q214;q311)^*;[a1];p13;
-  (([!a4]+[a4];([!a2];p22)^*;[a2\cap !a3];p41;p11);q214;q311;([!a1];p11;q214;q311)^*;[a1];p13)^*;
-  [a4];([!a2];p22)^*;[a2\cap a3];z2  ==  rhs.
+  (([!a4]+[a4];([!a2];p22)^*;[a2 ⊓ !a3];p41;p11);q214;q311;([!a1];p11;q214;q311)^*;[a1];p13)^*;
+  [a4];([!a2];p22)^*;[a2 ⊓ a3];z2  ≡  rhs.
 Proof.
   intros.
   (** simple commutation hypotheses, to be exploited by [hkat] *)
-  assert (a1p22:  [a1];p22  == p22;[a1])  by now apply eq_9'. 
-  assert (a1q214: [a1];q214 == q214;[a1]) by now apply eq_9'. 
-  assert (a1q211: [a1];q211 == q211;[a1]) by now apply eq_9'. 
-  assert (a1q311: [a1];q311 == q311;[a1]) by now apply eq_9'. 
-  assert (a2p13:  [a2];p13  == p13;[a2])  by now apply eq_9'. 
-  assert (a2r12:  [a2];r12  == r12;[a2])  by now apply eq_9'. 
-  assert (a2r13:  [a2];r13  == r13;[a2])  by now apply eq_9'. 
-  assert (a3p13:  [a3];p13  == p13;[a3])  by now apply eq_9'. 
-  assert (a3p22:  [a3];p22  == p22;[a3])  by now apply eq_9'. 
-  assert (a3r12:  [a3];r12  == r12;[a3])  by now apply eq_9'. 
-  assert (a3r13:  [a3];r13  == r13;[a3])  by now apply eq_9'. 
-  assert (a4p13:  [a4];p13  == p13;[a4])  by now apply eq_9'. 
-  assert (a4p11:  [a4];p11  == p11;[a4])  by now apply eq_9'. 
-  assert (a4p22:  [a4];p22  == p22;[a4])  by now apply eq_9'. 
-  assert (a4q214: [a4];q214 == q214;[a4]) by now apply eq_9'. 
-  assert (a4q211: [a4];q211 == q211;[a4]) by now apply eq_9'. 
-  assert (a4q311: [a4];q311 == q311;[a4]) by now apply eq_9'. 
-  assert (p41p11: p41;p11;[a1\cap !a4 \cup !a1\cap a4] <== 0).
+  assert (a1p22:  [a1];p22  ≡ p22;[a1])  by now apply eq_9'. 
+  assert (a1q214: [a1];q214 ≡ q214;[a1]) by now apply eq_9'. 
+  assert (a1q211: [a1];q211 ≡ q211;[a1]) by now apply eq_9'. 
+  assert (a1q311: [a1];q311 ≡ q311;[a1]) by now apply eq_9'. 
+  assert (a2p13:  [a2];p13  ≡ p13;[a2])  by now apply eq_9'. 
+  assert (a2r12:  [a2];r12  ≡ r12;[a2])  by now apply eq_9'. 
+  assert (a2r13:  [a2];r13  ≡ r13;[a2])  by now apply eq_9'. 
+  assert (a3p13:  [a3];p13  ≡ p13;[a3])  by now apply eq_9'. 
+  assert (a3p22:  [a3];p22  ≡ p22;[a3])  by now apply eq_9'. 
+  assert (a3r12:  [a3];r12  ≡ r12;[a3])  by now apply eq_9'. 
+  assert (a3r13:  [a3];r13  ≡ r13;[a3])  by now apply eq_9'. 
+  assert (a4p13:  [a4];p13  ≡ p13;[a4])  by now apply eq_9'. 
+  assert (a4p11:  [a4];p11  ≡ p11;[a4])  by now apply eq_9'. 
+  assert (a4p22:  [a4];p22  ≡ p22;[a4])  by now apply eq_9'. 
+  assert (a4q214: [a4];q214 ≡ q214;[a4]) by now apply eq_9'. 
+  assert (a4q211: [a4];q211 ≡ q211;[a4]) by now apply eq_9'. 
+  assert (a4q311: [a4];q311 ≡ q311;[a4]) by now apply eq_9'. 
+  assert (p41p11: p41;p11;[a1 ⊓ !a4 ⊔ !a1 ⊓ a4] ≦ 0).
    eapply same_value. apply frel_comp. reflexivity. 
-  assert (q211q311: q211;q311;[a2\cap !a3 \cup !a2\cap a3] <== 0).
+  assert (q211q311: q211;q311;[a2 ⊓ !a3 ⊔ !a2 ⊓ a3] ≦ 0).
    eapply same_value. apply frel_comp. reflexivity.
-  assert (r12p22: r12;p22;p22;[a1\cap !a2 \cup !a1\cap a2] <== 0).
+  assert (r12p22: r12;p22;p22;[a1 ⊓ !a2 ⊔ !a1 ⊓ a2] ≦ 0).
    eapply same_value. simpl bstep. rewrite 2frel_comp. reflexivity. reflexivity.
   (** this one cannot be used by [hkat], it's used by [rmov1]  *)
-  assert (p13p22: p13;p22 == p22;p13) by now apply eq_6'.
+  assert (p13p22: p13;p22 ≡ p22;p13) by now apply eq_6'.
 
   (** here starts the proof; the numbers in the comments refer to the
      equation numbers in Angus and Kozen's paper proof *)
@@ -457,48 +457,48 @@ Proof.
   (** (19) *)
   transitivity (
     x1;p41;p11;q214;q311;
-    ([!a1\cap !a4];p11;q214;q311 +
-     [!a1\cap  a4];p11;q214;q311 +
-     [ a1\cap !a4];p13;[!a4];q214;q311 +
-     [a1\cap a4];p13;([!a2];p22)^*;[a2 \cap !a3];p41;p11;q214;q311)^*;
-    [a1];p13;([!a2];p22)^*;[a2 \cap a3 \cap a4];z2). 
+    ([!a1 ⊓ !a4];p11;q214;q311 +
+     [!a1 ⊓  a4];p11;q214;q311 +
+     [ a1 ⊓ !a4];p13;[!a4];q214;q311 +
+     [a1 ⊓ a4];p13;([!a2];p22)^*;[a2 ⊓ !a3];p41;p11;q214;q311)^*;
+    [a1];p13;([!a2];p22)^*;[a2 ⊓ a3 ⊓ a4];z2). 
   clear -a4p13 a4p22. hkat. 
   do 2 rmov1 p13. 
   (** (23+) *)
   transitivity (
     x1;p41;p11;q214;q311;
-    ([!a1\cap !a4];p11;q214;q311 +
-     [!a1\cap  a4];p11;q214;q311 +
-     [ a1\cap !a4];p13;[!a4];q214;q311 +
-     [a1\cap a4];p13;([!a2];p22)^*;[a2 \cap !a3];p41;p11;q214;q311)^*;
-    ([!a2];p22)^*;[a1 \cap a2 \cap a3 \cap a4];(p13;z2)). 
+    ([!a1 ⊓ !a4];p11;q214;q311 +
+     [!a1 ⊓  a4];p11;q214;q311 +
+     [ a1 ⊓ !a4];p13;[!a4];q214;q311 +
+     [a1 ⊓ a4];p13;([!a2];p22)^*;[a2 ⊓ !a3];p41;p11;q214;q311)^*;
+    ([!a2];p22)^*;[a1 ⊓ a2 ⊓ a3 ⊓ a4];(p13;z2)). 
   clear -a1p22; hkat. 
   setoid_replace (p13;z2) with z2
      by (unfold z2, clr; mrewrite <-(gc_correct y1); [ simpl gc; kat | reflexivity ]).
   (** (24) *)
   transitivity (x1;p41;p11;q214;q311;
-    ([a1 \cap a4];p13;([!a2];p22)^*;[a2 \cap !a3];p41;p11;q214;q311)^*;
-    ([!a2];p22)^*;[a1 \cap a2 \cap a3 \cap a4];z2).
+    ([a1 ⊓ a4];p13;([!a2];p22)^*;[a2 ⊓ !a3];p41;p11;q214;q311)^*;
+    ([!a2];p22)^*;[a1 ⊓ a2 ⊓ a3 ⊓ a4];z2).
   clear -p41p11 a1p22 a1q214 a1q311 a4p11 a4p13 a4p22 a4q214 a4q311; hkat.
   (** big simplification w.r.t the paper proof here... *)
 
   (** (27) *)
-  assert (p41p11q214: p41;p11;q214 == p41;p11;q211).
-  change (upd y4 (f' y1) ; upd y1 (f' y1) ; upd y2 (g' y1 y4) == upd y4 (f' y1) ; upd y1 (f' y1) ; upd y2 (g' y1 y1)).
+  assert (p41p11q214: p41;p11;q214 ≡ p41;p11;q211).
+  change (upd y4 (f' y1) ; upd y1 (f' y1) ; upd y2 (g' y1 y4) ≡ upd y4 (f' y1) ; upd y1 (f' y1) ; upd y2 (g' y1 y1)).
   now rewrite 3frel_comp.
   do 2 mrewrite p41p11q214. clear p41p11q214.
   (** (29) *)
-  transitivity (x1;(p41;(p11;q211;q311;[a1];p13;([!a2];p22)^*;[a2\cap!a3]))^*;
-                p41;p11;q211;q311;([!a2];p22)^*;[a1\cap a2\cap a3];z2).
+  transitivity (x1;(p41;(p11;q211;q311;[a1];p13;([!a2];p22)^*;[a2 ⊓ !a3]))^*;
+                p41;p11;q211;q311;([!a2];p22)^*;[a1 ⊓ a2 ⊓ a3];z2).
   clear -p41p11 a1p22 a1q211 a1q311 a4p22 a4q211 a4q311; hkat.
   (** (31) *)
-  transitivity (x1;(p11;q211;q311;[a1];p13;([!a2];p22)^*;[a2\cap!a3])^*;
-                p11;q211;q311;([!a2];p22)^*;[a1\cap a2\cap a3];z2).
+  transitivity (x1;(p11;q211;q311;[a1];p13;([!a2];p22)^*;[a2 ⊓ !a3])^*;
+                p11;q211;q311;([!a2];p22)^*;[a1 ⊓ a2 ⊓ a3];z2).
   unfold z2, clr. mrewrite <-(gc_correct y4). 2: reflexivity. simpl gc. kat. 
   (** (32) *)
   rmov1 p13.
-  transitivity ((x1;p11);(q211;q311;([!a2];p22)^*;[a1\cap a2\cap!a3];(p13;p11))^*;
-                q211;q311;([!a2];p22)^*;[a1\cap a2\cap a3];z2).
+  transitivity ((x1;p11);(q211;q311;([!a2];p22)^*;[a1 ⊓ a2 ⊓ !a3];(p13;p11))^*;
+                q211;q311;([!a2];p22)^*;[a1 ⊓ a2 ⊓ a3];z2).
   clear -a1p22 a2p13 a3p13; hkat. 
   (** big simplification w.r.t the paper proof here... *)
 
@@ -506,24 +506,24 @@ Proof.
   setoid_replace (x1;p11) with s1 by apply eq_8. 
   setoid_replace (p13;p11) with r13 by apply eq_8. 
   (** (34) *)
-  transitivity (s1;(q211;q311;(([!a2];p22)^*;([a1];r13));[a2\cap!a3])^*;
-                q211;q311;([!a2];p22)^*;[a1\cap a2\cap a3];z2).
+  transitivity (s1;(q211;q311;(([!a2];p22)^*;([a1];r13));[a2 ⊓ !a3])^*;
+                q211;q311;([!a2];p22)^*;[a1 ⊓ a2 ⊓ a3];z2).
   clear -a2r13 a3r13; hkat. 
   setoid_replace (([!a2];p22)^*;([a1];r13)) with ([a1];r13;([!a2];p22)^*)
-   by (assert (r13;p22 == p22;r13) by (now apply eq_6'); rmov1 r13; clear -a1p22; hkat). 
-  transitivity (s1;([a1];(q211;q311;r13);([!a2];p22)^*;[a2\cap!a3])^*;
-                q211;q311;([!a2];p22)^*;[a1\cap a2\cap a3];z2).
+   by (assert (r13;p22 ≡ p22;r13) by (now apply eq_6'); rmov1 r13; clear -a1p22; hkat). 
+  transitivity (s1;([a1];(q211;q311;r13);([!a2];p22)^*;[a2 ⊓ !a3])^*;
+                q211;q311;([!a2];p22)^*;[a1 ⊓ a2 ⊓ a3];z2).
   clear -a1q311 a1q211; hkat. 
   (** (35) *)
   setoid_replace (q211;q311;r13) with (q211;q311;r12).
-  2: change (upd y2 (g' y1 y1) ; upd y3 (g' y1 y1) ; upd y1 (f' (f' y3)) == upd y2 (g' y1 y1) ; upd y3 (g' y1 y1) ; upd y1 (f' (f' y2))); now rewrite 3frel_comp.
+  2: change (upd y2 (g' y1 y1) ; upd y3 (g' y1 y1) ; upd y1 (f' (f' y3)) ≡ upd y2 (g' y1 y1) ; upd y3 (g' y1 y1) ; upd y1 (f' (f' y2))); now rewrite 3frel_comp.
   (** (36) *)
   transitivity (s1;([a1];(q211;q311);[!a2];r12;([!a2];p22)^*;[a2])^*;
-                (q211;q311);[a2];([!a2];p22)^*;[a1\cap a2];z2).
+                (q211;q311);[a2];([!a2];p22)^*;[a1 ⊓ a2];z2).
   clear -a3p22 a3r12 q211q311. hkat. 
   (** (37) *)
   transitivity (s1;([a1];q211;[!a2];r12;([!a2];p22)^*;[a2])^*;
-                q211;[a2];([!a2];p22)^*;[a1\cap a2];z2).
+                q211;[a2];([!a2];p22)^*;[a1 ⊓ a2];z2).
   unfold z2, clr. mrewrite <-(gc_correct y3). 2: reflexivity. simpl gc. kat. 
   (** (38) *)
   transitivity (s1;[a1];q211;([!a2];r12;[a1];p22;[a2];q211 + 
@@ -532,7 +532,7 @@ Proof.
   (** big simplification w.r.t the paper proof here... *)
 
   (** (43) *)
-  assert (p22q211: p22;q211 == q211) by apply eq_8. rewrite p22q211.
+  assert (p22q211: p22;q211 ≡ q211) by apply eq_8. rewrite p22q211.
   transitivity (s1;[a1];q211;([!a2];r12;[a1];(p22;q211))^*;[a2];z2). kat.
   rewrite p22q211. clear p22q211.
   (** (44) *)

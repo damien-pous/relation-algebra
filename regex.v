@@ -188,8 +188,8 @@ end.
 
 (** ** fundamental expansion theorem  *)
 
-Theorem expand' (e: regex') A: vars e <== A -> 
-  e == eps e + \sum_(a\in A) var a * deriv a e. 
+Theorem expand' (e: regex') A: vars e ≦ A -> 
+  e ≡ eps e + \sum_(a\in A) var a * deriv a e. 
 Proof. 
   induction e; simpl vars; intro HA; simpl deriv; fold_regex. 
   + rewrite sup_b, cupxb; ra. 
@@ -217,11 +217,11 @@ Proof.
     apply leq_supx. intros b _. case eqb_spec; try intros <-; ra. 
 Qed.
 
-Corollary expand e: e == eps e + \sup_(a\in vars e) var a * deriv a e.
+Corollary expand e: e ≡ eps e + \sup_(a\in vars e) var a * deriv a e.
 Proof. apply expand'. reflexivity. Qed.
 
 (* not used currently ; can easily be proved directly *)
-Corollary deriv_cancel a e: var a * deriv a e <== e.
+Corollary deriv_cancel a e: var a * deriv a e ≦ e.
 Proof. 
   rewrite (@expand' e ([a]++vars e)) at 2 by lattice.
   simpl. fold_regex. ra.
@@ -259,7 +259,7 @@ Lemma re_ind_eval leq weq (e: regex'):
   eval (X:=re_ind leq weq) (f':=fun _ =>regex_tt) var (to_expr e) = e. 
 Proof. induction e; simpl in *; reflexivity || congruence. Qed.
 
-Lemma leq_ind leq weq (L: laws BKA (re_ind leq weq)) (e f: regex'): e <== f -> leq e f.
+Lemma leq_ind leq weq (L: laws BKA (re_ind leq weq)) (e f: regex'): e ≦ f -> leq e f.
 Proof. 
   intro H. rewrite <-(re_ind_eval leq weq e), <-(re_ind_eval leq weq f). apply (H _ L). 
 Qed.
@@ -268,8 +268,8 @@ Qed.
 Instance deriv_leq a: Proper (leq ==> leq) (deriv a).
 Proof.
   intros e f. apply (@leq_ind 
-  (fun e f => e <== f /\ deriv a e <== deriv a f) 
-  (fun e f => e == f /\ deriv a e == deriv a f)).
+  (fun e f => e ≦ f /\ deriv a e ≦ deriv a f) 
+  (fun e f => e ≡ f /\ deriv a e ≡ deriv a f)).
   constructor; simpl; (try discriminate); (repeat intros _); (repeat right); 
     fold_regex; repeat intros _.
    constructor; simpl; (try discriminate); fold_regex; intros. 
@@ -307,7 +307,7 @@ Instance derivs_weq w: Proper (weq ==> weq) (derivs w) := op_leq_weq_1.
 
 (** ** deriving and expanding 01 regular expressions *)
 
-Lemma deriv_01 a e: is_01 e -> deriv a e == 0.
+Lemma deriv_01 a e: is_01 e -> deriv a e ≡ 0.
 Proof. 
   induction 1; simpl deriv; fold_regex. 
    reflexivity.
@@ -317,7 +317,7 @@ Proof.
    rewrite IHis_01. apply dot0x.
 Qed.
 
-Lemma expand_01 e: is_01 e -> e == eps e.
+Lemma expand_01 e: is_01 e -> e ≡ eps e.
 Proof.
   intro H. rewrite (expand e) at 1. 
   rewrite sup_b. apply cupxb. 
@@ -341,11 +341,11 @@ Proof. induction e; simpl pure_part; constructor; trivial. apply is_01_ofbool. Q
 
 (** ** expanding simple regular expressions *)
 
-Lemma str_eps e: eps e ^* == 1.
+Lemma str_eps e: eps e ^* ≡ 1.
 Proof. case epsilon. apply str1. apply str0. Qed.
 
 (* à dériver de [expand] ? *)
-Lemma expand_simple e: is_simple e -> e == eps e + pure_part e.
+Lemma expand_simple e: is_simple e -> e ≡ eps e + pure_part e.
 Proof.
   induction 1; simpl; fold_regex.
    lattice.
@@ -368,7 +368,7 @@ Proof.
 Qed.
 
 
-Lemma epsilon_deriv_pure a e: is_pure e -> eps (deriv a e) == deriv a e.
+Lemma epsilon_deriv_pure a e: is_pure e -> eps (deriv a e) ≡ deriv a e.
 Proof.
   induction 1; simpl; fold_regex. 
   reflexivity. 
@@ -378,7 +378,7 @@ Proof.
   rewrite deriv_01 by assumption. case (epsilon e); simpl; fold_regex; ra.
 Qed.
 
-Lemma expand_pure e A: is_pure e -> vars e <== A -> e == \sum_(a \in A) var a * deriv a e .
+Lemma expand_pure e A: is_pure e -> vars e ≦ A -> e ≡ \sum_(a \in A) var a * deriv a e .
 Proof.
   intros He HA. rewrite (expand' e HA) at 1. 
   rewrite epsilon_pure by assumption. apply cupbx.  
@@ -391,7 +391,7 @@ Lemma deriv_sup a I J (f: I -> regex'):
   deriv a (\sup_(i\in J) f i) = \sup_(i\in J) deriv a (f i). 
 Proof. apply f_sup_eq; now f_equal. Qed.
 
-Lemma epsilon_reflexive e: epsilon e -> 1 <== e.
+Lemma epsilon_reflexive e: epsilon e -> 1 ≦ e.
 Proof. intro H. rewrite (expand e), H. lattice. Qed.
 
 
@@ -408,7 +408,7 @@ Proof. intros e f H w. unfold lang. now rewrite H. Qed.
 Instance lang_weq: Proper (weq ==> weq) lang := op_leq_weq_1.
 
 (** (internal) characterisation of [epsilon] *)
-Lemma epsilon_iff_reflexive_eps (e: regex'): epsilon e <-> 1 <== eps e.
+Lemma epsilon_iff_reflexive_eps (e: regex'): epsilon e <-> 1 ≦ eps e.
 Proof. 
   case epsilon. intuition. intuition. discriminate. 
   apply lang_leq in H. specialize (H [] eq_refl). discriminate.
@@ -436,7 +436,7 @@ Proof.
 Qed.
 
 (** regular expression derivatives precisely correspond to language derivatives *)
-Lemma eval_deriv a e: elang (deriv a e) == lang_deriv a (elang e).
+Lemma eval_deriv a e: elang (deriv a e) ≡ lang_deriv a (elang e).
 Proof.
   induction e; simpl deriv; simpl eval; fold_regex; fold_lang.  
   - reflexivity. 
@@ -457,7 +457,7 @@ Qed.
 (** we deduce that both notions of language coincide: [lang] is the
    unique morphism from the coalgebra of regular expressions to the
    final coalgebra of languages *)
-Theorem lang_eval e: lang e == elang e.
+Theorem lang_eval e: lang e ≡ elang e.
 Proof.
   unfold lang. intro w. revert e. induction w as [|a w IH]; intro e; simpl derivs.
   - apply epsilon_iff_lang_nil.
@@ -465,23 +465,23 @@ Proof.
 Qed.
 
 (** as a consequence, [lang] is a KA morphism *)
-Corollary lang_0: lang 0 == bot.
+Corollary lang_0: lang 0 ≡ bot.
 Proof. now rewrite lang_eval. Qed.
 
-Corollary lang_1: lang 1 == 1.
+Corollary lang_1: lang 1 ≡ 1.
 Proof. now rewrite lang_eval. Qed.
 
-Corollary lang_var i: lang (var i) == eq [i].
+Corollary lang_var i: lang (var i) ≡ eq [i].
 Proof. now rewrite lang_eval. Qed.
 
-Corollary lang_pls e f: lang (e+f) == lang e \cup lang f.
+Corollary lang_pls e f: lang (e+f) ≡ lang e ⊔ lang f.
 Proof. now rewrite 3lang_eval. Qed.
 
-Corollary lang_sup I J (f: I -> _): lang (sup f J) == \sup_(i\in J) lang (f i).
+Corollary lang_sup I J (f: I -> _): lang (sup f J) ≡ \sup_(i\in J) lang (f i).
 Proof. apply f_sup_weq. apply lang_0. apply lang_pls. Qed.
 
-Corollary lang_dot e f: lang (e*f) == lang e * lang f.
+Corollary lang_dot e f: lang (e*f) ≡ lang e * lang f.
 Proof. now rewrite 3lang_eval. Qed.
 
-Corollary lang_itr e: lang (e^+) == lang e^+.
+Corollary lang_itr e: lang (e^+) ≡ lang e^+.
 Proof. rewrite 2lang_eval. simpl (elang _). symmetry. apply itr_str_l. Qed.

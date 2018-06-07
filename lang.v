@@ -75,14 +75,14 @@ Notation lang' := (lang_ops tt tt).
 
 (** auxiliary lemmas, to establish that languages form a residuated Kleene lattice *)
 Lemma lang_dotA n m p q x y z: 
-  lang_dot n m q x (lang_dot m p q y z) == lang_dot n p q (lang_dot n m p x y) z.
+  lang_dot n m q x (lang_dot m p q y z) ≡ lang_dot n p q (lang_dot n m p x y) z.
 Proof.
   intro w. split. 
   intros [u Hu [v [u' Hu' [v' Hv' ->]] ->]]. repeat eexists; eauto. apply ass_app.
   intros [u [u' Hu' [v' Hv' ->]] [v Hv ->]]. repeat eexists; eauto. apply app_ass.
 Qed.
 
-Lemma lang_dotx1 x: lang_dot tt tt tt x (lang_one tt) == x.
+Lemma lang_dotx1 x: lang_dot tt tt tt x (lang_one tt) ≡ x.
 Proof.
   intro w. split. 
    intros [u Hu [v <- ->]]. now rewrite <-app_nil_end. 
@@ -95,7 +95,7 @@ Proof.
   exists u. apply H, Hu. exists v. apply H', Hv. assumption.
 Qed.
 
-Lemma lang_iter_S i x: iter i x x == iter (S i) (lang_one tt) x.
+Lemma lang_iter_S i x: iter i x x ≡ iter (S i) (lang_one tt) x.
 Proof. 
   induction i; simpl iter. symmetry. apply lang_dotx1. 
   now apply (op_leq_weq_2 (Hf:=@lang_dot_leq _ _ _)).
@@ -103,7 +103,7 @@ Qed.
 
 (** languages form a residuated Kleene lattice 
    (we do not have an allegory, since the converse operation does not
-   satisfy the law [x<==x*x`*x]) *)
+   satisfy the law [x ≦x*x`*x]) *)
 Global Instance lang_laws: laws (BDL+STR+DIV) lang_ops.
 Proof.
   constructor; (try (intro; discriminate)); (try now left); repeat right; intros. 
@@ -135,7 +135,7 @@ Proof.
 Qed.
 
 (** concatenation of singleton languages *)
-Lemma eq_app_dot u v: eq (u++v) == (eq u: lang') * (eq v: lang').
+Lemma eq_app_dot u v: eq (u++v) ≡ (eq u: lang') * (eq v: lang').
 Proof. split. intros <-. repeat eexists; eauto. now intros [? <- [? <- <-]]. Qed.
 
 
@@ -143,18 +143,18 @@ Proof. split. intros <-. repeat eexists; eauto. now intros [? <- [? <- <-]]. Qed
 
 Definition lang_deriv a (L: lang'): lang' := fun w => L (a::w). 
 
-Lemma lang_deriv_0 a: lang_deriv a 0 == 0. 
+Lemma lang_deriv_0 a: lang_deriv a 0 ≡ 0. 
 Proof. firstorder. Qed.
 
-Lemma lang_deriv_1 a: lang_deriv a 1 == 0. 
+Lemma lang_deriv_1 a: lang_deriv a 1 ≡ 0. 
 Proof. compute. intuition discriminate. Qed.
 
 Lemma lang_deriv_pls a (H K: lang'): 
-  lang_deriv a (H+K) == lang_deriv a H + lang_deriv a K.
+  lang_deriv a (H+K) ≡ lang_deriv a H + lang_deriv a K.
 Proof. intro. now apply cup_weq. Qed.
 
 Lemma lang_deriv_dot_1 a (H K: lang'): H nil ->
-  lang_deriv a (H*K) == lang_deriv a H * K + lang_deriv a K.
+  lang_deriv a (H*K) ≡ lang_deriv a H * K + lang_deriv a K.
 Proof.
   intros Hnil w; simpl; unfold lang_deriv, lang_dot.
    split. 
@@ -165,7 +165,7 @@ Proof.
 Qed.
 
 Lemma lang_deriv_dot_2 a (H K: lang'): ~ (H nil) ->
-  lang_deriv a (H*K) == lang_deriv a H * K.
+  lang_deriv a (H*K) ≡ lang_deriv a H * K.
 Proof.
   intros Hnil w; simpl; unfold lang_deriv, lang_dot.
    split. 
@@ -176,7 +176,7 @@ Proof.
 Qed.
 
 Lemma lang_deriv_str a (H: lang'): 
-  lang_deriv a (H^*) == lang_deriv a H * H^*.
+  lang_deriv a (H^*) ≡ lang_deriv a H * H^*.
 Proof.
   intro w. split. 
   intros [n Hn]. induction n in a, w, Hn; simpl in Hn. 

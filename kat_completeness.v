@@ -21,20 +21,20 @@
 
    The proof can be summarised as follows:
    one exhibits a function [hat: gregex n m -> gregex n m] such that:
-   1. forall x, KAT |- hat x == x 
-   2. forall x, G(hat x) == R(hat x), where 
+   1. forall x, KAT |- hat x ≡ x 
+   2. forall x, G(hat x) ≡ R(hat x), where 
       . G(y) is the typed guarded strings interpretation of y
       . R(y) is the language interpretation of y, seen as a regular expression
    (the concrete coercions will be specified later on)
 
    From these properties, it follows that for all x,y: gregex n m, we have
-           G(x) == G(y)
- =>    G(hat x) == G(hat y)          (1, and G is a model)
- =>    R(hat x) == R(hat x)          (2)
- => KA |- hat x == hat y             (KA completeness)
- => KA |- hat x == hat y : n -> m    (untyping theorem for KA)
- => KAT|- hat x == hat y : n -> m    (KA theorems hold in KAT)
- => KAT|-     x == y : n -> m        (1, and transitivity)
+           G(x) ≡ G(y)
+ =>    G(hat x) ≡ G(hat y)          (1, and G is a model)
+ =>    R(hat x) ≡ R(hat x)          (2)
+ => KA |- hat x ≡ hat y             (KA completeness)
+ => KA |- hat x ≡ hat y : n -> m    (untyping theorem for KA)
+ => KAT|- hat x ≡ hat y : n -> m    (KA theorems hold in KAT)
+ => KAT|-     x ≡ y : n -> m        (1, and transitivity)
    
    (the converse is immediate, G being a model) *)
 
@@ -90,7 +90,7 @@ Notation teval := (sup (@geval _ _)).
 Definition g_prd' n p: guards n n  := 
   map g_pred (filter (fun a => lsyntax.eval (set.mem a) p) (seq (pow2 pred))).
 
-Lemma teval_prd n (p: tst n): teval (g_prd' n p) == inj p. 
+Lemma teval_prd n (p: tst n): teval (g_prd' n p) ≡ inj p. 
 Proof.
   unfold g_prd'. rewrite sup_map. unfold geval. 
   setoid_rewrite <-inj_sup. apply inj_weq.
@@ -102,7 +102,7 @@ Qed.
 (** accordingly, [1] is simply mapped to the set of all atoms *)
 Definition g_one' n := g_prd' n (@lsyntax.e_top _).
 
-Lemma teval_one n: teval (g_one' n) == 1. 
+Lemma teval_one n: teval (g_one' n) ≡ 1. 
 Proof. unfold g_one'. rewrite teval_prd. apply inj_top. Qed.
 
 (** *** letters *)
@@ -112,14 +112,14 @@ Proof. unfold g_one'. rewrite teval_prd. apply inj_top. Qed.
 
 Definition g_var' i := \sup_(f<_) \sup_(g<_) [g_elem f (g_var i) g]%list.
 
-Lemma sum_atoms n: \sup_(i<pow2 pred) g_atom n i == 1.
+Lemma sum_atoms n: \sup_(i<pow2 pred) g_atom n i ≡ 1.
 Proof.
   rewrite <- teval_one. unfold g_one', g_prd'. rewrite sup_map.
   apply sup_weq. reflexivity. 
   induction seq. reflexivity. now apply (cup_weq [_] [_])%list.
 Qed.
 
-Lemma teval_var i: teval (g_var' i) == g_var i.
+Lemma teval_var i: teval (g_var' i) ≡ g_var i.
 Proof.
   unfold g_var'. rewrite sup_sup. setoid_rewrite sup_sup.
   setoid_rewrite sup_singleton. unfold geval.
@@ -153,17 +153,17 @@ Definition g_dot' n m p (h: guards n m) (k: guards m p) :=
   \sup_(x\in h) \sup_(y\in k) g_dot1 x y.
 
 (** the correctness of this construction relies on the following two lemma *)
-Lemma empty_atom_dot n a b: a<>b -> g_atom n a * g_atom n b == 0.
+Lemma empty_atom_dot n a b: a<>b -> g_atom n a * g_atom n b ≡ 0.
 Proof. 
   intros. setoid_rewrite <-inj_cap.
   rewrite (empty_atom_cap H). apply inj_bot. 
 Qed.
 
-Lemma idem_atom_dot n a: g_atom n a * g_atom n a == g_atom n a.
+Lemma idem_atom_dot n a: g_atom n a * g_atom n a ≡ g_atom n a.
 Proof. setoid_rewrite <-inj_cap. now rewrite capI. Qed.
 
 (** correctness of [g_dot1] *)
-Lemma geval_dot n m p (x: guard n m) (y: guard m p): teval (g_dot1 x y) == geval x * geval y.
+Lemma geval_dot n m p (x: guard n m) (y: guard m p): teval (g_dot1 x y) ≡ geval x * geval y.
 Proof.
   destruct x as [? a|? ? a e b]; destruct y as [? c|? ? c f d]; unfold g_dot1; 
     (case eqb_spec; [intros <-|intro E]); unfold geval; rewrite ?sup_singleton; unfold sup.
@@ -181,7 +181,7 @@ Qed.
 
 (** correctness of [g_dot'] *)
 Lemma teval_dot n m p (x: guards n m) (y: guards m p):
-  teval (g_dot' x y) == teval x * teval y.
+  teval (g_dot' x y) ≡ teval x * teval y.
 Proof.
   unfold g_dot'. rewrite sup_sup. setoid_rewrite sup_sup.
   setoid_rewrite geval_dot. 
@@ -201,12 +201,12 @@ Definition g_inner_dot n m (x: guard n m): forall p, guard m p -> gregex n p :=
     | g_pred a => fun p y => 
       match y with 
         | g_pred b       => 0
-        | g_elem b e c => if eqb a b \cap eqb a c then e else 0
+        | g_elem b e c => if eqb a b ⊓ eqb a c then e else 0
       end
     | g_elem a e b => fun p y => 
       match y with 
-        | g_pred c => fun e => if eqb a b \cap eqb b c  then e else 0
-        | g_elem c f d => fun e => if eqb b c \cap eqb a d then e*g_atom _ b*f else 0
+        | g_pred c => fun e => if eqb a b ⊓ eqb b c  then e else 0
+        | g_elem c f d => fun e => if eqb b c ⊓ eqb a d then e*g_atom _ b*f else 0
       end e
   end.
 
@@ -226,14 +226,14 @@ Fixpoint g_str' n (x: guards n n) :=
 
 (** the correctness of this construction is substantially more involved than for the other ones *)
 
-Lemma geval_fst n m (r: guard n m): geval r == g_atom _ (fst r) * geval r. 
+Lemma geval_fst n m (r: guard n m): geval r ≡ g_atom _ (fst r) * geval r. 
 Proof.
   destruct r.
    simpl fst; unfold geval. now rewrite idem_atom_dot. 
    simpl fst; unfold geval. now rewrite 2dotA, idem_atom_dot.
 Qed.
 
-Lemma geval_lst n m (r: guard n m): geval r == geval r * g_atom _ (lst r). 
+Lemma geval_lst n m (r: guard n m): geval r ≡ geval r * g_atom _ (lst r). 
 Proof.
   destruct r.
    simpl fst; unfold geval. now rewrite idem_atom_dot. 
@@ -251,7 +251,7 @@ Proof.
 Qed.
 
 Lemma teval_inner_dot n m p (x: guard n m) (y: guard m p):
-  dirac n p + g_atom _ (fst x) * g_inner_dot x y * g_atom _ (fst x) == 
+  dirac n p + g_atom _ (fst x) * g_inner_dot x y * g_atom _ (fst x) ≡ 
   dirac n p + ofbool (eqb (fst x) (lst y)) * geval x * geval y.
 Proof.
   unfold g_inner_dot.
@@ -279,7 +279,7 @@ Proof.
      ra. 
 Qed.
 
-Lemma teval_xitr n m (r: guard n m) q: teval (xitr r q) == (geval r * teval q)^+.
+Lemma teval_xitr n m (r: guard n m) q: teval (xitr r q) ≡ (geval r * teval q)^+.
 Proof.
   unfold xitr. 
   rewrite 2teval_dot, sup_app, 2sup_singleton, teval_one. 
@@ -298,7 +298,7 @@ Proof.
   rewrite (geval_lst e), <-2dotA, empty_atom_dot by congruence. ra. 
 Qed.
 
-Lemma teval_str n (x: guards n n): teval (g_str' x) == teval x ^*.
+Lemma teval_str n (x: guards n n): teval (g_str' x) ≡ teval x ^*.
 Proof.
   induction x as [|r q IH]; simpl g_str'. 
   rewrite teval_one. symmetry. apply str0.
@@ -312,13 +312,13 @@ Fixpoint hat n m (e: gregex n m): guards n m :=
   match e with
     | g_zer _ _ _ => []
     | g_prd _ _ p => g_prd' _ p
-    | g_pls e f => hat e \cup hat f
+    | g_pls e f => hat e ⊔ hat f
     | g_dot e f => g_dot' (hat e) (hat f)
     | g_itr e => g_dot' (hat e) (g_str' (hat e))
     | g_var i => g_var' i
   end.
 
-Theorem teval_hat n m (e: gregex n m): teval (hat e) == e.
+Theorem teval_hat n m (e: gregex n m): teval (hat e) ≡ e.
 Proof.
   induction e; simpl hat. 
    reflexivity.
@@ -479,8 +479,8 @@ Definition o': forall n m, expr3 n m -> gregex n m :=
               | l_var i => g_var i
             end).
 
-Lemma o'o_pred: forall n (a: test), o' (o_pred n a) == g_prd _ _ a
- with o'o_npred: forall n (a: test), o' (o_npred n a) == g_prd _ _ (!a).
+Lemma o'o_pred: forall n (a: test), o' (o_pred n a) ≡ g_prd _ _ a
+ with o'o_npred: forall n (a: test), o' (o_npred n a) ≡ g_prd _ _ (!a).
 Proof.
   destruct a.
    symmetry. apply inj_bot. 
@@ -501,7 +501,7 @@ Proof.
 Qed.
 
 (** [o] admits [o'] as left-inverse *)
-Lemma o'o: forall n m (e: gregex n m), o' (o e) == e.
+Lemma o'o: forall n m (e: gregex n m), o' (o e) ≡ e.
 Proof.
   induction e; simpl o; simpl o'. 
    reflexivity. 
@@ -516,7 +516,7 @@ Lemma o'_weq n m: Proper (weq ==> weq) (@o' n m).
 Proof. intros ? ? H. apply (H (gregex_monoid_ops _ _ _) _ id). Qed.
 
 (** so that [o] is injective *)
-Corollary o_inj n m (e f: gregex n m): o e == o f -> e == f.
+Corollary o_inj n m (e f: gregex n m): o e ≡ o f -> e ≡ f.
 Proof. intro H. apply o'_weq in H. revert H. now rewrite 2o'o. Qed.
 
 
@@ -528,7 +528,7 @@ Definition v: forall n m, expr3 n m -> regex :=
 Definition w (e: regex): uexpr3 :=
   eval (X:=expr_ops _ _ BKA) (f':=fun _ => xH) (fun p => e_var (pl p)) (to_expr e).
 
-Lemma wv_u n m (e: expr3 n m): e_level e << BKA -> w (v e) == erase BKA e.
+Lemma wv_u n m (e: expr3 n m): e_level e << BKA -> w (v e) ≡ erase BKA e.
 Proof.
   unfold w.
   induction e; simpl e_level; intro Hl; try discriminate_levels;
@@ -539,7 +539,7 @@ Proof.
 Qed.
 
 (** key lemma to be able to use the untyping theorem *)
-Lemma wvo_uo n m (e: gregex n m): w (v (o e)) == erase BKA (o e).
+Lemma wvo_uo n m (e: gregex n m): w (v (o e)) ≡ erase BKA (o e).
 Proof. apply wv_u, o_level. Qed. (* note: on doit pouvoir prouver une égalité forte *)
 
 Lemma w_weq: Proper (weq ==> weq) w. 
@@ -608,7 +608,7 @@ Qed.
 
 (** * 2. G (hat e) = R (hat e)
 
-   (more formally, gl (G (hat e)) == R (v (o (hat e))))
+   (more formally, gl (G (hat e)) ≡ R (v (o (hat e))))
 
   *)
 
@@ -620,7 +620,7 @@ Notation latom n a := (eq (atom_to_word n a): lang).
 
 (** regular language corresponding to an atom *)
 
-Lemma R_lang_atom n a: R (v (o (g_atom n a))) == latom n a.
+Lemma R_lang_atom n a: R (v (o (g_atom n a))) ≡ latom n a.
 Proof.
   simpl o. unfold atom, atom_to_word. 
   induction (seq pred). apply R.lang_1. simpl (sup _ _). 
@@ -633,22 +633,22 @@ Qed.
 
 (** [gl] is a semilattice morphism (note that it does not preserve products/iterations) *)
 
-Lemma gl_bot n m: @gl n m bot == bot.
+Lemma gl_bot n m: @gl n m bot ≡ bot.
 Proof. split. intros [? [? []]]. intros []. Qed.
 
-Lemma gl_cup n m (e f: glang n m): gl (e \cup f) == gl e \cup gl f.
+Lemma gl_cup n m (e f: glang n m): gl (e ⊔ f) ≡ gl e ⊔ gl f.
 Proof. 
   split. 
    intros [w [-> [H|H]]]; [left|right]; exists w; split; auto.
    intros [H|H]; destruct H as [w [-> H]]; exists w; split; trivial; (now left) || (now right).
 Qed.
 
-Lemma gl_sup n m I J (f: I -> glang n m): gl (sup f J) == \sup_(i\in J) gl (f i).
+Lemma gl_sup n m I J (f: I -> glang n m): gl (sup f J) ≡ \sup_(i\in J) gl (f i).
 Proof. apply f_sup_weq. apply gl_bot. apply gl_cup. Qed.
 
 (** [gl] maps atoms to atoms *)
 
-Lemma gl_atom n a: gl (tatom n a) == latom n a.
+Lemma gl_atom n a: gl (tatom n a) ≡ latom n a.
 Proof.
   intro w; split. 
   intros [g [-> <-]]. reflexivity. 
@@ -657,7 +657,7 @@ Qed.
 
 (** image of single letter traces under [gl] *)
 Lemma gl_single' a i b:
-  gl (tsingle' a i b) == 
+  gl (tsingle' a i b) ≡ 
   eq (atom_to_word (src i) a++[lp (l_var i)]++atom_to_word (tgt i) b).
 Proof.
   intro w; split. 
@@ -667,9 +667,9 @@ Qed.
 
 (** key auxiliary lemma for composition: we need to use an atom as a cutting point *)
 Lemma gl_dot n m p (e: glang n m) a (f: glang m p) (e' f': lang): 
-  gl (e * tatom m a) == e' * latom m a ->  
-  gl (tatom m a * f) == latom m a * f' ->  
-  gl (e * tatom m a * f) == e' * latom m a * f'.
+  gl (e * tatom m a) ≡ e' * latom m a ->  
+  gl (tatom m a * f) ≡ latom m a * f' ->  
+  gl (e * tatom m a * f) ≡ e' * latom m a * f'.
 Proof.
   setoid_rewrite weq_spec.
   intros He Hf. split; intro w.
@@ -696,7 +696,7 @@ Proof.
     congruence.
 Qed.
 
-Lemma gl_nildot a n m (e: glang n m): exists e', gl (tatom n a * e) == latom n a * e'.
+Lemma gl_nildot a n m (e: glang n m): exists e', gl (tatom n a * e) ≡ latom n a * e'.
 Proof.
   exists (fun w => exists g, proj1_sig e g /\ thead g = a /\ w = gword_to_word' g).
   rewrite weq_spec. split; intro w.
@@ -708,8 +708,8 @@ Qed.
 
 (** key auxiliary lemma for iteration: we need to use an atom as bounds *)
 Lemma gl_itr n (e: glang n n) a (e': lang): 
-  gl (tatom n a * e * tatom n a) == e' * latom n a ->  
-  gl ((tatom n a * e)^+ * tatom n a) == e'^+ * latom n a.
+  gl (tatom n a * e * tatom n a) ≡ e' * latom n a ->  
+  gl ((tatom n a * e)^+ * tatom n a) ≡ e'^+ * latom n a.
 Proof.
   rename n into m.
   intro H. rewrite <-itr_dot. apply antisym.
@@ -727,7 +727,7 @@ Proof.
     repeat eexists; eauto.
      rewrite Hu, <-(tapp_head H'). apply tapp_nil_x.
      rewrite Hn; apply tapp_x_nil.
-    assert (Hext: e' * (e'^+ * latom m a) <== e'^+ * latom m a).
+    assert (Hext: e' * (e'^+ * latom m a) ≦ e'^+ * latom m a).
      now rewrite dotA, itr_cons.
     apply Hext. clear Hext.
     eexists. eassumption. eexists. apply IHn. apply Haw. 
@@ -744,10 +744,10 @@ Qed.
 
 (** ** clean terms: those on which [G] and [R] coincide *)
 
-Definition clean1 n m (e: guard n m) := gl (G (geval e)) == R (v (o (geval e))).
+Definition clean1 n m (e: guard n m) := gl (G (geval e)) ≡ R (v (o (geval e))).
 Definition clean n m (e: guards n m) := forall g, In g e -> clean1 g.
 
-Lemma G_clean n m (e: guards n m): clean e -> gl (G (teval e)) == R (v (o (teval e))).
+Lemma G_clean n m (e: guards n m): clean e -> gl (G (teval e)) ≡ R (v (o (teval e))).
 Proof.
   intro He. rewrite o_sup, v_sup, lang_sup, R.lang_sup, gl_sup.
   apply sup_weq'. reflexivity. intros g Hg. apply He, Hg. 
@@ -802,10 +802,10 @@ Proof. apply clean_map. intros. apply clean_pred. Qed.
 
 Lemma clean_inner_dot n m (e: guard n m) (He: clean1 e):
   forall p (f: guard m p), clean1 f -> 
-   gl (tatom n (fst e) * G (g_inner_dot e f) * tatom p (fst e)) ==
+   gl (tatom n (fst e) * G (g_inner_dot e f) * tatom p (fst e)) ≡
    latom n (fst e) * R (v (o (g_inner_dot e f))) * latom p (fst e).
 Proof.
-  assert (Z: forall n m p q (e: glang n m) (f: glang p q) e' f', gl (e*G 0*f) == e'*R 0*f').
+  assert (Z: forall n m p q (e: glang n m) (f: glang p q) e' f', gl (e*G 0*f) ≡ e'*R 0*f').
    intros. rewrite G.lang_0, dotx0, dot0x, gl_bot. setoid_rewrite R.lang_0. ra. 
   destruct e as [n a|n m a e b]; destruct f as [p c|p q c f d]; intros Hf;
     simpl fst; simpl lst; simpl g_inner_dot.
@@ -871,13 +871,13 @@ Qed.
 
 (** whence the desired property, as a corollary *)
 
-Corollary G_hat n m (e: gregex n m): gl (G e) == R (v (o (teval (hat e)))).
+Corollary G_hat n m (e: gregex n m): gl (G e) ≡ R (v (o (teval (hat e)))).
 Proof. rewrite <-(teval_hat e) at 1. apply G_clean, clean_hat. Qed.
 
 (** * KAT completeness *)
 
 (** we assemble all the pieces as explained at the beginning of this file *)
-Theorem kat_complete_weq n m: forall e f: gregex n m, G e == G f -> e == f.
+Theorem kat_complete_weq n m: forall e f: gregex n m, G e ≡ G f -> e ≡ f.
 Proof.
   intros e f H.
   apply gl_weq in H. 
@@ -894,14 +894,14 @@ Proof.
 Qed.
 
 (** we deduce a similar result for language inclusions *)
-Corollary kat_complete_leq n m: forall e f: gregex n m, G e <== G f -> e <== f.
+Corollary kat_complete_leq n m: forall e f: gregex n m, G e ≦ G f -> e ≦ f.
 Proof. intros e f. rewrite 2leq_iff_cup, <-G.lang_pls. apply kat_complete_weq. Qed.
 
 (** and the above implications actually are equivalences *)
-Corollary kat_correct_complete_weq n m: forall e f: gregex n m, G e == G f <-> e == f.
+Corollary kat_correct_complete_weq n m: forall e f: gregex n m, G e ≡ G f <-> e ≡ f.
 Proof. split. apply kat_complete_weq. apply G.lang_weq. Qed.
 
-Corollary kat_correct_complete_leq n m: forall e f: gregex n m, G e <== G f <-> e <== f.
+Corollary kat_correct_complete_leq n m: forall e f: gregex n m, G e ≦ G f <-> e ≦ f.
 Proof. split. apply kat_complete_leq. apply G.lang_leq. Qed.
 
 (** * KAT decidability  *)
@@ -911,7 +911,7 @@ Proof. split. apply kat_complete_leq. apply G.lang_leq. Qed.
    - KAT equality is decidable *)
 
 Corollary kat_reduces_to_ka n m: forall e f: gregex n m, 
-  e==f <-> v (o (teval (hat e))) == v (o (teval (hat f))).
+  e ≡f <-> v (o (teval (hat e))) ≡ v (o (teval (hat f))).
 Proof.
    intros. split; intro H. 
     apply ka_complete_weq. now rewrite <-2G_hat, H.
@@ -924,7 +924,7 @@ Proof.
     now rewrite 2teval_hat in H. 
 Qed.
 
-Corollary kat_dec n m: forall e f: gregex n m, {e==f} + {~(e==f)}.
+Corollary kat_dec n m: forall e f: gregex n m, {e ≡f} + {~(e ≡f)}.
 Proof. intros. eapply sumbool_iff. symmetry. apply kat_reduces_to_ka. apply ka_weq_dec. Qed.
 
 End s.

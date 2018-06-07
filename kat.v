@@ -39,7 +39,7 @@ Notation " [ p ] " := (inj p): ra_terms.
 (* Definition inj' X n: @car' X n -> @car'' X n := @inj X n. *)
 (* Coercion inj' : car' >-> car''. *)
 (* Print Coercion Paths car' car. *)
-(* Goal forall `{X: ops} n m (a: X n m) (p: tst n) (q: tst m), p*a*q == a. *)
+(* Goal forall `{X: ops} n m (a: X n m) (p: tst n) (q: tst m), p*a*q ≡ a. *)
 
 
 (** * KAT laws  *)
@@ -61,8 +61,8 @@ Class laws (X: ops) := {
   kar_BKA:> monoid.laws BKA kar;
   tst_BL:> forall n, lattice.laws BL (tst n);
   mor_inj: forall n, morphism BSL (@inj X n);
-  inj_top: forall n, [top] == one n;
-  inj_cap: forall n (p q: tst n), [p \cap q] == [p] * [q]
+  inj_top: forall n, [top] ≡ one n;
+  inj_cap: forall n (p q: tst n), [p ⊓ q] ≡ [p] * [q]
 }.
 
 
@@ -78,13 +78,13 @@ Proof. apply mor_inj. Qed.
 Global Instance inj_weq: Proper (weq ==> weq) (@inj X n).
 Proof. apply mor_inj. Qed.
 
-Lemma inj_bot: [bot] == zer n n.
+Lemma inj_bot: [bot] ≡ zer n n.
 Proof. now apply mor_inj. Qed.
 
-Lemma inj_cup (p q: tst n): [p \cup q] == [p] + [q].
+Lemma inj_cup (p q: tst n): [p ⊔ q] ≡ [p] + [q].
 Proof. now apply mor_inj. Qed.
 
-Lemma str_inj (p: tst n): [p]^* == 1.
+Lemma str_inj (p: tst n): [p]^* ≡ 1.
 Proof. apply antisym. now rewrite leq_xt, inj_top, str1. apply str_refl. Qed.
 
 End s.

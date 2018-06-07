@@ -17,26 +17,26 @@ Unset Printing Implicit Defensive.
 
 (** generic lemmas *)
 
-Lemma dottx `{laws} `{TOP<<l} n m (x: X n m): x <== top*x.
+Lemma dottx `{laws} `{TOP<<l} n m (x: X n m): x ≦ top*x.
 Proof. rewrite <-dot1x at 1. apply dot_leq; lattice. Qed.
 
-Lemma dotxt `{laws} `{TOP<<l} n m (x: X m n): x <== x*top.
+Lemma dotxt `{laws} `{TOP<<l} n m (x: X m n): x ≦ x*top.
 Proof. dual @dottx. Qed.
 
-Lemma top_nnm `{laws} `{TOP<<l} n m: top' n n * top' n m == top' n m. 
+Lemma top_nnm `{laws} `{TOP<<l} n m: top' n n * top' n m ≡ top' n m. 
 Proof. apply leq_tx_iff. apply dottx. Qed.
 
-Lemma top_mnn `{laws} `{TOP<<l} n m: top' m n * top' n n == top' m n. 
+Lemma top_mnn `{laws} `{TOP<<l} n m: top' m n * top' n n ≡ top' m n. 
 Proof. dual @top_nnm. Qed.
 
-Lemma disjoint_id `{laws} `{AL+BOT<<l} n m (p q: X n m): p \cap q <== 0 -> 1\cap (p*q`) == 0. 
+Lemma disjoint_id `{laws} `{AL+BOT<<l} n m (p q: X n m): p ⊓ q ≦ 0 -> 1 ⊓ (p*q`) ≡ 0. 
 Proof. 
   intro Hpq. apply leq_xb_iff. rewrite capC, capxdot. ra_normalise.
   rewrite Hpq. ra. 
 Qed.
 
 Lemma dedekind `{laws} `{AL<<l} n m p (x : X n m) (y : X m p) (z : X n p):
-  x*y \cap z <== (x \cap (z*y`))*(y \cap (x`*z)).
+  x*y ⊓ z ≦ (x ⊓ (z*y`))*(y ⊓ (x`*z)).
 Proof. rewrite <-(capI z) at 1. rewrite capA, capdotx, capxdot. ra. Qed.
   
 (** algebraic properties of relations 
@@ -47,7 +47,7 @@ Proof. rewrite <-(capI z) at 1. rewrite capA, capdotx, capxdot. ra. Qed.
 
 Ltac tc := solve [eauto with typeclass_instances].
 
-Class is_nonempty {X: ops} n m (x: X n m) := nonempty: forall p q, top' p q <== top * x * top.
+Class is_nonempty {X: ops} n m (x: X n m) := nonempty: forall p q, top' p q ≦ top * x * top.
 Notation is_nonempty' m := (is_nonempty (one m)).
 
 Lemma nonempty_dom `{laws} `{TOP<<l} n m {x: X n m} {Hx: is_nonempty x}: is_nonempty' n.
@@ -61,17 +61,17 @@ Section props.
   
 Context {l: level} {X: ops}. 
 
-Class is_reflexive n (x: X n n) := reflexive: 1 <== x.
-Class is_irreflexive n (x: X n n) := irreflexive: x \cap 1 == 0.
-Class is_transitive n (x: X n n) := transitive: x * x <== x.
-Class is_linear n (x: X n n) := linear: x \cup x` == top.
-Class is_symmetric n (x: X n n) := symmetric_: x` <== x. (* see below for [symmetric] *)
-Class is_antisymmetric n (x: X n n) := antisymmetric: x`\cap x <== 1.
-Class is_univalent n m (x: X n m) := univalent: x` * x <== 1.
-Class is_injective n m (x: X n m) := injective: x * x` <== 1.
-Class is_surjective n m (x: X n m) := surjective: 1 <== x` * x.
-Class is_total n m (x: X n m) := total: 1 <== x * x`.
-Class is_vector n m (v: X n m) := vector: v*top == v.
+Class is_reflexive n (x: X n n) := reflexive: 1 ≦ x.
+Class is_irreflexive n (x: X n n) := irreflexive: x ⊓ 1 ≡ 0.
+Class is_transitive n (x: X n n) := transitive: x * x ≦ x.
+Class is_linear n (x: X n n) := linear: x ⊔ x` ≡ top.
+Class is_symmetric n (x: X n n) := symmetric_: x` ≦ x. (* see below for [symmetric] *)
+Class is_antisymmetric n (x: X n n) := antisymmetric: x` ⊓ x ≦ 1.
+Class is_univalent n m (x: X n m) := univalent: x` * x ≦ 1.
+Class is_injective n m (x: X n m) := injective: x * x` ≦ 1.
+Class is_surjective n m (x: X n m) := surjective: 1 ≦ x` * x.
+Class is_total n m (x: X n m) := total: 1 ≦ x * x`.
+Class is_vector n m (v: X n m) := vector: v*top ≡ v.
 
 Class is_point n m (p: X n m) := {
   point_vector:> is_vector p;
@@ -79,8 +79,8 @@ Class is_point n m (p: X n m) := {
   point_nonempty:> is_nonempty p}.
 
 Class is_atom n m (a: X n m) := {
-  a_top_a': a*top*a` <== 1;
-  a'_top_a: a`*top*a <== 1;
+  a_top_a': a*top*a` ≦ 1;
+  a'_top_a: a`*top*a ≦ 1;
   atom_nonempty:> is_nonempty a}.
 
 Class is_mapping n m (f: X n m) := {
@@ -146,13 +146,13 @@ Proof. apply proper_weq_leq_iff. intros ? ? E [? ?]. split; now rewrite <-E. Qed
 
 (** alternative characterisation of [is_surjective] *)
 
-Lemma surjective_tx `{TOP<<l} {n m} {x: X n m} {Hx: is_surjective x} p: top' p _ * x == top.
+Lemma surjective_tx `{TOP<<l} {n m} {x: X n m} {Hx: is_surjective x} p: top' p _ * x ≡ top.
 Proof.
   apply leq_tx_iff. transitivity (top' p _ * (x` * x)).
   rewrite <-surjective. ra. rewrite dotA. apply dot_leq; lattice.
 Qed.
 
-Lemma tx_surjective `{AL+TOP<<l} n m (x: X m n): top' n n <== top*x -> is_surjective x.
+Lemma tx_surjective `{AL+TOP<<l} n m (x: X m n): top' n n ≦ top*x -> is_surjective x.
 Proof.
   intro E. unfold is_surjective.
   transitivity (1 ^ (top' n m * x)). rewrite <-E. lattice.
@@ -161,16 +161,16 @@ Qed.
 
 (** basic properties  *)
 
-Lemma symmetric `{CNV<<l} {n} {x: X n n} {Hx: is_symmetric x}: x`==x.
+Lemma symmetric `{CNV<<l} {n} {x: X n n} {Hx: is_symmetric x}: x` ≡ x.
 Proof. apply antisym. assumption. now cnv_switch. Qed.
 
-Lemma irreflexive' `{BL<<l} {n} {x: X n n} {Hx: is_irreflexive x}: x <== !1.
+Lemma irreflexive' `{BL<<l} {n} {x: X n n} {Hx: is_irreflexive x}: x ≦ !1.
 Proof. now rewrite <-leq_cap_neg', Hx. Qed.
 
-Lemma vector' `{TOP<<l} {n m} {v: X n m} {Hv: is_vector v} x: v * x <== v.
+Lemma vector' `{TOP<<l} {n m} {v: X n m} {Hv: is_vector v} x: v * x ≦ v.
 Proof. rewrite <-vector at 2. ra. Qed.
 
-Lemma top_nonempty `{TOP<<l} {n m p} {Hm: is_nonempty' m}: top' n m * top' m p == top.
+Lemma top_nonempty `{TOP<<l} {n m p} {Hm: is_nonempty' m}: top' n m * top' m p ≡ top.
 Proof. apply leq_tx_iff. rewrite nonempty. ra. Qed.
 
 
@@ -235,7 +235,7 @@ Proof. split; tc. Qed.          (* actually just need x to be injective and surj
 Global Instance order_cnv `{AL<<l} {n} {x: X n n} {Hx: is_order x}: is_order (x`).
 Proof. constructor; tc. Qed.
 
-Global Instance vector_cap `{CAP+TOP<<l} {n m} {v w: X n m} {Hv: is_vector v} {Hw: is_vector w}: is_vector (v \cap w). 
+Global Instance vector_cap `{CAP+TOP<<l} {n m} {v w: X n m} {Hv: is_vector v} {Hw: is_vector w}: is_vector (v ⊓ w). 
 Proof. 
   unfold is_vector. apply antisym. 2: apply dotxt. 
   now rewrite dotcapx, 2vector. 
@@ -259,24 +259,24 @@ Proof. unfold is_symmetric. now rewrite cnvitr, symmetric. Qed.
 
 (** lemmas about relations of a specific shape *)
 
-Lemma itr_transitive `{STR<<l} n (x: X n n): is_transitive x -> x^+ == x.
+Lemma itr_transitive `{STR<<l} n (x: X n n): is_transitive x -> x^+ ≡ x.
 Proof. intro. apply antisym. now apply itr_ind_l1. apply itr_ext. Qed.
 
-Lemma str_transitive `{KA<<l} n (x: X n n): is_transitive x -> x^* == 1+x.
+Lemma str_transitive `{KA<<l} n (x: X n n): is_transitive x -> x^* ≡ 1+x.
 Proof. intro. now rewrite str_itr, itr_transitive. Qed.
 
-Lemma dot_mono `{AL<<l} n (x y: X n n): x <== 1 -> y <== 1 -> x*y == x \cap y. 
+Lemma dot_mono `{AL<<l} n (x y: X n n): x ≦ 1 -> y ≦ 1 -> x*y ≡ x ⊓ y. 
 Proof. 
   intros Hx Hy. apply antisym. apply leq_xcap.
    rewrite Hy; ra.
    rewrite Hx; ra.
-  transitivity (x*1 \cap y). ra.
+  transitivity (x*1 ⊓ y). ra.
   rewrite capdotx. rewrite Hx at 2.
   ra_normalise. apply dot_leq; lattice. 
 Qed.
 
 Lemma kernel_refl_antisym `{laws} `{CAP+CNV<<l} {n} {x: X n n}
-  {Hr: is_reflexive x} {Ha: is_antisymmetric x}: x` \cap x == 1. 
+  {Hr: is_reflexive x} {Ha: is_antisymmetric x}: x` ⊓ x ≡ 1. 
 Proof. 
   apply antisym. assumption.
   apply cap_spec; split; trivial. 
@@ -284,20 +284,20 @@ Proof.
 Qed. 
 
 Lemma dot_univalent_cap `{AL<<l} {n m p} {x: X n m} {y z: X m p}
-  {E: is_univalent x}: x * (y ^ z) == (x*y) ^ (x*z).  
+  {E: is_univalent x}: x * (y ^ z) ≡ (x*y) ^ (x*z).  
 Proof. apply antisym. ra. rewrite capdotx. mrewrite univalent. ra. Qed.
 
 Lemma univalent_antisym `{AL+TOP<<l} {n m} {x y: X n m}
-  {Hy: is_univalent y}: y*top' m m <== x*top -> x <== y -> x == y. 
+  {Hy: is_univalent y}: y*top' m m ≦ x*top -> x ≦ y -> x ≡ y. 
 Proof. 
   intros Ht Hxy. apply antisym. assumption.
-  transitivity (y \cap (x*(top' m m))). rewrite <- Ht, <- dotxt. lattice.
+  transitivity (y ⊓ (x*(top' m m))). rewrite <- Ht, <- dotxt. lattice.
   rewrite capC, capdotx. 
   ra_normalise. rewrite Hxy at 2. mrewrite univalent. ra.
 Qed.
 
 Lemma surjective_injective_antisym `{AL+TOP<<l} {n m} {p q: X n m}
-   {Hp: is_surjective p} {Hq: is_injective q}: p <== q -> p == q. 
+   {Hp: is_surjective p} {Hq: is_injective q}: p ≦ q -> p ≡ q. 
 Proof.
   intros Hpq. cnv_switch. apply univalent_antisym.
   cnv_switch; ra_normalise. rewrite surjective_tx. lattice.
@@ -305,14 +305,14 @@ Proof.
 Qed.
 
 Lemma disjoint_vect_iff `{BL+CNV<<l} {n m} {p q: X n m}
-  {Hq: is_vector q}: p\cap q <== 0 <-> q`*p <== 0.
+  {Hq: is_vector q}: p ⊓ q ≦ 0 <-> q`*p ≦ 0.
 Proof.
   rewrite Schroeder_l, cnv_invol, negbot.
   rewrite vector, capC. apply leq_cap_neg'.
 Qed.
 
 Lemma disjoint_vect_iff' `{AL+DIV+BOT+TOP<<l} {n m} {p q: X n m}
-  {Hq: is_vector q}: p\cap q <== 0 <-> q`*p <== 0.
+  {Hq: is_vector q}: p ⊓ q ≦ 0 <-> q`*p ≦ 0.
 Proof.
   split; intro Hpq.
    rewrite <-capxt, capdotx, cnv_invol, vector, Hpq. ra.
@@ -331,7 +331,7 @@ Proof.
 Qed.
 
 Lemma leq_xyp `{AL+TOP<<l} {n m k} {p: X m k} {x: X n k} {y: X n m}
-  {Hp: is_point p}: x <== y*p <-> x*p` <== y.
+  {Hp: is_point p}: x ≦ y*p <-> x*p` ≦ y.
 Proof.
   split; intro E.
    rewrite <-(dotx1 y). rewrite <-injective. now mrewrite <-E.
@@ -339,11 +339,11 @@ Proof.
 Qed.
 
 Lemma leq_pxq `{AL+TOP<<l} {n m k} {p: X n k} {q: X m k} {x: X n m}
-   {Hp: is_point p} {Hq: is_point q}: p <== x*q <-> q <==x`*p.
+   {Hp: is_point p} {Hq: is_point q}: p ≦ x*q <-> q ≦x`*p.
 Proof. rewrite 2leq_xyp. now rewrite cnv_leq_iff', cnvdot, cnv_invol. Qed.
 
 Lemma point_lattice_atom {Hl: AL+TOP<<l} {n m} {p v: X n m} {Hp: is_point p} {Hv: is_vector v}:
-  is_nonempty v -> v <== p -> v == p.
+  is_nonempty v -> v ≦ p -> v ≡ p.
 Proof.
   intros Hv' Hvp. apply antisym. assumption.
   assert (is_nonempty (p^v)). rewrite leq_iff_cap in Hvp. now rewrite capC, Hvp.
@@ -353,26 +353,26 @@ Proof.
 Qed.
 
 
-Lemma dot_neg_inj {Hl: BL+CNV<<l} {n m p} {x: X n m} {y: X m p} {Hy: is_injective y}: !x * y <== !(x*y).
+Lemma dot_neg_inj {Hl: BL+CNV<<l} {n m p} {x: X n m} {y: X m p} {Hy: is_injective y}: !x * y ≦ !(x*y).
 Proof. rewrite Schroeder_r, 2negneg. mrewrite injective. ra. Qed.
 
-Lemma dot_neg_surj {Hl: BL+CNV<<l} {n m p} {x: X n m} {y: X m p} {Hy: is_surjective y}: !(x*y) <== !x * y.
+Lemma dot_neg_surj {Hl: BL+CNV<<l} {n m p} {x: X n m} {y: X m p} {Hy: is_surjective y}: !(x*y) ≦ !x * y.
 Proof.
   rewrite leq_cap_neg. rewrite <-negcup, <-dotplsx, cupneg. now rewrite surjective_tx, negtop.
 Qed.
 
-Lemma dot_neg_point {Hl: BL+CNV<<l} {n m k} {x: X n m} {p: X m k} {Hp: is_point p}: !x * p == !(x*p).
+Lemma dot_neg_point {Hl: BL+CNV<<l} {n m k} {x: X n m} {p: X m k} {Hp: is_point p}: !x * p ≡ !(x*p).
 Proof. apply antisym. apply dot_neg_inj. apply dot_neg_surj. Qed.
 
 Lemma disjoint_vect_ext {Hl: BL+CNV<<l} {n m k} {x y: X n m} {x' y': X m k}
-      {Hx: is_vector x}: x \cap y <== 0 -> (x * x') \cap (y * y') <== 0.
+      {Hx: is_vector x}: x ⊓ y ≦ 0 -> (x * x') ⊓ (y * y') ≦ 0.
 Proof.
   rewrite capC. intro H. apply disjoint_vect_iff in H.
   rewrite capdotx. mrewrite H. ra.
 Qed.
 
 Lemma atom_of_points_aux `{AL+TOP<<l} {n m k} {p: X n m} {q: X k m} {Hp: is_point p} {Hq: is_point q}:
-  p * q` * top * q * p` <== 1.
+  p * q` * top * q * p` ≦ 1.
 Proof.
   mrewrite surjective_tx. transitivity (p*(top*q)`*p`). ra.
   mrewrite surjective_tx. ra_normalise. rewrite vector. now apply injective.
@@ -397,14 +397,14 @@ Qed.
 Lemma point_a'_top `{CNV+TOP<<l} {n m} {a: X n m} {Ha: is_atom a}: is_point (a`*top' n n).
 Proof. apply point_a_top. Qed.
 
-Lemma a_top_a_aux `{AL+TOP<<l} {n m} {a: X n m} {Ha: is_atom a}: (a * top) ^ (top * a) == a.
+Lemma a_top_a_aux `{AL+TOP<<l} {n m} {a: X n m} {Ha: is_atom a}: (a * top) ^ (top * a) ≡ a.
 Proof.
   apply antisym.
   rewrite capdotx. mrewrite a'_top_a. ra.
   rewrite <-2(leq_xt 1). ra. 
 Qed.  
   
-Lemma a_top_a `{AL+TOP<<l} {n m} {a: X n m} {Ha: is_atom a}: a * top * a == a.
+Lemma a_top_a `{AL+TOP<<l} {n m} {a: X n m} {Ha: is_atom a}: a * top * a ≡ a.
 Proof.
   rewrite <-a_top_a_aux at 3.
   apply antisym.
@@ -416,15 +416,15 @@ Global Instance atom_transitive `{AL+TOP<<l} {n} {a: X n n} {Ha: is_atom a}: is_
 Proof. unfold is_transitive. rewrite <-a_top_a at 3. rewrite <-(leq_xt 1). ra. Qed.
 
 (* TOTHINK: transitivity should follow from mono *)
-Lemma atom_mono `{AL+TOP<<l} {n} {a: X n n} {Ha: is_atom a}: a*a <== 1.
+Lemma atom_mono `{AL+TOP<<l} {n} {a: X n n} {Ha: is_atom a}: a*a ≦ 1.
 Proof.
-  transitivity (a*a \cap a). apply leq_xcap. reflexivity. apply atom_transitive.
+  transitivity (a*a ⊓ a). apply leq_xcap. reflexivity. apply atom_transitive.
   rewrite dedekind. transitivity ((a*a`)*(a`*a)). apply dot_leq; lattice.
   mrewrite (injective (x:=a)). mrewrite (univalent (x:=a)). ra.
 Qed.
 
 Lemma atom_points `{AL+TOP<<l} {n m k} {a: X n m} {Ha: is_atom a} {Hk: is_nonempty' k}:
-  exists p q: X _ k, is_point p /\ is_point q /\ a == p*q`.
+  exists p q: X _ k, is_point p /\ is_point q /\ a ≡ p*q`.
 Proof.
   exists (a*top). exists (a`*top). 
   split. rewrite <-top_nnm, dotA. apply gen_point. assumption. apply point_a_top. 
@@ -433,7 +433,7 @@ Proof.
 Qed.
 
 Lemma atom_lattice_atom {Hl: AL+TOP<<l} {n m} {a x: X n m} {Ha: is_atom a}:
-  is_nonempty x -> x <== a -> x == a.
+  is_nonempty x -> x ≦ a -> x ≡ a.
 Proof.
   intros Hx Hax. 
   pose proof point_a_top as Hat.
@@ -448,12 +448,12 @@ End props.
 
 (** lemmas obtained by duality *)
 
-Lemma total_xt `{laws} `{TOP<<l} {n m} {x: X n m} {Hx: is_total x} p: x*top' _ p == top.
+Lemma total_xt `{laws} `{TOP<<l} {n m} {x: X n m} {Hx: is_total x} p: x*top' _ p ≡ top.
 Proof. now dual @surjective_tx. Qed.
 
-Lemma xt_total `{laws} `{AL+TOP<<l} n m (x: X n m): top' n n <== x*top -> is_total x.
+Lemma xt_total `{laws} `{AL+TOP<<l} n m (x: X n m): top' n n ≦ x*top -> is_total x.
 Proof. now dual @tx_surjective. Qed.
 
 Lemma dot_cap_injective `{laws} `{AL<<l} {n m p} {x: X m n} {y z: X p m}
-      {Hx: is_injective x}: (y ^ z) * x == (y*x) ^ (z*x).  
+      {Hx: is_injective x}: (y ^ z) * x ≡ (y*x) ^ (z*x).  
 Proof. revert Hx. dual @dot_univalent_cap. Qed.

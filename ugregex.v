@@ -56,8 +56,8 @@ Fixpoint lang (e: ugregex): uglang :=
 
 (** we get a KA structure, by interpretation into languages *)
 
-Definition u_leq e f := lang e <== lang f.
-Definition u_weq e f := lang e == lang f.
+Definition u_leq e f := lang e ≦ lang f.
+Definition u_weq e f := lang e ≡ lang f.
 
 Canonical Structure ugregex_lattice_ops := 
   lattice.mk_ops _ u_leq u_weq u_pls u_pls id u_zer u_zer. 
@@ -171,13 +171,13 @@ Proof.
   apply IHi. setoid_rewrite traces_dot_nil in Hi. apply Hi. 
 Qed.
 
-Lemma lang_0: lang u_zer == 0.
+Lemma lang_0: lang u_zer ≡ 0.
 Proof. intros [?|???]; simpl; intuition; discriminate. Qed.
 
-Lemma lang_1: lang u_one == 1.
+Lemma lang_1: lang u_one ≡ 1.
 Proof. intros [a|???]; simpl. intuition. reflexivity. Qed.
 
-Lemma lang_ofbool b: lang (ofbool b: ugregex') == ofbool b.
+Lemma lang_ofbool b: lang (ofbool b: ugregex') ≡ ofbool b.
 Proof. case b. apply lang_1. apply lang_0. Qed.
 
 Global Instance lang_leq: Proper (leq ==> leq) lang.
@@ -185,7 +185,7 @@ Proof. now intros ? ?. Qed.
 Global Instance lang_weq: Proper (weq ==> weq) lang. 
 Proof. now intros ? ?. Qed.
 
-Lemma lang_sup J: lang (sup id J) == sup lang J.
+Lemma lang_sup J: lang (sup id J) ≡ sup lang J.
 Proof. apply f_sup_weq. apply lang_0. reflexivity. Qed.
 
 Lemma deriv_sup a i J: deriv a i (sup id J) = sup (deriv a i) J.
@@ -193,7 +193,7 @@ Proof. apply f_sup_eq; now f_equal. Qed.
 
 (** characterisation of derivatives through languages *)
 
-Lemma deriv_traces a i e: lang (deriv a i e) == traces_deriv a i (lang e).
+Lemma deriv_traces a i e: lang (deriv a i e) ≡ traces_deriv a i (lang e).
 Proof.
   symmetry. induction e; simpl deriv. simpl lang. 
    rewrite lang_ofbool. apply traces_deriv_single. 
@@ -213,7 +213,7 @@ Qed.
 (** the two definitions of languages (algebraic and coalgebraic) coincide,
    by unicity of the coalgebra morphism from expressions to languages *)
 
-Theorem lang_lang' e: lang e == lang' e. 
+Theorem lang_lang' e: lang e ≡ lang' e. 
 Proof.
   symmetry. intro w. revert e. induction w as [a|a i w IH]; simpl lang'; intro e. 
   - apply epsilon_iff_lang_nil. 

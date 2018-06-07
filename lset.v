@@ -118,7 +118,7 @@ Section m.
    end.
 
  (** weak specification: [union] actually performs an union *)
- Lemma union_app: forall h k, union h k == h ++ k. 
+ Lemma union_app: forall h k, union h k ≡ h ++ k. 
  Proof.
    induction h as [|x h IHh]; simpl union. reflexivity. 
    induction k as [|y k IHk]. lattice. case cmp_spec. 
@@ -134,7 +134,7 @@ Section m.
    case cmp_spec. congruence. reflexivity. now rewrite IHl. 
  Qed.
 
- Lemma insert_app: forall i l, insert i l == [i] ++ l. 
+ Lemma insert_app: forall i l, insert i l ≡ [i] ++ l. 
  Proof. intros. rewrite insert_union. apply union_app. Qed.
 
 End m.
