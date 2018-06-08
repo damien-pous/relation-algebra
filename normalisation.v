@@ -133,7 +133,7 @@ Definition cap' n m (x y: expr n m) :=
   else e_cap x y.
 
 Lemma cap'cap l n m (x y: expr n m) {Hl: CAP+e_level x+e_level y << l}: 
-  cap' x y ==_[l] x^y.
+  cap' x y ==_[l] x ∩ y.
 Proof.
   symmetry. unfold cap'. revert Hl. 
   case is_top_spec. intros. apply captx.
@@ -243,7 +243,7 @@ Fixpoint cnv' n m (x: expr n m): expr m n :=
     | e_top _ _ => top
     | e_one _ => 1
     | e_pls x y => cnv' x + cnv' y
-    | e_cap x y => cnv' x ^ cnv' y
+    | e_cap x y => cnv' x ∩ cnv' y
     | e_neg x => ! cnv' x                        (* TODO: normalise complements *)
     | e_dot x y => dot' (cnv' y) (cnv' x) (* we need to reverse parentheses *)
     | e_ldv x y => e_rdv (cnv' x) (cnv' y)     (* TODO: normalise residuals? *)

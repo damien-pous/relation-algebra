@@ -90,7 +90,7 @@ Fixpoint eval n m (x: expr n m): X (f' n) (f' m) :=
     | e_top _ _ => top
     | e_one _ => 1
     | e_pls _ _ x y => eval x + eval y
-    | e_cap _ _ x y => eval x ^ eval y
+    | e_cap _ _ x y => eval x ∩ eval y
     | e_neg _ _ x => ! eval x
     (* | e_not _ x => eval x ^~ *)
     | e_dot _ _ _ x y => eval x * eval y
@@ -240,7 +240,7 @@ Notation "x <==_[ l ] y" := (@leq (expr_ops _ _ l _ _) x y) (at level 79): ra_sc
 Notation "x ==_[ l ] y" := (@weq (expr_ops _ _ l _ _) x y) (at level 79): ra_scope.
 
 Infix "+" := e_pls: ast_scope.
-Infix "^" := e_cap: ast_scope.
+Infix "∩" := e_cap: ast_scope.
 Infix "*" := e_dot: ast_scope.
 Notation "1" := (e_one _): ast_scope.
 Notation "0" := (e_zer _ _): ast_scope.

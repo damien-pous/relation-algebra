@@ -48,13 +48,18 @@ Arguments cnv {ops} n m (x)%ra / : simpl nomatch.
 Arguments ldv {ops} n m p (x y)%ra / : simpl nomatch.
 Arguments rdv {ops} n m p (x y)%ra / : simpl nomatch.
 
-(** Notations (note that "+" and "^" are just specialisations of the
-   notations "\cup" and "\cap", when these operations actually come
+(** Notations (note that "+" and "∩" are just specialisations of the
+   notations "⊔" and "⊓", when these operations actually come
    from a monoid) *)
+
+(** 
+   ∩ : \cap (company-coq) or INTERSECTION
+
+*)
+
 Infix "*" := (dot _ _ _)      (left associativity, at level 40): ra_terms.
 Notation "x + y" := (@cup (mor _ _) x y) (left associativity, at level 50): ra_terms.
-Notation "x ^ y" := (@cap (mor _ _) x y) (right associativity, at level 30): ra_terms. 
-(* would be better to keep [^] at the level of [*]... *) (* TOFIX *)
+Notation "x ∩ y" := (@cap (mor _ _) x y) (left associativity, at level 40): ra_terms. 
 Notation "1" := (one _): ra_terms.
 Notation zer n m := (@bot (mor n m)).
 Notation top' n m := (@top (mor n m)) (only parsing).
@@ -119,7 +124,7 @@ Class laws (l: level) (X: ops) := {
   str_ind_r_`{STR<<l}: DIV<<l \/ CNV<<l \/ forall n m (x: X n n) (z: X m n), z*x ≦ z -> z*x^* ≦ z;
   itr_str_l `{STR<<l}: forall n (x: X n n), x^+ ≡ x*x^*;
   (** modularity law *)
-  capdotx   `{AL<<l}: forall n m p (x: X n m) (y: X m p) (z: X n p), (x*y) ^ z ≦ x*(y ^ (x`*z));
+  capdotx   `{AL<<l}: forall n m p (x: X n m) (y: X m p) (z: X n p), (x*y) ∩ z ≦ x*(y ∩ (x`*z));
   (** left and right residuals *)
   ldv_spec  `{DIV<<l}: forall n m p (x: X n m) (y: X n p) z, z ≦ x -o y <-> x*z ≦ y;
   rdv_spec  `{DIV<<l}: forall n m p (x: X m n) (y: X p n) z, z ≦ y o- x <-> z*x ≦ y
@@ -178,7 +183,7 @@ Proof.
   apply leq_cupx; cnv_switch; lattice.
 Qed.
 
-Lemma cnvcap `{laws} `{AL<<l} n m (x y: X n m): (x^y)` ≡ x`^y`.
+Lemma cnvcap `{laws} `{AL<<l} n m (x y: X n m): (x ∩ y)` ≡ x` ∩ y`.
 Proof.
   apply antisym. 
   apply leq_xcap; apply cnv_leq; lattice.
@@ -237,18 +242,18 @@ Proof.
 Qed.
 
 Lemma dotxcap `{laws} `{CAP<<l} n m p (x: X n m) (y z: X m p): 
-  x * (y^z) ≦ (x*y) ^ (x*z). 
+  x * (y ∩ z) ≦ (x*y) ∩ (x*z). 
 Proof. apply leq_xcap; apply dot_leq; lattice. Qed.
 
 Lemma cnv_ext `{laws} `{CNV<<l} n m (x: X n m): x ≦ x*x`*x.
 Proof. 
   destruct cnv_ext_; trivial.
-  transitivity ((x*1)^x). rewrite dotx1. lattice.
+  transitivity ((x*1) ∩ x). rewrite dotx1. lattice.
   rewrite capdotx, <-dotA. apply dot_leq; lattice.
 Qed.
 
 Lemma capxdot `{laws} `{AL<<l} n m p (x: X m n) (y: X p m) (z: X p n):
-  (y*x) ^ z ≦ (y ^ (z*x`))*x.
+  (y*x) ∩ z ≦ (y ∩ (z*x`))*x.
 Proof. cnv_switch. now rewrite cnvdot, 2cnvcap, 2cnvdot, capdotx. Qed.
 
 
@@ -445,7 +450,7 @@ Proof. dual @ldv_weq. Qed.
 Lemma cnvrdv `{laws} `{CNV+DIV<<l} n m p (x: X m n) (y: X p n): (y o- x)` ≡ x` -o y`.
 Proof. dual @cnvldv. Qed.
 
-Lemma dotcapx `{laws} `{CAP<<l} n m p (x: X m n) (y z: X p m): (y^z) * x ≦ (y*x) ^ (z*x). 
+Lemma dotcapx `{laws} `{CAP<<l} n m p (x: X m n) (y z: X p m): (y ∩ z) * x ≦ (y*x) ∩ (z*x). 
 Proof. dual @dotxcap. Qed.
 
 Lemma Schroeder_r `{laws} `{BL+CNV<<l} n m p (x : X n m) (y : X m p) (z : X n p): 
