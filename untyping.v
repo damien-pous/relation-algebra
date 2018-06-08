@@ -97,7 +97,7 @@ Definition e_str' n (x: expr n n) :=
   (if is_zer x then 1 else x^*)%ast.
 
 Definition e_cnv' n m (x: expr n m) :=
-  (if is_zer x then 0 else x`)%ast.
+  (if is_zer x then 0 else x°)%ast.
 
 Fixpoint clean n m (x: expr n m): expr n m :=
   match x with
@@ -182,7 +182,7 @@ Proof. destruct_tests. intros. now rewrite itr0. Qed.
 Lemma e_str_weq l n x: STR + e_level x << l -> @e_str' n x ==_[l] x^*.
 Proof. destruct_tests. intros. now rewrite str0. Qed.
 
-Lemma e_cnv_weq l n m x: CNV + e_level x << l -> @e_cnv' n m x ==_[l] x`.
+Lemma e_cnv_weq l n m x: CNV + e_level x << l -> @e_cnv' n m x ==_[l] x°.
 Proof. destruct_tests. intros. now rewrite cnv0. Qed.
 
 (** the cleaning function thus returns an equivalent expression (at
@@ -333,7 +333,7 @@ Inductive eval: forall n m, uexpr -> expr n m -> Prop :=
 | ev_dot: forall x y n m p x' y', @eval n m x x' -> @eval m p y y' -> eval (x*y) (x'*y')
 | ev_itr: forall x n x', @eval n n x x' -> eval (x^+) (x'^+)
 | ev_str: forall x n x', @eval n n x x' -> eval (x^* ) (x'^* )
-| ev_cnv: forall x n m x', @eval n m x x' -> eval (x`) (x'`)
+| ev_cnv: forall x n m x', @eval n m x x' -> eval (x°) (x'°)
 | ev_var: forall a, eval (e_var a) (e_var a).
 Arguments eval : clear implicits.
 
@@ -383,9 +383,9 @@ Proof.
   eauto 6. 
 Qed.
 
-Lemma eval_cnv n m x z: eval n m (x`) z -> exists x', eval m n x x' /\ z=e_cnv x'.
+Lemma eval_cnv n m x z: eval n m (x°) z -> exists x', eval m n x x' /\ z=e_cnv x'.
 Proof.
-  remember (x`)%ast as z' eqn:E. destruct 1; try discriminate. 
+  remember (x°)%ast as z' eqn:E. destruct 1; try discriminate. 
   rewrite <- (f_equal ((fun n m (e: syntax.expr _ _ n m) => 
     match e with e_cnv x => x | _ => e_zer _ _ end) _ _) E). 
   eauto. 

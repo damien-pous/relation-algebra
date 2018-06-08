@@ -190,8 +190,8 @@ Qed.
 
 (** * converse and iteration commute *)
 
-Lemma cnvstr `{laws} `{CNV+STR<<l} n (x: X n n): x^*` ≡ x`^*.
+Lemma cnvstr `{laws} `{CNV+STR<<l} n (x: X n n): x^*° ≡ x°^*.
 Proof. apply antisym. apply cnvstr_. cnv_switch. now rewrite cnvstr_, cnv_invol. Qed.
 
-Lemma cnvitr `{laws} `{CNV+STR<<l} n (x: X n n): x^+` ≡ x`^+.
+Lemma cnvitr `{laws} `{CNV+STR<<l} n (x: X n n): x^+° ≡ x°^+.
 Proof. now rewrite itr_str_l, itr_str_r, cnvdot, cnvstr. Qed.

@@ -64,7 +64,7 @@ Notation "1" := (one _): ra_terms.
 Notation zer n m := (@bot (mor n m)).
 Notation top' n m := (@top (mor n m)) (only parsing).
 Notation "0" := (zer _ _): ra_terms.
-Notation "x `"  := (cnv _ _ x) (at level 30, format "x `"): ra_terms.
+Notation "x °"  := (cnv _ _ x) (at level 30, format "x °"): ra_terms.
 Notation "x ^+" := (itr _ x) (at level 30, format "x ^+"): ra_terms.
 Notation "x ^*" := (str _ x) (at level 30, format "x ^*"): ra_terms.
 Notation "x -o y" := (ldv _ _ _ x y) (right associativity, at level 60): ra_terms. 
@@ -113,10 +113,10 @@ Class laws (l: level) (X: ops) := {
   dot0x_    `{BOT<<l}: DIV<<l \/ forall n m p (x: X m p), 0*x ≦ zer n p;
   dotx0_    `{BOT<<l}: DIV<<l \/ CNV<<l \/ forall n m p (x: X p m), x*0 ≦ zer p n;
   (** converse laws *)
-  cnvdot_   `{CNV<<l}: forall n m p (x: X n m) (y: X m p), (x*y)` ≦ y`*x`;
-  cnv_invol `{CNV<<l}: forall n m (x: X n m), x`` ≡ x;
+  cnvdot_   `{CNV<<l}: forall n m p (x: X n m) (y: X m p), (x*y)° ≦ y°*x°;
+  cnv_invol `{CNV<<l}: forall n m (x: X n m), x°° ≡ x;
   cnv_leq   `{CNV<<l}:>forall n m, Proper (leq ==> leq) (cnv n m);
-  cnv_ext_  `{CNV<<l}: CAP<<l \/ forall n m (x: X n m), x ≦ x*x`*x;
+  cnv_ext_  `{CNV<<l}: CAP<<l \/ forall n m (x: X n m), x ≦ x*x°*x;
   (** star laws *)
   str_refl  `{STR<<l}: forall n (x: X n n), 1 ≦ x^*;
   str_cons  `{STR<<l}: forall n (x: X n n), x*x^* ≦ x^*;
@@ -124,7 +124,7 @@ Class laws (l: level) (X: ops) := {
   str_ind_r_`{STR<<l}: DIV<<l \/ CNV<<l \/ forall n m (x: X n n) (z: X m n), z*x ≦ z -> z*x^* ≦ z;
   itr_str_l `{STR<<l}: forall n (x: X n n), x^+ ≡ x*x^*;
   (** modularity law *)
-  capdotx   `{AL<<l}: forall n m p (x: X n m) (y: X m p) (z: X n p), (x*y) ∩ z ≦ x*(y ∩ (x`*z));
+  capdotx   `{AL<<l}: forall n m p (x: X n m) (y: X m p) (z: X n p), (x*y) ∩ z ≦ x*(y ∩ (x°*z));
   (** left and right residuals *)
   ldv_spec  `{DIV<<l}: forall n m p (x: X n m) (y: X n p) z, z ≦ x -o y <-> x*z ≦ y;
   rdv_spec  `{DIV<<l}: forall n m p (x: X m n) (y: X p n) z, z ≦ y o- x <-> z*x ≦ y
@@ -149,14 +149,14 @@ Instance dot_weq `{laws} n m p: Proper (weq ==> weq ==> weq) (dot n m p) := op_l
 
 Instance cnv_weq `{laws} `{CNV<<l} n m: Proper (weq ==> weq) (cnv n m) := op_leq_weq_1.
 
-Lemma cnv_leq_iff `{laws} `{CNV<<l} n m (x y: X n m): x` ≦ y` <-> x ≦ y. 
+Lemma cnv_leq_iff `{laws} `{CNV<<l} n m (x y: X n m): x° ≦ y° <-> x ≦ y. 
 Proof. split. intro E. apply cnv_leq in E. now rewrite 2cnv_invol in E. apply cnv_leq. Qed.
-Lemma cnv_leq_iff' `{laws} `{CNV<<l} n m (x: X n m) y: x ≦ y` <-> x` ≦ y. 
+Lemma cnv_leq_iff' `{laws} `{CNV<<l} n m (x: X n m) y: x ≦ y° <-> x° ≦ y. 
 Proof. now rewrite <- cnv_leq_iff, cnv_invol. Qed.
 
-Lemma cnv_weq_iff `{laws} `{CNV<<l} n m (x y: X n m): x` ≡ y` <-> x ≡ y. 
+Lemma cnv_weq_iff `{laws} `{CNV<<l} n m (x y: X n m): x° ≡ y° <-> x ≡ y. 
 Proof. now rewrite 2weq_spec, 2cnv_leq_iff. Qed.
-Lemma cnv_weq_iff' `{laws} `{CNV<<l} n m (x: X n m) y: x ≡ y` <-> x` ≡ y. 
+Lemma cnv_weq_iff' `{laws} `{CNV<<l} n m (x: X n m) y: x ≡ y° <-> x° ≡ y. 
 Proof. now rewrite <-cnv_weq_iff, cnv_invol. Qed.
 
 (** simple tactic to move converse from one side to the other of an (in)equation *)
@@ -170,33 +170,33 @@ Ltac cnv_switch := first [
   rewrite <-cnv_weq_iff' |
   rewrite <-cnv_weq_iff ].
 
-Lemma cnvdot `{laws} `{CNV<<l} n m p (x: X n m) (y: X m p): (x*y)` ≡ y`*x`.
+Lemma cnvdot `{laws} `{CNV<<l} n m p (x: X n m) (y: X m p): (x*y)° ≡ y°*x°.
 Proof. apply antisym. apply cnvdot_. cnv_switch. now rewrite cnvdot_, 2cnv_invol. Qed.
 
-Lemma cnv1 `{laws} `{CNV<<l} n: (one n)` ≡ 1.
-Proof. rewrite <- (dot1x (1`)). cnv_switch. now rewrite cnvdot, cnv_invol, dot1x. Qed.
+Lemma cnv1 `{laws} `{CNV<<l} n: (one n)° ≡ 1.
+Proof. rewrite <- (dot1x (1°)). cnv_switch. now rewrite cnvdot, cnv_invol, dot1x. Qed.
 
-Lemma cnvpls `{laws} `{CNV+CUP<<l} n m (x y: X n m): (x+y)` ≡ x`+y`.
+Lemma cnvpls `{laws} `{CNV+CUP<<l} n m (x y: X n m): (x+y)° ≡ x°+y°.
 Proof.
   apply antisym.
   cnv_switch. apply leq_cupx; cnv_switch; lattice.
   apply leq_cupx; cnv_switch; lattice.
 Qed.
 
-Lemma cnvcap `{laws} `{AL<<l} n m (x y: X n m): (x ∩ y)` ≡ x` ∩ y`.
+Lemma cnvcap `{laws} `{AL<<l} n m (x y: X n m): (x ∩ y)° ≡ x° ∩ y°.
 Proof.
   apply antisym. 
   apply leq_xcap; apply cnv_leq; lattice.
   cnv_switch. apply leq_xcap; cnv_switch; lattice.
 Qed.
 
-Lemma cnv0 `{laws} `{CNV+BOT<<l} n m: (zer n m)` ≡ 0.
+Lemma cnv0 `{laws} `{CNV+BOT<<l} n m: (zer n m)° ≡ 0.
 Proof. apply antisym; [cnv_switch|]; apply leq_bx. Qed.
 
-Lemma cnvtop `{laws} `{CNV+TOP<<l} n m: (top: X n m)` ≡ top.
+Lemma cnvtop `{laws} `{CNV+TOP<<l} n m: (top: X n m)° ≡ top.
 Proof. apply antisym; [|cnv_switch]; apply leq_xt. Qed.
 
-Lemma cnvneg `{laws} `{CNV+BL<<l} n m (x: X n m): (neg x)` ≡ neg (x`).
+Lemma cnvneg `{laws} `{CNV+BL<<l} n m (x: X n m): (neg x)° ≡ neg (x°).
 Proof.
   apply neg_unique. 
   rewrite <-cnvpls, cupC, cupneg. now rewrite cnvtop.
@@ -245,7 +245,7 @@ Lemma dotxcap `{laws} `{CAP<<l} n m p (x: X n m) (y z: X m p):
   x * (y ∩ z) ≦ (x*y) ∩ (x*z). 
 Proof. apply leq_xcap; apply dot_leq; lattice. Qed.
 
-Lemma cnv_ext `{laws} `{CNV<<l} n m (x: X n m): x ≦ x*x`*x.
+Lemma cnv_ext `{laws} `{CNV<<l} n m (x: X n m): x ≦ x*x°*x.
 Proof. 
   destruct cnv_ext_; trivial.
   transitivity ((x*1) ∩ x). rewrite dotx1. lattice.
@@ -253,7 +253,7 @@ Proof.
 Qed.
 
 Lemma capxdot `{laws} `{AL<<l} n m p (x: X m n) (y: X p m) (z: X p n):
-  (y*x) ∩ z ≦ (y ∩ (z*x`))*x.
+  (y*x) ∩ z ≦ (y ∩ (z*x°))*x.
 Proof. cnv_switch. now rewrite cnvdot, 2cnvcap, 2cnvdot, capdotx. Qed.
 
 
@@ -281,7 +281,7 @@ Proof. intros x x' Hx y y' Hy. now rewrite ldv_spec, <-Hx, <-Hy, <-ldv_spec. Qed
 Instance ldv_weq `{laws} `{DIV<<l} n m p: Proper (weq ==> weq ==> weq) (ldv n m p).
 Proof. simpl. setoid_rewrite weq_spec. split; apply ldv_leq; tauto. Qed.
 
-Lemma cnvldv `{laws} `{CNV+DIV<<l} n m p (x: X n m) (y: X n p): (x -o y)` ≡ y` o- x`.
+Lemma cnvldv `{laws} `{CNV+DIV<<l} n m p (x: X n m) (y: X n p): (x -o y)° ≡ y° o- x°.
 Proof.
   apply from_below. intro z. 
   cnv_switch. rewrite ldv_spec.
@@ -292,14 +292,14 @@ Qed.
 
 (** ** Schroeder rules  *)
 Lemma Schroeder_  `{laws} `{BL+CNV<<l} n m p (x : X n m) (y : X m p) (z : X n p): 
-  x`*!z ≦ !y -> x*y ≦ z.
+  x°*!z ≦ !y -> x*y ≦ z.
 Proof.
   intro E. apply leq_cap_neg in E. rewrite negneg in E. 
   apply leq_cap_neg. now rewrite capdotx, capC, E, dotx0. 
 Qed.
   
 Lemma Schroeder_l `{laws} `{BL+CNV<<l} n m p (x : X n m) (y : X m p) (z : X n p): 
-  x*y ≦ z <-> x`*!z ≦ !y. 
+  x*y ≦ z <-> x°*!z ≦ !y. 
 Proof.
   split. 2: apply Schroeder_. intro.
   apply Schroeder_. now rewrite 2negneg, cnv_invol. 
@@ -340,7 +340,7 @@ Qed.
 Lemma str_itr `{laws} `{KA<<l} n (x: X n n): x^* ≡ 1+x^+.
 Proof. rewrite itr_str_l. apply str_unfold_l. Qed.
 
-Lemma cnvstr_ `{laws} `{CNV+STR<<l} n (x: X n n): x^*` ≦ x`^*.
+Lemma cnvstr_ `{laws} `{CNV+STR<<l} n (x: X n n): x^*° ≦ x°^*.
 Proof.
   cnv_switch. apply str_ind_l1. now rewrite <-str_refl, cnv1.  
   cnv_switch. rewrite cnvdot, cnv_invol. apply str_snoc. 
@@ -447,14 +447,14 @@ Proof. dual @ldv_leq. Qed.
 Instance rdv_weq `{laws} `{DIV<<l} n m p: Proper (weq ==> weq ==> weq) (rdv n m p).
 Proof. dual @ldv_weq. Qed.
 
-Lemma cnvrdv `{laws} `{CNV+DIV<<l} n m p (x: X m n) (y: X p n): (y o- x)` ≡ x` -o y`.
+Lemma cnvrdv `{laws} `{CNV+DIV<<l} n m p (x: X m n) (y: X p n): (y o- x)° ≡ x° -o y°.
 Proof. dual @cnvldv. Qed.
 
 Lemma dotcapx `{laws} `{CAP<<l} n m p (x: X m n) (y z: X p m): (y ∩ z) * x ≦ (y*x) ∩ (z*x). 
 Proof. dual @dotxcap. Qed.
 
 Lemma Schroeder_r `{laws} `{BL+CNV<<l} n m p (x : X n m) (y : X m p) (z : X n p): 
-  x*y ≦ z <-> !z*y` ≦ !x.
+  x*y ≦ z <-> !z*y° ≦ !x.
 Proof. dual @Schroeder_l. Qed.
 
 
@@ -466,7 +466,7 @@ Class functor l {X Y: ops} (f': ob X -> ob Y) (f: forall {n m}, X n m -> Y (f' n
   fn_one:           forall n, f (one n) ≡ 1;
   fn_itr `{STR<<l}: forall n (x: X n n), f (x^+) ≡ (f x)^+;
   fn_str `{STR<<l}: forall n (x: X n n), f (x^*) ≡ (f x)^*;
-  fn_cnv `{CNV<<l}: forall n m (x: X n m), f (x`) ≡ (f x)`;
+  fn_cnv `{CNV<<l}: forall n m (x: X n m), f (x°) ≡ (f x)°;
   fn_ldv `{DIV<<l}: forall n m p (x: X n m) (y: X n p), f (x -o y) ≡ f x -o f y;
   fn_rdv `{DIV<<l}: forall n m p (x: X m n) (y: X p n), f (y o- x) ≡ f y o- f x
 }.

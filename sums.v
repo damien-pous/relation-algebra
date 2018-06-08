@@ -35,5 +35,5 @@ Proof. dual @dotxsum. Qed.
 
 (** converse commutes with sums *)
 Lemma cnvsum `{laws} `{BSL+CNV<<l} I J n m (f: I -> X n m): 
-  (\sum_(i\in J) f i)` ≡ \sum_(i\in J) (f i`).
+  (\sum_(i\in J) f i)° ≡ \sum_(i\in J) (f i°).
 Proof. apply f_sup_weq. apply cnv0. apply cnvpls. Qed.

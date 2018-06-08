@@ -207,7 +207,7 @@ Definition mx_rdv n m p (M: mx m n) (N: mx p n): mx p m :=
 
 (** transposed matrix (note that the elements are also transposed) *)
 Definition mx_cnv n m (M: mx n m): mx m n :=
-  fun i j => M j i `.
+  fun i j => (M j i)°.
 
 (** Kleene star of a matrix, defined inductively, by block matrix constructions *)
 
@@ -393,16 +393,16 @@ Canonical Structure lset_ops A := lattice.mk_ops (list A)
   (fun h k => forall a, List.In a h <-> List.In a k)
   (@app A) (@app A) (assert_false id) (@nil A) (@nil A).
 
-Lemma mx_cnvdot_ n m p (M: mx n m) (N: mx m p): (M*N)` ≦ N`*M`.
+Lemma mx_cnvdot_ n m p (M: mx n m) (N: mx m p): (M*N)° ≦ N°*M°.
 Proof. intros i j. setoid_rewrite cnvsum. now setoid_rewrite cnvdot. Qed.
 
-Lemma mx_cnv_invol n m (M: mx n m): M`` ≡ M.
+Lemma mx_cnv_invol n m (M: mx n m): M°° ≡ M.
 Proof. intros i j. apply cnv_invol. Qed.
 
 Lemma mx_cnv_leq n m: Proper (leq ==> leq) (mx_cnv X u n m).
 Proof. intros ? ? H i j. apply cnv_leq, H. Qed.
 
-Lemma mx_cnv_ext n m (M: mx n m): M ≦ M*M`*M.
+Lemma mx_cnv_ext n m (M: mx n m): M ≦ M*M°*M.
 Proof. 
   intros i j. simpl. unfold mx_dot, mx_cnv. setoid_rewrite dotsumx. 
   rewrite <- (leq_xsup _ _ i) by apply in_seq. 

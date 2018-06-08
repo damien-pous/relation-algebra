@@ -103,7 +103,7 @@ Qed.
 
 (** languages form a residuated Kleene lattice 
    (we do not have an allegory, since the converse operation does not
-   satisfy the law [x ≦x*x`*x]) *)
+   satisfy the law [x ≦x*x°*x]) *)
 Global Instance lang_laws: laws (BDL+STR+DIV) lang_ops.
 Proof.
   constructor; (try (intro; discriminate)); (try now left); repeat right; intros. 

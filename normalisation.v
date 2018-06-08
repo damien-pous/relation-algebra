@@ -251,7 +251,7 @@ Fixpoint cnv' n m (x: expr n m): expr m n :=
     | e_itr x => cnv' x ^+
     | e_str x => cnv' x ^*
     | e_cnv x => x
-    | e_var a => e_var a`
+    | e_var a => e_var a °
   end%ast.
 
 Lemma cnv'_level n m (x: expr n m): e_level (cnv' x) << CNV+e_level x.
@@ -260,7 +260,7 @@ Proof.
     rewrite ?dot'_level, ?pls'_level, ?cap'_level, ?IHx1, ?IHx2, ?IHx; solve_lower'.
 Qed.
 
-Lemma cnv'cnv l n m (x: expr n m) {Hl: CNV+e_level x << l}: cnv' x ==_[l] x`.
+Lemma cnv'cnv l n m (x: expr n m) {Hl: CNV+e_level x << l}: cnv' x ==_[l] x°.
 Proof.
   symmetry. induction x; simpl cnv'; simpl e_level in Hl; 
   rewrite ?dot'dot, ?e_str' by (rewrite ?cnv'_level; solve_lower').
