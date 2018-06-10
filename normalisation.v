@@ -248,10 +248,10 @@ Fixpoint cnv' n m (x: expr n m): expr m n :=
     | e_dot x y => dot' (cnv' y) (cnv' x) (* we need to reverse parentheses *)
     | e_ldv x y => e_rdv (cnv' x) (cnv' y)     (* TODO: normalise residuals? *)
     | e_rdv x y => e_ldv (cnv' x) (cnv' y)
-    | e_itr x => cnv' x ^+
-    | e_str x => cnv' x ^*
+    | e_itr x => (cnv' x)^+
+    | e_str x => (cnv' x)^*
     | e_cnv x => x
-    | e_var a => e_var a °
+    | e_var a => (e_var a)°
   end%ast.
 
 Lemma cnv'_level n m (x: expr n m): e_level (cnv' x) << CNV+e_level x.
@@ -291,12 +291,12 @@ Fixpoint remove n m (x: expr n m): expr n m :=
 Definition itr' n (x: expr n n): expr n n :=
   (if is_zer x then 0
   else if is_top x then top 
-  else remove x^+)%ast.
+  else (remove x)^+)%ast.
 
 Definition str' n (x: expr n n): expr n n :=
   (if is_zer x then 1
   else if is_top x then top 
-  else remove x^*)%ast.
+  else (remove x)^*)%ast.
 
 Lemma remove_level n m (x: expr n m): e_level (remove x) << e_level x.
 Proof. induction x; cbn; rewrite ?pls'_level; solve_lower'. Qed.
@@ -318,7 +318,7 @@ Proof.
 Qed.
 
 Lemma remove_spec_dep l n m (x: expr n m):
-  forall (H: n=m) {Hl: STR+e_level x << l}, (cast H eq_refl (remove x))^+ ==_[l] cast H eq_refl x^+.
+  forall (H: n=m) {Hl: STR+e_level x << l}, (cast H eq_refl (remove x))^+ ==_[l] (cast H eq_refl x)^+.
 Proof.
   induction x; cbn; trivial; intros H Hl. 
   - subst. cbn. rewrite itr_pls_itr, pls'pls by (rewrite 2remove_level; solve_lower').
@@ -327,7 +327,7 @@ Proof.
 Qed.
 
 Lemma remove_spec l n (x: expr n n) {Hl: STR+e_level x << l}:
-  remove x ^+ ==_[l] x^+.
+  (remove x)^+ ==_[l] x^+.
 Proof. apply (remove_spec_dep _ eq_refl). Qed.
 
 Lemma itr'itr l n (x: expr n n) {Hl: STR+e_level x << l}: 
@@ -340,7 +340,7 @@ Proof.
 Qed.
 
 Lemma remove_spec_dep' l n m (x: expr n m): forall (H: n=m) {Hl: STR+e_level x << l}, 
-  (cast H eq_refl (remove x))^* ==_[l] cast H eq_refl x^*.
+  (cast H eq_refl (remove x))^* ==_[l] (cast H eq_refl x)^*.
 Proof.
   induction x; cbn; trivial; intros H Hl. 
   - subst. simpl cast. rewrite str_pls_str. 
@@ -353,7 +353,7 @@ Proof.
 Qed.
 
 Lemma remove_spec' l n (x: expr n n) {Hl: STR+e_level x << l}:
-  remove x ^* ==_[l] x^*.
+  (remove x)^* ==_[l] x^*.
 Proof. apply (remove_spec_dep' _ eq_refl). Qed.
 
 Lemma str'str l n (x: expr n n) {Hl: STR+e_level x << l}: 

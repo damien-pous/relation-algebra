@@ -234,7 +234,7 @@ Definition mx_str_build n m
 Fixpoint mx_str n: mx n n -> mx n n :=
   match n with
     | O => fun M => M
-    | S n => mx_str_build 1 n (fun M => scal_mx (mx_scal M ^*)) (mx_str n)
+    | S n => mx_str_build 1 n (fun M => scal_mx ((mx_scal M)^*)) (mx_str n)
   end.
 
 (** strict iteration is derived from Kleene star *)

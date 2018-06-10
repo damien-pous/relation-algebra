@@ -75,7 +75,7 @@ Fixpoint eval n m (e: gregex n m): X (fo n) (fo m) :=
     | @g_prd n p => [lsyntax.eval (fp n) p]
     | g_pls e f => eval e + eval f
     | g_dot e f => eval e * eval f
-    | g_itr e => eval e ^+
+    | g_itr e => (eval e)^+
     | g_var i => fs i
   end.
 
@@ -209,7 +209,7 @@ Proof. reflexivity. Qed.
 Lemma lang_dot n m p (e: gregex n m) (f: gregex m p): lang (e*f) = lang e * lang f.
 Proof. reflexivity. Qed.
 
-Lemma lang_itr n (e: gregex n n): lang (e^+) = lang e^+.
+Lemma lang_itr n (e: gregex n n): lang (e^+) = (lang e)^+.
 Proof. reflexivity. Qed.
 
 Lemma lang_sup n m I J (f: I -> _): @lang n m (sup f J) = \sup_(i\in J) lang (f i).

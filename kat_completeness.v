@@ -298,7 +298,7 @@ Proof.
   rewrite (geval_lst e), <-2dotA, empty_atom_dot by congruence. ra. 
 Qed.
 
-Lemma teval_str n (x: guards n n): teval (g_str' x) ≡ teval x ^*.
+Lemma teval_str n (x: guards n n): teval (g_str' x) ≡ (teval x)^*.
 Proof.
   induction x as [|r q IH]; simpl g_str'. 
   rewrite teval_one. symmetry. apply str0.
@@ -456,7 +456,7 @@ Fixpoint o n m (e: gregex n m): expr3 n m:=
     | g_prd _ _ p => o_pred _ p
     | g_pls e f => o e + o f
     | g_dot e f => o e * o f
-    | g_itr e => o e ^+
+    | g_itr e => (o e)^+
     | g_var j => e_var (l_var j)
   end.
 

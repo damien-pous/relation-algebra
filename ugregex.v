@@ -51,7 +51,7 @@ Fixpoint lang (e: ugregex): uglang :=
     | u_prd p => tinj (fun i => eval (set.mem i) p)
     | u_pls e f => lang e + lang f
     | u_dot e f => lang e * lang f
-    | u_itr e => lang e ^+
+    | u_itr e => (lang e)^+
   end.
 
 (** we get a KA structure, by interpretation into languages *)

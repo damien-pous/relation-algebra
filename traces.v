@@ -592,7 +592,7 @@ Proof.
   assumption. now apply typed'_iter.
 Qed.
 
-Lemma restrict_itr n (x: traces'): typed' n n x -> restrict n n (x^+) ≡ restrict n n x^+. 
+Lemma restrict_itr n (x: traces'): typed' n n x -> restrict n n (x^+) ≡ (restrict n n x)^+. 
 Proof.
   intros Hx w. simpl. split.
    intros [H [i Hw]]. exists i. apply restrict_iter; trivial. now split. 

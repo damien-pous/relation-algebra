@@ -50,9 +50,9 @@ Instance epsilon_mx_weq n m: Proper (weq ==> weq) (@epsilon_mx n m).
 Proof. intros M N H i j. unfold epsilon_mx, mx_map. now rewrite (H i j). Qed.
 
 (** [epsilon_mx] commutes with Kleene star on matrices *)
-Lemma epsilon_mx_str: forall n (M: rmx n n), epsilon_mx (M^*) ≡ epsilon_mx M ^*.
+Lemma epsilon_mx_str: forall n (M: rmx n n), epsilon_mx (M^*) ≡ (epsilon_mx M)^*.
 Proof.
-  apply (mx_str_ind' (fun n M sM => epsilon_mx sM ≡ epsilon_mx M ^*)).
+  apply (mx_str_ind' (fun n M sM => epsilon_mx sM ≡ (epsilon_mx M)^*)).
   - intros n ? ? H ? ? H'. now rewrite H, H'.  
   - intros ? i. elim (ord_0_empty i).
   - intro M. rewrite mx_str_1. intros i j.
@@ -60,8 +60,8 @@ Proof.
   - intros n m a b c d e be ec f fbe ecf He Hf. 
     unfold epsilon_mx. rewrite 2mx_map_blk, mx_str_blk. 
     fold (epsilon_mx). 
-    assert (H1: epsilon_mx (a+be*c) ^*
-             ≡ (epsilon_mx a + epsilon_mx b * epsilon_mx d ^* * epsilon_mx c) ^*)
+    assert (H1: (epsilon_mx (a+be*c))^*
+             ≡ (epsilon_mx a + epsilon_mx b * (epsilon_mx d)^* * epsilon_mx c) ^*)
       by (unfold be; rewrite epsilon_mx_pls, 2epsilon_mx_dot, He; reflexivity). 
     apply blk_mx_weq.
     + rewrite Hf. exact H1.

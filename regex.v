@@ -46,7 +46,7 @@ Fixpoint to_expr (e: regex): expr_(BKA) (fun _ => xH) (fun _ => xH) xH xH :=
     | r_one => 1
     | r_pls e f => to_expr e + to_expr f
     | r_dot e f => to_expr e * to_expr f
-    | r_str e => to_expr e ^*
+    | r_str e => (to_expr e)^*
     | r_var a => e_var a
   end.
 
@@ -341,7 +341,7 @@ Proof. induction e; simpl pure_part; constructor; trivial. apply is_01_ofbool. Q
 
 (** ** expanding simple regular expressions *)
 
-Lemma str_eps e: eps e ^* ≡ 1.
+Lemma str_eps e: (eps e)^* ≡ 1.
 Proof. case epsilon. apply str1. apply str0. Qed.
 
 (* à dériver de [expand] ? *)
@@ -483,5 +483,5 @@ Proof. apply f_sup_weq. apply lang_0. apply lang_pls. Qed.
 Corollary lang_dot e f: lang (e*f) ≡ lang e * lang f.
 Proof. now rewrite 3lang_eval. Qed.
 
-Corollary lang_itr e: lang (e^+) ≡ lang e^+.
+Corollary lang_itr e: lang (e^+) ≡ (lang e)^+.
 Proof. rewrite 2lang_eval. simpl (elang _). symmetry. apply itr_str_l. Qed.

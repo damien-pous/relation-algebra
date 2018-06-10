@@ -112,7 +112,7 @@ Proof. set (o:=eval one). vm_compute in o; subst o. ra. Qed.
 Lemma eval_pls e f: eval (pls e f) ≡ eval e + eval f.
 Proof.
   destruct e as [n u M v]. destruct f as [m s N t].
-  change (mx_scal (row_mx u s * blk_mx M 0 0 N ^* * col_mx v t) ≡ mx_scal (u * M ^* * v) + mx_scal (s * N ^* * t)).
+  change (mx_scal (row_mx u s * (blk_mx M 0 0 N)^* * col_mx v t) ≡ mx_scal (u * M ^* * v) + mx_scal (s * N ^* * t)).
   rewrite <-mx_scal_pls. apply mx_scal_weq.
   rewrite mx_str_diagonal.
   setoid_rewrite mx_dot_rowcol. rewrite dotplsx. 
@@ -122,21 +122,21 @@ Qed.
 Lemma eval_dot e f: eval (dot e f) ≡ eval e * eval f.
 Proof.
   destruct e as [n u M v]. destruct f as [m s N t].
-  change (mx_scal (row_mx u 0 * blk_mx M (v * s) 0 N ^* * col_mx 0 t) ≡ mx_scal (u * M ^* * v) * mx_scal (s * N ^* * t)).
+  change (mx_scal (row_mx u 0 * (blk_mx M (v * s) 0 N)^* * col_mx 0 t) ≡ mx_scal (u * M ^* * v) * mx_scal (s * N ^* * t)).
   rewrite <-mx_scal_dot. apply mx_scal_weq.
   rewrite mx_str_trigonal. setoid_rewrite mx_dot_rowcol. rewrite dotplsx. 
   rewrite <-dotA, mx_dot_rowcol. ra. 
 Qed.
 
-Lemma eval_itr e: eval (itr e) ≡ eval e ^+.
+Lemma eval_itr e: eval (itr e) ≡ (eval e)^+.
 Proof.
   rewrite itr_str_l. destruct e as [n u M v].
-  change (mx_scal (u * (M + v * u) ^* * v) ≡ mx_scal (u * M ^* * v) * mx_scal (u * M ^* * v) ^*).
+  change (mx_scal (u * (M + v * u) ^* * v) ≡ mx_scal (u * M ^* * v) * (mx_scal (u * M ^* * v))^*).
   rewrite <-mx_scal_str, <-mx_scal_dot. apply mx_scal_weq. 
   rewrite str_pls. rewrite <-3dotA, <-str_dot. ra. 
 Qed.
 
-Lemma eval_str e: eval (str e) ≡ eval e ^*.
+Lemma eval_str e: eval (str e) ≡ (eval e)^*.
 Proof. unfold str. now rewrite eval_pls, eval_one, eval_itr, str_itr. Qed.
 
 (** algebraic correcteness of the global construction *)
@@ -174,7 +174,7 @@ End Thompson.
 
 Definition nfa e := 
   let e := Thompson.enfa e in
-  let J := epsilon_mx e^M ^* in
+  let J := (epsilon_mx e^M)^* in
   mk e^u (J * pure_part_mx e^M) (J * e^v).
 
 (** ** correctness *)
@@ -184,8 +184,8 @@ Proof.
   rewrite <- (Thompson.correct e) at 2. unfold nfa.
   change (mx_scal
     ((Thompson.enfa e) ^u *
-     (epsilon_mx (Thompson.enfa e) ^M ^* * pure_part_mx (Thompson.enfa e) ^M)
-     ^* * (epsilon_mx (Thompson.enfa e) ^M ^* * (Thompson.enfa e) ^v)) ≡
+     ((epsilon_mx (Thompson.enfa e)^M)^* * pure_part_mx (Thompson.enfa e) ^M)
+     ^* * ((epsilon_mx (Thompson.enfa e)^M)^* * (Thompson.enfa e) ^v)) ≡
     eval (Thompson.enfa e)).
   set (f := Thompson.enfa e). set (J := epsilon_mx f^M). apply mx_scal_weq.
   rewrite (@expand_simple_mx _ _ f^M) at 2 by apply Thompson.is_enfa.

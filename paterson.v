@@ -171,7 +171,7 @@ Fixpoint bstep (p: prog): rel state state :=
   match p with
     | p_tst p => [eval p: dset state]
     | p_aff x e => upd x e
-    | p_str p => bstep p ^*
+    | p_str p => (bstep p)^*
     | p_dot p q => bstep p * bstep q
     | p_pls p q => bstep p + bstep q
   end.
@@ -349,7 +349,7 @@ Qed.
 (** (i.e., Lemma 4.5 in Angus and Kozen's paper)  *)
 Fixpoint gc y (p: prog'): prog' :=
   match p with
-    | p_str p => gc y p^*
+    | p_str p => (gc y p)^*
     | p_tst _ => p
     | p_aff x e => if eqb x y then 1 else x<-e
     | p_dot p q => gc y p ; gc y q

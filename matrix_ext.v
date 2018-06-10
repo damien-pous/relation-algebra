@@ -34,7 +34,7 @@ Lemma mx_scal_dot `{laws} `{BOT+CUP<<l} u (M N: mx (X u u) 1 1):
 Proof. apply cupxb. Qed.
 
 Lemma mx_scal_str `{laws} `{BKA<<l} u (M: mx (X u u) 1 1): 
-  mx_scal (M^*) ≡ mx_scal M ^*.
+  mx_scal (M^*) ≡ (mx_scal M)^*.
 Proof. 
   apply str_weq. unfold mx_scal, sub00_mx, tsub_mx, lsub_mx. simpl. 
   setoid_rewrite ord0_unique. apply cupxb. 
@@ -107,7 +107,7 @@ Lemma mx_str_blk n1 n2
   (c: mx (X u u) n2 n1) (d: mx (X u u) n2 n2):
   let e := d^* in
   let f := (a+(b*e)*c)^* in
-  blk_mx a b c d ^* ≡ blk_mx f (f*(b*e)) ((e*c)*f) (e+(e*c*f)*(b*e)).
+  (blk_mx a b c d)^* ≡ blk_mx f (f*(b*e)) ((e*c)*f) (e+(e*c*f)*(b*e)).
 Proof.
   intros e f. rewrite mx_str_blk'. unfold mx_str_build.
   ra_fold (mx_ops X). now rewrite mx_sub00_blk, mx_sub01_blk, mx_sub10_blk, mx_sub11_blk.
@@ -117,17 +117,17 @@ Qed.
 Lemma mx_str_trigonal n1 n2 
   (a: mx (X u u) n1 n1) (b: mx (X u u) n1 n2) 
                         (d: mx (X u u) n2 n2):
-  blk_mx a b 0 d ^* ≡ blk_mx (a^*) (a^**(b*d^*)) 0 (d^*).
+  (blk_mx a b 0 d)^* ≡ blk_mx (a^*) (a^**(b*d^*)) 0 (d^*).
 Proof. rewrite mx_str_blk. apply blk_mx_weq; ra. Qed.
 
 (** and to diagonal block matrices *)
 Lemma mx_str_diagonal n1 n2 
   (a: mx (X u u) n1 n1) (d: mx (X u u) n2 n2):
-  blk_mx a 0 0 d ^* ≡ blk_mx (a^*) 0 0 (d^*).
+  (blk_mx a 0 0 d)^* ≡ blk_mx (a^*) 0 0 (d^*).
 Proof. rewrite mx_str_trigonal. apply blk_mx_weq; trivial; ra. Qed.
 
 
-Lemma mx_str_1 (M: mx (X u u) 1 1): M^* ≡ scal_mx (mx_scal M ^*).
+Lemma mx_str_1 (M: mx (X u u) 1 1): M^* ≡ scal_mx ((mx_scal M)^*).
 Proof.
   intros i j. setoid_rewrite ord0_unique. simpl.  
   unfold mx_str_build, blk_mx, col_mx, row_mx, ordinal.split; simpl. 
@@ -141,7 +141,7 @@ Qed.
 Lemma mx_str_ind (P: forall n, mx (X u u) n n -> mx (X u u) n n -> Prop): 
   (forall n, Proper (weq ==> weq ==> iff) (P n)) ->
   (forall M, P O M M) -> 
-  (forall M, P _ M (scal_mx (mx_scal M ^*))) -> 
+  (forall M, P _ M (scal_mx ((mx_scal M)^*))) -> 
   (forall n m,
     (forall M, P n M (M^*)) -> 
     (forall M, P m M (M^*)) -> 
@@ -160,7 +160,7 @@ Qed.
 Lemma mx_str_ind' (P: forall n, mx (X u u) n n -> mx (X u u) n n -> Prop): 
   (forall n, Proper (weq ==> weq ==> iff) (P n)) ->
   (forall M, P O M M) -> 
-  (forall M, P _ M (scal_mx (mx_scal M ^*))) -> 
+  (forall M, P _ M (scal_mx ((mx_scal M)^*))) -> 
   (forall n m a b c d,
     let e := d^* in
     let be := b*e in
