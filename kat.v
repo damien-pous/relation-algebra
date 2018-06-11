@@ -39,7 +39,7 @@ Notation " [ p ] " := (inj p): ra_terms.
 (* Definition inj' X n: @car' X n -> @car'' X n := @inj X n. *)
 (* Coercion inj' : car' >-> car''. *)
 (* Print Coercion Paths car' car. *)
-(* Goal forall `{X: ops} n m (a: X n m) (p: tst n) (q: tst m), p*a*q ≡ a. *)
+(* Goal forall `{X: ops} n m (a: X n m) (p: tst n) (q: tst m), p⋅a*q ≡ a. *)
 
 
 (** * KAT laws  *)
@@ -62,7 +62,7 @@ Class laws (X: ops) := {
   tst_BL:> forall n, lattice.laws BL (tst n);
   mor_inj: forall n, morphism BSL (@inj X n);
   inj_top: forall n, [top] ≡ one n;
-  inj_cap: forall n (p q: tst n), [p ⊓ q] ≡ [p] * [q]
+  inj_cap: forall n (p q: tst n), [p ⊓ q] ≡ [p] ⋅ [q]
 }.
 
 

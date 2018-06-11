@@ -11,13 +11,13 @@
 Require Import kleene.
 Set Implicit Arguments.
 
-Lemma ldv_dotx `{laws} `{DIV<<l} n m p q (x: X n m) (y: X m p) (z: X n q): x*y -o z ≡ y -o x -o z.
+Lemma ldv_dotx `{laws} `{DIV<<l} n m p q (x: X n m) (y: X m p) (z: X n q): x⋅y -o z ≡ y -o x -o z.
 Proof.
   apply from_below. intro t. 
   now rewrite 3ldv_spec, dotA.
 Qed.
 
-Lemma ldv_xdot `{laws} `{DIV<<l} n m p (x: X n m) (y: X m p): y ≦ x -o (x*y).
+Lemma ldv_xdot `{laws} `{DIV<<l} n m p (x: X n m) (y: X m p): y ≦ x -o (x⋅y).
 Proof. now rewrite ldv_spec. Qed.
 
 Lemma ldv_1x `{laws} `{DIV<<l} n m (x: X n m): 1 -o x ≡ x.
@@ -35,19 +35,19 @@ Proof. apply antisym. apply str_ldv_. apply str_ext. Qed.
 Lemma ldv_rdv `{laws} `{DIV<<l} n m p q (x: X n m) y (z: X p q): x -o (y o- z) ≡ (x -o y) o- z.
 Proof. apply from_below. intro. now rewrite ldv_spec, 2rdv_spec, ldv_spec, dotA. Qed.
 
-Lemma ldv_unfold `{laws} `{BL+DIV+CNV<<l} n m p (x: X n m) (y: X n p): x -o y ≡ !(x° * !y).
+Lemma ldv_unfold `{laws} `{BL+DIV+CNV<<l} n m p (x: X n m) (y: X n p): x -o y ≡ !(x° ⋅ !y).
 Proof. apply from_below. intro. now rewrite ldv_spec, neg_leq_iff', <-Schroeder_l. Qed.
 
 
 (** dual properties for right factors *)
 
-Lemma rdv_cancel `{laws} `{DIV<<l} n m p (x: X m n) (y: X p n): (y o- x)*x ≦ y.
+Lemma rdv_cancel `{laws} `{DIV<<l} n m p (x: X m n) (y: X p n): (y o- x)⋅x ≦ y.
 Proof. dual @ldv_cancel. Qed.
 
-Lemma rdv_dotx `{laws} `{DIV<<l} n m p q (x: X m n) (y: X p m) (z: X q n): z o- y*x ≡ z o- x o- y.
+Lemma rdv_dotx `{laws} `{DIV<<l} n m p q (x: X m n) (y: X p m) (z: X q n): z o- y⋅x ≡ z o- x o- y.
 Proof. dual @ldv_dotx. Qed.
 
-Lemma rdv_xdot `{laws} `{DIV<<l} n m p (x: X m n) (y: X p m): y ≦ y*x o- x.
+Lemma rdv_xdot `{laws} `{DIV<<l} n m p (x: X m n) (y: X p m): y ≦ y⋅x o- x.
 Proof. dual @ldv_xdot. Qed.
 
 Lemma leq_rdv `{laws} `{DIV<<l} n m (x y: X m n): x ≦ y <-> 1 ≦ y o- x. 
@@ -66,11 +66,11 @@ Lemma rdv_xt `{laws} `{DIV+TOP<<l} n m p (x: X m n): top o- x ≡ top' p m.
 Proof. dual @ldv_xt. Qed.
 
 Lemma rdv_trans `{laws} `{DIV<<l} n m p q (x: X m n) (y: X p n) (z: X q n): 
-  (z o- y)*(y o- x) ≦ z o- x.
+  (z o- y)⋅(y o- x) ≦ z o- x.
 Proof. dual @ldv_trans. Qed.
 
 Lemma str_rdv `{laws} `{STR+DIV<<l} n m (x: X m n): (x o- x)^* ≡ x o- x.
 Proof. dual @str_ldv. Qed.
 
-Lemma rdv_unfold `{laws} `{BL+DIV+CNV<<l} n m p (x: X m n) (y: X p n): y o- x ≡ !(!y*x°).
+Lemma rdv_unfold `{laws} `{BL+DIV+CNV<<l} n m p (x: X m n) (y: X p n): y o- x ≡ !(!y⋅x°).
 Proof. dual @ldv_unfold. Qed.

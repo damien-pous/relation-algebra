@@ -38,7 +38,7 @@ Fixpoint gerase n m (e: gregex n m): ugregex :=
     | g_zer _ _ _ => 0
     | g_prd _ _ p => u_prd p
     | g_pls e f => gerase e + gerase f
-    | g_dot e f => gerase e * gerase f
+    | g_dot e f => gerase e ⋅ gerase f
     | g_itr e => (gerase e)^+
     | g_var i => u_var _ i
   end.

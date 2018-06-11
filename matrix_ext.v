@@ -30,7 +30,7 @@ Lemma mx_scal_pls `{lattice.laws} (M N: mx X 1 1):
 Proof. reflexivity.  Qed.
 
 Lemma mx_scal_dot `{laws} `{BOT+CUP<<l} u (M N: mx (X u u) 1 1): 
-  mx_scal (M * N) ≡ mx_scal M * mx_scal N.
+  mx_scal (M ⋅ N) ≡ mx_scal M ⋅ mx_scal N.
 Proof. apply cupxb. Qed.
 
 Lemma mx_scal_str `{laws} `{BKA<<l} u (M: mx (X u u) 1 1): 
@@ -106,8 +106,8 @@ Lemma mx_str_blk n1 n2
   (a: mx (X u u) n1 n1) (b: mx (X u u) n1 n2) 
   (c: mx (X u u) n2 n1) (d: mx (X u u) n2 n2):
   let e := d^* in
-  let f := (a+(b*e)*c)^* in
-  (blk_mx a b c d)^* ≡ blk_mx f (f*(b*e)) ((e*c)*f) (e+(e*c*f)*(b*e)).
+  let f := (a+(b⋅e)⋅c)^* in
+  (blk_mx a b c d)^* ≡ blk_mx f (f⋅(b⋅e)) ((e⋅c)⋅f) (e+(e⋅c⋅f)⋅(b⋅e)).
 Proof.
   intros e f. rewrite mx_str_blk'. unfold mx_str_build.
   ra_fold (mx_ops X). now rewrite mx_sub00_blk, mx_sub01_blk, mx_sub10_blk, mx_sub11_blk.
@@ -117,7 +117,7 @@ Qed.
 Lemma mx_str_trigonal n1 n2 
   (a: mx (X u u) n1 n1) (b: mx (X u u) n1 n2) 
                         (d: mx (X u u) n2 n2):
-  (blk_mx a b 0 d)^* ≡ blk_mx (a^*) (a^**(b*d^*)) 0 (d^*).
+  (blk_mx a b 0 d)^* ≡ blk_mx (a^*) (a^*⋅(b⋅d^*)) 0 (d^*).
 Proof. rewrite mx_str_blk. apply blk_mx_weq; ra. Qed.
 
 (** and to diagonal block matrices *)
@@ -163,14 +163,14 @@ Lemma mx_str_ind' (P: forall n, mx (X u u) n n -> mx (X u u) n n -> Prop):
   (forall M, P _ M (scal_mx ((mx_scal M)^*))) -> 
   (forall n m a b c d,
     let e := d^* in
-    let be := b*e in
-    let ec := e*c in
-    let f := (a+be*c)^* in
-    let fbe := f*be in
-    let ecf := ec*f in
+    let be := b⋅e in
+    let ec := e⋅c in
+    let f := (a+be⋅c)^* in
+    let fbe := f⋅be in
+    let ecf := ec⋅f in
     P m d e -> 
-    P n (a+be*c) f -> 
-    P _ (blk_mx a b c d) (blk_mx f fbe ecf (e+ecf*be))) ->
+    P n (a+be⋅c) f -> 
+    P _ (blk_mx a b c d) (blk_mx f fbe ecf (e+ecf⋅be))) ->
   forall n M, P n M (M^*). 
 Proof.
   intros HP HO H1 Hplus. apply (mx_str_ind P HP HO H1). 
@@ -212,7 +212,7 @@ Definition mx_fun {X: lattice.ops} n m f z: mx X n m :=
   fun x y => if eqb_ord y (f x) then z else bot. 
 
 Lemma mx_dot_fun `{laws} `{BSL<<l} u n m f z p (M: mx (X u u) m p) i j: 
-  (mx_fun (n:=n) f z * M) i j ≡ z * M (f i) j.
+  (mx_fun (n:=n) f z ⋅ M) i j ≡ z ⋅ M (f i) j.
 Proof.
   simpl. unfold mx_dot. apply antisym. 
   apply leq_supx. intros j' _. unfold mx_fun. case eqb_ord_spec.
@@ -223,7 +223,7 @@ Proof.
 Qed.
 
 Lemma mx_dot_kfun1 `{laws} `{BSL<<l} u n m i p (M: mx (X u u) m p): 
-  (mx_fun (n:=n) (fun _ => i) 1 * M) ≡ fun _ j => M i j.
+  (mx_fun (n:=n) (fun _ => i) 1 ⋅ M) ≡ fun _ j => M i j.
 Proof. intros j k. rewrite mx_dot_fun. apply dot1x. Qed.
 
 Lemma mx_map_fun {X Y: lattice.ops} {l} {HY: lattice.laws l Y} n m f z g: 

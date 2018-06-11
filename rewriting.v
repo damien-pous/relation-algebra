@@ -17,12 +17,12 @@ Require Import monoid.
     associativity, and to use an extended lemma: for instance, if one
     wants to rewrite using a closed hypothesis 
 
-    [H: a_1*...*a_n ≡ c]
+    [H: a_1⋅...⋅a_n ≡ c]
 
-    in a goal including a subterm like [d*e*a_1*...*a_n*f], then one
+    in a goal including a subterm like [d⋅e*a_1⋅...⋅a_n⋅f], then one
     can simply rewrite using 
 
-    [(ext_weq_n H): forall x, x*a_1*...*a_n ≡ x*c] 
+    [(ext_weq_n H): forall x, x⋅a_1⋅...⋅a_n ≡ x⋅c] 
 
     where ext_weq_n is the appropriate lemma (see rewriting.v).
     
@@ -31,7 +31,7 @@ Require Import monoid.
 
     This trick generalises to "open" equations, like
 
-    [H: forall x y, P x y -> forall z, y*(x+z)*y ≡ y]
+    [H: forall x y, P x y -> forall z, y⋅(x+z)⋅y ≡ y]
 
     where one wants to rewrite using 
     [(fun x y Hxy z => ext_weq_3 (H x y Hxy z))]
@@ -49,55 +49,55 @@ Require Import monoid.
     not supported in AAC_tactics. 
 *)
 
-Lemma ext_leq_2 `{laws} {n m p} (x: X n m) (y: X m p) v: x*y ≦ v -> 
-  forall o (u: X o n), u*x*y ≦ u*v. 
+Lemma ext_leq_2 `{laws} {n m p} (x: X n m) (y: X m p) v: x⋅y ≦ v -> 
+  forall o (u: X o n), u⋅x⋅y ≦ u⋅v. 
 Proof. intros E ? ?. now rewrite <-E, !dotA. Qed.
 
-Lemma ext_leq_3 `{laws} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: x*y*z ≦ v -> 
-  forall o (u: X o n), u*x*y*z ≦ u*v. 
+Lemma ext_leq_3 `{laws} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: x⋅y⋅z ≦ v -> 
+  forall o (u: X o n), u⋅x⋅y⋅z ≦ u⋅v. 
 Proof. intros E ? ?. now rewrite <-E, !dotA. Qed. 
 
-Lemma ext_leq_4 `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: x*y*z*t ≦ v -> 
-  forall o (u: X o n), u*x*y*z*t ≦ u*v. 
+Lemma ext_leq_4 `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: x⋅y⋅z⋅t ≦ v -> 
+  forall o (u: X o n), u⋅x⋅y⋅z⋅t ≦ u⋅v. 
 Proof. intros E ? ?. now rewrite <-E, !dotA. Qed. 
 
 
-Lemma ext_weq_2 `{laws} {n m p} (x: X n m) (y: X m p) v: x*y ≡ v -> 
-  forall o (u: X o n), u*x*y ≡ u*v. 
+Lemma ext_weq_2 `{laws} {n m p} (x: X n m) (y: X m p) v: x⋅y ≡ v -> 
+  forall o (u: X o n), u⋅x⋅y ≡ u⋅v. 
 Proof. intros E ? ?. now rewrite <-E, !dotA. Qed.
 
-Lemma ext_weq_3 `{laws} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: x*y*z ≡ v -> 
-  forall o (u: X o n), u*x*y*z ≡ u*v. 
+Lemma ext_weq_3 `{laws} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: x⋅y⋅z ≡ v -> 
+  forall o (u: X o n), u⋅x⋅y⋅z ≡ u⋅v. 
 Proof. intros E ? ?. now rewrite <-E, !dotA. Qed. 
 
-Lemma ext_weq_4 `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: x*y*z*t ≡ v -> 
-  forall o (u: X o n), u*x*y*z*t ≡ u*v. 
+Lemma ext_weq_4 `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: x⋅y⋅z⋅t ≡ v -> 
+  forall o (u: X o n), u⋅x⋅y⋅z⋅t ≡ u⋅v. 
 Proof. intros E ? ?. now rewrite <-E, !dotA. Qed. 
 
 
-Lemma ext_leq_2' `{laws} {n m p} (x: X n m) (y: X m p) v: v ≦ x*y -> 
-  forall o (u: X o n), u*v ≦ u*x*y. 
+Lemma ext_leq_2' `{laws} {n m p} (x: X n m) (y: X m p) v: v ≦ x⋅y -> 
+  forall o (u: X o n), u⋅v ≦ u⋅x⋅y. 
 Proof. intros E ? ?. now rewrite E, !dotA. Qed.
 
-Lemma ext_leq_3' `{laws} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: v ≦ x*y*z -> 
-  forall o (u: X o n), u*v ≦ u*x*y*z. 
+Lemma ext_leq_3' `{laws} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: v ≦ x⋅y⋅z -> 
+  forall o (u: X o n), u⋅v ≦ u⋅x⋅y⋅z. 
 Proof. intros E ? ?. now rewrite E, !dotA. Qed. 
 
-Lemma ext_leq_4' `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: v ≦ x*y*z*t -> 
-  forall o (u: X o n), u*v ≦ u*x*y*z*t. 
+Lemma ext_leq_4' `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: v ≦ x⋅y⋅z⋅t -> 
+  forall o (u: X o n), u⋅v ≦ u⋅x⋅y⋅z⋅t. 
 Proof. intros E ? ?. now rewrite E, !dotA. Qed. 
 
 
-Lemma ext_weq_2' `{laws} {n m p} (x: X n m) (y: X m p) v: v ≡ x*y -> 
-  forall o (u: X o n), u*v ≡ u*x*y. 
+Lemma ext_weq_2' `{laws} {n m p} (x: X n m) (y: X m p) v: v ≡ x⋅y -> 
+  forall o (u: X o n), u⋅v ≡ u⋅x⋅y. 
 Proof. intros E ? ?. now rewrite E, !dotA. Qed.
 
-Lemma ext_weq_3' `{laws} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: v ≡ x*y*z -> 
-  forall o (u: X o n), u*v ≡ u*x*y*z. 
+Lemma ext_weq_3' `{laws} {n m p q} (x: X n m) (y: X m p) (z: X p q) v: v ≡ x⋅y⋅z -> 
+  forall o (u: X o n), u⋅v ≡ u⋅x⋅y⋅z. 
 Proof. intros E ? ?. now rewrite E, !dotA. Qed. 
 
-Lemma ext_weq_4' `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: v ≡ x*y*z*t -> 
-  forall o (u: X o n), u*v ≡ u*x*y*z*t. 
+Lemma ext_weq_4' `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r) v: v ≡ x⋅y⋅z⋅t -> 
+  forall o (u: X o n), u⋅v ≡ u⋅x⋅y⋅z⋅t. 
 Proof. intros E ? ?. now rewrite E, !dotA. Qed. 
 
 
@@ -150,16 +150,16 @@ End monoid.
 (* tests for AAC_tactics *)
 (*
 Require Import kleene.
-Goal forall `{laws} `{BKA<<l} n (a b c: X n n), a+b ≡ c -> (forall x: X n n, x*x ≡ x) -> 
-  a*b+b+1*a+(b+0)^* ≡ a*b*c*b*c*a+0.
+Goal forall `{laws} `{BKA<<l} n (a b c: X n n), a+b ≡ c -> (forall x: X n n, x⋅x ≡ x) -> 
+  a⋅b+b+1⋅a+(b+0)^* ≡ a⋅b*c⋅b*c⋅a+0.
 Proof. 
   intros. aac_normalise. 
   aac_rewrite H1. 
   aac_rewrite H2 in_right. 
 Abort.
 Require Import rel.
-Goal forall (a b c: rel nat nat), a+b ≡ c -> (forall x: rel nat nat, x*x ≡ x) -> 
-  a*b+b+1*a+(b+0)^* ≡ a*b*c*b*c*a+0.
+Goal forall (a b c: rel nat nat), a+b ≡ c -> (forall x: rel nat nat, x⋅x ≡ x) -> 
+  a⋅b+b+1⋅a+(b+0)^* ≡ a⋅b*c⋅b*c⋅a+0.
 Proof.
   intros.
   aac_rewrite H.

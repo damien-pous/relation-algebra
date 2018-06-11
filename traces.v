@@ -110,7 +110,7 @@ Definition traces_one (n: traces_unit): traces :=
 Definition traces_cnv (n m: traces_unit) (x: traces): traces := 
   fun w => x (rev w).
 
-(** finite iterations (with a slight generalisation: [y*x^n]) *)
+(** finite iterations (with a slight generalisation: [y⋅x^n]) *)
 Fixpoint traces_iter (y x: traces) i := 
   match i with O => y | S i => traces_dot tt tt tt x (traces_iter y x i) end.
 
@@ -245,7 +245,7 @@ Qed.
 
 (** traces form a residuated Kleene lattice 
    (we do not have an allegory, since the converse operation does not
-   satisfy the law [x ≦x*x°*x]) *)
+   satisfy the law [x ≦x⋅x°⋅x]) *)
 (* TODO: include a weak converse? *)
 Global Instance traces_monoid_laws: monoid.laws (BDL+STR+DIV) traces_monoid_ops.
 Proof.
@@ -275,7 +275,7 @@ Qed.
 
 (** empty trace property for concatenated languages of traces *)
 
-Lemma traces_dot_nil (L L': traces') a: (L*L')%ra (tnil a) <-> L (tnil a) /\ L' (tnil a).
+Lemma traces_dot_nil (L L': traces') a: (L⋅L')%ra (tnil a) <-> L (tnil a) /\ L' (tnil a).
 Proof. 
   split. intros [h H [k K E]]. inversion E. subst. clear E. now split.
   intros [H H']. repeat eexists; eauto using tapp_nil_nil. 
@@ -298,7 +298,7 @@ Lemma traces_deriv_pls a i (H K: traces'):
 Proof. intro. now apply cup_weq. Qed.
 
 Lemma traces_deriv_dot_1 a i (H K: traces'): H (tnil a) ->
-  traces_deriv a i (H*K) ≡ traces_deriv a i H * K + traces_deriv a i K.
+  traces_deriv a i (H⋅K) ≡ traces_deriv a i H ⋅ K + traces_deriv a i K.
 Proof.
   intros Hnil w; simpl; unfold traces_deriv, traces_dot, pw2.
    split. 
@@ -309,7 +309,7 @@ Proof.
 Qed.
 
 Lemma traces_deriv_dot_2 a i (H K: traces'): ~ (H (tnil a)) ->
-  traces_deriv a i (H*K) ≡ traces_deriv a i H * K.
+  traces_deriv a i (H⋅K) ≡ traces_deriv a i H ⋅ K.
 Proof.
   intros Hnil w; simpl; unfold traces_deriv, traces_dot, pw2.
    split. 
@@ -320,7 +320,7 @@ Proof.
 Qed.
 
 Lemma traces_deriv_itr a i (H: traces'): 
-  traces_deriv a i (H^+) ≡ traces_deriv a i H * H^*.
+  traces_deriv a i (H^+) ≡ traces_deriv a i H ⋅ H^*.
 Proof.
   rewrite str_itr. apply antisym. 
   - intro w.
@@ -391,7 +391,7 @@ Proof.
    inversion_clear Hu. constructor. eapply IHtapp; eassumption.
 Qed.
 
-Lemma typed'_dot n m p (x y: traces'): typed' n m x -> typed' m p y -> typed' n p (x*y).
+Lemma typed'_dot n m p (x y: traces'): typed' n m x -> typed' m p y -> typed' n p (x⋅y).
 Proof. intros Hx Hy w [u Hu [v Hv H]]. eapply tapp_typed; eauto. Qed.
 
 Lemma typed'_one n: typed' n n (one tt).
@@ -546,7 +546,7 @@ Next Obligation. apply typed'_single. Qed.
 Program Definition tsingle' a i b: ttraces (src i) (tgt i) := eq (tcons a i (tnil b)).
 Next Obligation. intros ? <-. do 2 constructor. Qed.
 
-Lemma atom_single_atom a i b: tatom _ a * ttsingle i * tatom _ b ≡ tsingle' a i b.
+Lemma atom_single_atom a i b: tatom _ a ⋅ ttsingle i ⋅ tatom _ b ≡ tsingle' a i b.
 Proof.
   intro x. split. 
   - intros [uv [u <- [v Hv Huvw]] [w <- Huvw']]. destruct v as [|c j [d|]]; try elim Hv. 
@@ -575,7 +575,7 @@ Proof. intros w; simpl; unfold pw2. tauto. Qed.
 
 Lemma restrict_dot n m p (x y: traces'):
   typed' n m x -> typed' m p y -> 
-  restrict n p (x * y) ≡ restrict n m x * restrict m p y. 
+  restrict n p (x ⋅ y) ≡ restrict n m x ⋅ restrict m p y. 
 Proof. 
   intros Hx Hy w; simpl. split. 
    intros [Hw [u Hu [v Hv H]]]. repeat eexists; eauto. 

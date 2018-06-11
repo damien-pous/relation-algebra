@@ -28,7 +28,7 @@ Notation "x ^M" := (M x) (at level 2, left associativity, format "x ^M").
 Notation "x ^v" := (v x) (at level 2, left associativity, format "x ^v").
 
 (** formal evaluation of matricial automata into regular expressions *)
-Definition eval A := mx_scal (A^u * A^M^* * A^v).
+Definition eval A := mx_scal (A^u ⋅ A^M^* ⋅ A^v).
 Arguments eval !_ /.
 
 (** two important classes of automata: 
@@ -40,7 +40,7 @@ Definition is_enfa e := is_01_mx e^u /\ is_simple_mx e^M /\ is_01_mx e^v.
 
 (** characterisation of epsilon for automata with a pure transition matrix *)
 Lemma epsilon_eval n u (M: rmx n n) v: is_pure_mx M -> 
-  (epsilon (mx_scal (u*M^**v))  <->  epsilon (mx_scal (u*v))).
+  (epsilon (mx_scal (u⋅M^*⋅v))  <->  epsilon (mx_scal (u⋅v))).
 Proof.
   intro HM. rewrite 2epsilon_iff_reflexive_eps. 
   rewrite 2(scal_mx_map (fun e => eps e)). 
@@ -50,7 +50,7 @@ Qed.
 
 (** characterisation of derivatives for NFA *)
 Lemma deriv_eval a n u (M: rmx n n) v: is_01_mx u -> is_pure_mx M -> is_01_mx v ->
- deriv a (mx_scal (u*M^**v))  ≡  mx_scal (u*epsilon_mx (deriv_mx a M)*M^**v).
+ deriv a (mx_scal (u⋅M^*⋅v))  ≡  mx_scal (u⋅epsilon_mx (deriv_mx a M)⋅M^*⋅v).
  (* NB: we use epsilon_mx because [deriv_mx a M] is not necessarily a 01 matrix, 
         even if it is equal to such a matrix *)
 Proof.
@@ -66,15 +66,15 @@ Qed.
 (** (operationally, not through evaluation into regular expressions) *)
 Fixpoint lang n (M: rmx n n) v u w: Prop := 
   match w with 
-    | nil => epsilon (mx_scal (u * v))
-    | cons a w => lang M v (u * epsilon_mx (deriv_mx a M)) w
+    | nil => epsilon (mx_scal (u ⋅ v))
+    | cons a w => lang M v (u ⋅ epsilon_mx (deriv_mx a M)) w
   end.
-(* NB: like above, we have to use [epsilon_mx] because [u * deriv_mx a M] is 
+(* NB: like above, we have to use [epsilon_mx] because [u ⋅ deriv_mx a M] is 
    only equal to a 01-matrix *)
 
 (** the language of the NFA is that obtained by evaluation into regular expressions *)
 Theorem eval_lang n u M v (H: is_nfa (@mk n u M v)):
-  regex.lang (mx_scal (u * M^* * v)) ≡ lang M v u.
+  regex.lang (mx_scal (u ⋅ M^* ⋅ v)) ≡ lang M v u.
 Proof.
   unfold regex.lang. intro w. revert u H. induction w; intros u H. 
    unfold derivs. now rewrite epsilon_eval by apply H.

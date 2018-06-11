@@ -22,7 +22,7 @@ Fixpoint bmx_str n: bmx n n -> bmx n n :=
       let b := sub01_mx (n1:=1) (m1:=1) M in
       let c := sub10_mx (n1:=1) (m1:=1) M in
       let d := bmx_str (sub11_mx (n1:=1) (m1:=1)  M) in
-      blk_mx 1 (b*d) (d*c) (d+d*c*(b*d))
+      blk_mx 1 (b⋅d) (d⋅c) (d+d⋅c⋅(b⋅d))
   end.
 
 Lemma bmx_top_1: top ≡ (1: bmx 1%nat 1%nat).

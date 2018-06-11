@@ -88,7 +88,7 @@ Definition e_pls' n m (x y: expr n m) :=
   (if is_zer x then y else if is_zer y then x else x+y)%ast.
 
 Definition e_dot' n m p (x: expr n m) (y: expr m p) :=
-  (if is_zer x then 0 else if is_zer y then 0 else x * y)%ast.
+  (if is_zer x then 0 else if is_zer y then 0 else x ⋅ y)%ast.
 
 Definition e_itr' n (x: expr n n) :=
   (if is_zer x then 0 else x^+)%ast.
@@ -173,7 +173,7 @@ Proof. rewrite <-clean_level. now intros ->. Qed.
 Lemma e_pls_weq l n m x y: `{CUP + e_level x + e_level y << l} -> @e_pls' n m x y ==_[l] x+y.
 Proof. destruct_tests; intros; lattice. Qed.
 
-Lemma e_dot_weq l n m p x y: e_level x + e_level y << l -> @e_dot' n m p x y ==_[l] x*y.
+Lemma e_dot_weq l n m p x y: e_level x + e_level y << l -> @e_dot' n m p x y ==_[l] x⋅y.
 Proof. destruct_tests; symmetry. apply dot0x. apply dotx0. Qed.
 
 Lemma e_itr_weq l n x: STR + e_level x << l -> @e_itr' n x ==_[l] x^+.
@@ -330,7 +330,7 @@ Notation expr := (expr s t).
 Inductive eval: forall n m, uexpr -> expr n m -> Prop :=
 | ev_one: forall n, @eval n n 1 1
 | ev_pls: forall x y n m x' y', @eval n m x x' -> @eval n m y y' -> eval (x+y) (x'+y')
-| ev_dot: forall x y n m p x' y', @eval n m x x' -> @eval m p y y' -> eval (x*y) (x'*y')
+| ev_dot: forall x y n m p x' y', @eval n m x x' -> @eval m p y y' -> eval (x⋅y) (x'⋅y')
 | ev_itr: forall x n x', @eval n n x x' -> eval (x^+) (x'^+)
 | ev_str: forall x n x', @eval n n x x' -> eval (x^* ) (x'^* )
 | ev_cnv: forall x n m x', @eval n m x x' -> eval (x°) (x'°)
@@ -356,10 +356,10 @@ Proof.
   eauto. 
 Qed.
 
-Lemma eval_dot n m x y z: eval n m (x*y) z -> 
+Lemma eval_dot n m x y z: eval n m (x⋅y) z -> 
   exists p, exists x', eval n p x x' /\ exists y', eval p m y y' /\ z=e_dot x' y'.
 Proof. 
-  remember (x*y)%ast as z' eqn:E. destruct 1; try discriminate.
+  remember (x⋅y)%ast as z' eqn:E. destruct 1; try discriminate.
   generalize (f_equal ((fun n m e =>
     match e in syntax.expr _ _ n m return syntax.expr _ _ n xH with 
       | @e_dot _ _ _ _ p _ x _ => 

@@ -47,7 +47,7 @@ Lemma rmov_x_neg `{L: laws} {n} (x: X n n) a:
   x;[a] ≡ [a];x -> x;[!a] ≡ [!a];x.
 Proof. hkat. Qed.
 
-Lemma rmov_inj `{L: laws} {n} (a b: tst n): [a]*[b] ≡ [b]*[a].
+Lemma rmov_inj `{L: laws} {n} (a b: tst n): [a]⋅[b] ≡ [b]⋅[a].
 Proof. kat. Qed.
 
 Ltac solve_rmov :=

@@ -62,9 +62,9 @@ Fixpoint bstep (p: prog): rel state state :=
   match p with
     | skp => 1
     | aff x e => upd x e
-    | seq p q => bstep p * bstep q
-    | ite b p q => [b] * bstep p + [!b] * bstep q
-    | whl b p => ([b] * bstep p)^*  *  [!b]
+    | seq p q => bstep p ⋅ bstep q
+    | ite b p q => [b] ⋅ bstep p + [!b] ⋅ bstep q
+    | whl b p => ([b] ⋅ bstep p)^*  ⋅  [!b]
   end.
 
 (** ** using an inductive predicate, as in standard textbooks *)
@@ -89,10 +89,10 @@ Proof.
      eexists; eassumption. 
      right. eexists. split. reflexivity. simpl; now rewrite H. assumption.
      left. eexists. split. reflexivity. assumption. assumption. 
-     exists s. apply (str_refl ([b] * bstep p)). reflexivity.
+     exists s. apply (str_refl ([b] ⋅ bstep p)). reflexivity.
       simpl. unfold rel_inj. simpl. now rewrite H.
      destruct IHbstep' as [t ? [t' ? ?]]. exists t'. 2: assumption. 
-     apply (str_cons ([b] * bstep p)). exists t. 2: assumption.
+     apply (str_cons ([b] ⋅ bstep p)). exists t. 2: assumption.
      eexists; eauto. now split. 
   - induction p; unfold bstep; fold bstep.
      intros ? ? <-. constructor. 
@@ -199,7 +199,7 @@ Lemma aff_ite x e t p q:
   (ite (subst x e t) (x <- e ;; p) (x <- e ;; q)).
 Proof.
   simp. 
-  assert (H: upd x e * [t] ≡ [subst x e t] * upd x e)
+  assert (H: upd x e ⋅ [t] ≡ [subst x e t] ⋅ upd x e)
    by (cbv; firstorder; subst; eauto). 
   hkat.
 Qed.
@@ -210,7 +210,7 @@ Qed.
 
 (** Hoare triples for partial correctness can be expressed really
    easily using KAT: *)
-Notation Hoare A p B := ([A] * bstep p * [!B] ≦ 0).
+Notation Hoare A p B := ([A] ⋅ bstep p ⋅ [!B] ≦ 0).
 
 (** ** correspondence w.r.t. the standard interpretation of Hoare triples  *)
 Lemma Hoare_eq A p B: 

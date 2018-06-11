@@ -50,7 +50,7 @@ Fixpoint lang (e: ugregex): uglang :=
     | u_var a => tsingle a
     | u_prd p => tinj (fun i => eval (set.mem i) p)
     | u_pls e f => lang e + lang f
-    | u_dot e f => lang e * lang f
+    | u_dot e f => lang e ⋅ lang f
     | u_itr e => (lang e)^+
   end.
 
@@ -139,8 +139,8 @@ Fixpoint deriv a i (e: ugregex'): ugregex' :=
     | u_prd _ => 0
     | u_var j => ofbool (eqb_pos i j)
     | u_pls e f => deriv a i e + deriv a i f
-    | u_dot e f => deriv a i e * f + ofbool (epsilon (set.mem a) e) * deriv a i f
-    | u_itr e => deriv a i e * (e: ugregex')^*
+    | u_dot e f => deriv a i e ⋅ f + ofbool (epsilon (set.mem a) e) ⋅ deriv a i f
+    | u_itr e => deriv a i e ⋅ (e: ugregex')^*
   end.
 
 (** corresponding coalgebraic notion of language *)

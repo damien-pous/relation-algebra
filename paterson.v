@@ -172,7 +172,7 @@ Fixpoint bstep (p: prog): rel state state :=
     | p_tst p => [eval p: dset state]
     | p_aff x e => upd x e
     | p_str p => (bstep p)^*
-    | p_dot p q => bstep p * bstep q
+    | p_dot p q => bstep p ⋅ bstep q
     | p_pls p q => bstep p + bstep q
   end.
 

@@ -160,19 +160,19 @@ Proof. intro H. rewrite H. kat. Qed.
 
 (* note: les quatre implications suivantes ne sont complètes que pour p=q *)
 Lemma bpqc_to_hoare `{L: laws} {n m} (b: tst n) (c: tst m) p q: 
-  [b]*p ≦ q*[c] -> [b]*p*[!c] ≦ 0.
+  [b]⋅p ≦ q⋅[c] -> [b]⋅p⋅[!c] ≦ 0.
 Proof. intro H. rewrite H. kat. Qed.
 
 Lemma pbcq_to_hoare `{L: laws} {n m} (b: tst n) (c: tst m) p q: 
-  p*[b] ≦ [c]*q -> [!c]*p*[b] ≦ 0.
+  p⋅[b] ≦ [c]⋅q -> [!c]⋅p⋅[b] ≦ 0.
 Proof. rewrite <-dotA. dual @bpqc_to_hoare. Qed.
 
 Lemma qpc_to_hoare `{L: laws} {n m} (c: tst m) (p q: X n m): 
-  q ≦ p*[c] -> q*[!c] ≦ 0.
+  q ≦ p⋅[c] -> q⋅[!c] ≦ 0.
 Proof. intro H. rewrite H. kat. Qed.
 
 Lemma qcp_to_hoare `{L: laws} {n m} (c: tst m) (p q: X m n):
-  q ≦ [c]*p -> [!c]*q ≦ 0.
+  q ≦ [c]⋅p -> [!c]⋅q ≦ 0.
 Proof. dual @qpc_to_hoare. Qed.
 
 (* TOTHINK: comprendre modulo A, et peut-être revenir aux cas complets
@@ -180,11 +180,11 @@ Proof. dual @qpc_to_hoare. Qed.
           mais pas prises dans le cas complet) *)
 
 Lemma cp_c `{L: laws} {n} (c: tst n) (p: X n n): 
-  [c]*p ≡ [c] -> p ≡ [!c]*p+[c].
+  [c]⋅p ≡ [c] -> p ≡ [!c]⋅p+[c].
 Proof. intro H. rewrite <-H. kat. Qed.
 
 Lemma pc_c `{L: laws} {n} (c: tst n) (p: X n n): 
-  p*[c] ≡ [c] -> p ≡ p*[!c]+[c].
+  p⋅[c] ≡ [c] -> p ≡ p⋅[!c]+[c].
 Proof. dual @cp_c. Qed.
 
 
@@ -195,11 +195,11 @@ Proof. rewrite cup_spec. tauto. Qed.
 (** eliminating Hoare hypotheses ; [u] and [v] are intended to be the
    universal expressions of the appropriate type *)
 Lemma elim_hoare_hypotheses_weq `{L: laws} {n m p q} (u: X n p) (v: X q m) (z: X p q) (x y: X n m):
-  z ≦ 0 -> x+u*z*v ≡ y+u*z*v -> x ≡y.
+  z ≦ 0 -> x+u⋅z⋅v ≡ y+u⋅z⋅v -> x ≡y.
 Proof. rewrite leq_xb_iff. intro Hz. now rewrite Hz, dotx0, dot0x, 2cupxb. Qed.
 
 Lemma elim_hoare_hypotheses_leq `{L: laws} {n m p q} (u: X n p) (v: X q m) (z: X p q) (x y: X n m):
-  z ≦ 0 -> x ≦ y+u*z*v -> x ≦y.
+  z ≦ 0 -> x ≦ y+u⋅z⋅v -> x ≦y.
 Proof. intro Hz. now rewrite Hz, dotx0, dot0x, cupxb. Qed.
 
 (** tactic used to aggregate Hoare hypotheses: convert hypotheses into

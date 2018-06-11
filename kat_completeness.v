@@ -78,7 +78,7 @@ Notation guards n m := (list (guard n m)).
 Definition geval n m (x: guard n m) :=
   match x with 
     | @g_pred n a => g_atom n a
-    | @g_elem n m a e b => g_atom n a * e * g_atom m b
+    | @g_elem n m a e b => g_atom n a ⋅ e ⋅ g_atom m b
   end.
 Notation teval := (sup (@geval _ _)).
 
@@ -107,7 +107,7 @@ Proof. unfold g_one'. rewrite teval_prd. apply inj_top. Qed.
 
 (** *** letters *)
 
-(** a Kleene variable [i] is mapped to the sum of all [f*i*g], for f,g
+(** a Kleene variable [i] is mapped to the sum of all [f⋅i⋅g], for f,g
    arbitrary atoms *)
 
 Definition g_var' i := \sup_(f<_) \sup_(g<_) [g_elem f (g_var i) g]%list.
@@ -144,7 +144,7 @@ Definition g_dot1 n m (x: guard n m): forall p, guard m p -> guards n p  :=
     | g_elem a e b => fun p y => 
       match y with 
         | g_pred c => fun e => if eqb b c then [g_elem a e b] else []
-        | g_elem c f d => fun e => if eqb b c then [g_elem a (e*g_atom _ b*f) d] else []
+        | g_elem c f d => fun e => if eqb b c then [g_elem a (e⋅g_atom _ b⋅f) d] else []
       end e
   end%list.
 
@@ -153,17 +153,17 @@ Definition g_dot' n m p (h: guards n m) (k: guards m p) :=
   \sup_(x\in h) \sup_(y\in k) g_dot1 x y.
 
 (** the correctness of this construction relies on the following two lemma *)
-Lemma empty_atom_dot n a b: a<>b -> g_atom n a * g_atom n b ≡ 0.
+Lemma empty_atom_dot n a b: a<>b -> g_atom n a ⋅ g_atom n b ≡ 0.
 Proof. 
   intros. setoid_rewrite <-inj_cap.
   rewrite (empty_atom_cap H). apply inj_bot. 
 Qed.
 
-Lemma idem_atom_dot n a: g_atom n a * g_atom n a ≡ g_atom n a.
+Lemma idem_atom_dot n a: g_atom n a ⋅ g_atom n a ≡ g_atom n a.
 Proof. setoid_rewrite <-inj_cap. now rewrite capI. Qed.
 
 (** correctness of [g_dot1] *)
-Lemma geval_dot n m p (x: guard n m) (y: guard m p): teval (g_dot1 x y) ≡ geval x * geval y.
+Lemma geval_dot n m p (x: guard n m) (y: guard m p): teval (g_dot1 x y) ≡ geval x ⋅ geval y.
 Proof.
   destruct x as [? a|? ? a e b]; destruct y as [? c|? ? c f d]; unfold g_dot1; 
     (case eqb_spec; [intros <-|intro E]); unfold geval; rewrite ?sup_singleton; unfold sup.
@@ -173,15 +173,15 @@ Proof.
   - rewrite 2dotA, (empty_atom_dot _ E). ra.
   - now rewrite <-3dotA, idem_atom_dot.
   - rewrite <-2dotA, (empty_atom_dot _ E). ra.
-  - transitivity (g_atom _ a*(e*(g_atom _ b*g_atom _ b)*f)*g_atom _ d). 2:ra. 
+  - transitivity (g_atom _ a⋅(e⋅(g_atom _ b⋅g_atom _ b)⋅f)⋅g_atom _ d). 2:ra. 
     now rewrite idem_atom_dot.
-  - transitivity (g_atom _ a*(e*(g_atom _ b*g_atom _ c)*f)*g_atom _ d). 2:ra. 
+  - transitivity (g_atom _ a⋅(e⋅(g_atom _ b⋅g_atom _ c)⋅f)⋅g_atom _ d). 2:ra. 
     rewrite (empty_atom_dot _ E). ra.
 Qed.
 
 (** correctness of [g_dot'] *)
 Lemma teval_dot n m p (x: guards n m) (y: guards m p):
-  teval (g_dot' x y) ≡ teval x * teval y.
+  teval (g_dot' x y) ≡ teval x ⋅ teval y.
 Proof.
   unfold g_dot'. rewrite sup_sup. setoid_rewrite sup_sup.
   setoid_rewrite geval_dot. 
@@ -206,7 +206,7 @@ Definition g_inner_dot n m (x: guard n m): forall p, guard m p -> gregex n p :=
     | g_elem a e b => fun p y => 
       match y with 
         | g_pred c => fun e => if eqb a b ⊓ eqb b c  then e else 0
-        | g_elem c f d => fun e => if eqb b c ⊓ eqb a d then e*g_atom _ b*f else 0
+        | g_elem c f d => fun e => if eqb b c ⊓ eqb a d then e⋅g_atom _ b⋅f else 0
       end e
   end.
 
@@ -214,7 +214,7 @@ Definition xitr n m (r: guard n m) q' :=
   let rq' := g_dot' [r] q' in
   let a := fst r in
   let p := sup (@g_inner_dot _ _ r _) q' in
-    g_dot' ([g_elem a (p*(g_atom _ a*p)^*) a]++g_one' _) rq'.
+    g_dot' ([g_elem a (p⋅(g_atom _ a⋅p)^*) a]++g_one' _) rq'.
 
 Fixpoint g_str' n (x: guards n n) := 
   match x with
@@ -226,14 +226,14 @@ Fixpoint g_str' n (x: guards n n) :=
 
 (** the correctness of this construction is substantially more involved than for the other ones *)
 
-Lemma geval_fst n m (r: guard n m): geval r ≡ g_atom _ (fst r) * geval r. 
+Lemma geval_fst n m (r: guard n m): geval r ≡ g_atom _ (fst r) ⋅ geval r. 
 Proof.
   destruct r.
    simpl fst; unfold geval. now rewrite idem_atom_dot. 
    simpl fst; unfold geval. now rewrite 2dotA, idem_atom_dot.
 Qed.
 
-Lemma geval_lst n m (r: guard n m): geval r ≡ geval r * g_atom _ (lst r). 
+Lemma geval_lst n m (r: guard n m): geval r ≡ geval r ⋅ g_atom _ (lst r). 
 Proof.
   destruct r.
    simpl fst; unfold geval. now rewrite idem_atom_dot. 
@@ -251,8 +251,8 @@ Proof.
 Qed.
 
 Lemma teval_inner_dot n m p (x: guard n m) (y: guard m p):
-  dirac n p + g_atom _ (fst x) * g_inner_dot x y * g_atom _ (fst x) ≡ 
-  dirac n p + ofbool (eqb (fst x) (lst y)) * geval x * geval y.
+  dirac n p + g_atom _ (fst x) ⋅ g_inner_dot x y ⋅ g_atom _ (fst x) ≡ 
+  dirac n p + ofbool (eqb (fst x) (lst y)) ⋅ geval x ⋅ geval y.
 Proof.
   unfold g_inner_dot.
   revert p y. destruct x as [n a|n m a e b]; destruct y as [p c|p q c f d];
@@ -279,7 +279,7 @@ Proof.
      ra. 
 Qed.
 
-Lemma teval_xitr n m (r: guard n m) q: teval (xitr r q) ≡ (geval r * teval q)^+.
+Lemma teval_xitr n m (r: guard n m) q: teval (xitr r q) ≡ (geval r ⋅ teval q)^+.
 Proof.
   unfold xitr. 
   rewrite 2teval_dot, sup_app, 2sup_singleton, teval_one. 
@@ -303,7 +303,7 @@ Proof.
   induction x as [|r q IH]; simpl g_str'. 
   rewrite teval_one. symmetry. apply str0.
   simpl (sup _ _). setoid_rewrite (cupC (geval r)). rewrite str_pls.
-  rewrite sup_app, teval_dot, teval_xitr, IH. rewrite (str_itr (_*_)). ra. 
+  rewrite sup_app, teval_dot, teval_xitr, IH. rewrite (str_itr (_⋅_)). ra. 
 Qed.
 
 (** ** summing up the constructions, by induction *)
@@ -428,7 +428,7 @@ Fixpoint o_pred (x: test): expr3 n n :=
     | e_bot => 0
     | e_top => 1
     | e_cup x y => o_pred x + o_pred y
-    | e_cap x y => o_pred x * o_pred y
+    | e_cap x y => o_pred x ⋅ o_pred y
     | e_neg x => o_npred x
     | e_var a => syntax.e_var (l_pos n a)
   end
@@ -436,7 +436,7 @@ with o_npred (x: test): expr3 n n :=
   match x with
     | e_bot => 1
     | e_top => 0
-    | e_cup x y => o_npred x * o_npred y
+    | e_cup x y => o_npred x ⋅ o_npred y
     | e_cap x y => o_npred x + o_npred y
     | e_neg x => o_pred x
     | e_var a => syntax.e_var (l_neg n a)
@@ -455,7 +455,7 @@ Fixpoint o n m (e: gregex n m): expr3 n m:=
     | g_zer _ _ _ => 0
     | g_prd _ _ p => o_pred _ p
     | g_pls e f => o e + o f
-    | g_dot e f => o e * o f
+    | g_dot e f => o e ⋅ o f
     | g_itr e => (o e)^+
     | g_var j => e_var (l_var j)
   end.
@@ -563,7 +563,7 @@ Definition atom_to_word n (a: Atom) :=
   map (fun i => if set.mem a i then lp (l_pos n i) else lp (l_neg n i)) (seq pred).
 
 (** converting an guarded string into a word of the extended alphabet
-   the resulting word has length [pred+(1+pred)*n], where [n] is the
+   the resulting word has length [pred+(1+pred)⋅n], where [n] is the
    length of the guarded string *)
 Fixpoint gword_to_word n (w: gword) :=
   match w with
@@ -667,9 +667,9 @@ Qed.
 
 (** key auxiliary lemma for composition: we need to use an atom as a cutting point *)
 Lemma gl_dot n m p (e: glang n m) a (f: glang m p) (e' f': lang): 
-  gl (e * tatom m a) ≡ e' * latom m a ->  
-  gl (tatom m a * f) ≡ latom m a * f' ->  
-  gl (e * tatom m a * f) ≡ e' * latom m a * f'.
+  gl (e ⋅ tatom m a) ≡ e' ⋅ latom m a ->  
+  gl (tatom m a ⋅ f) ≡ latom m a ⋅ f' ->  
+  gl (e ⋅ tatom m a ⋅ f) ≡ e' ⋅ latom m a ⋅ f'.
 Proof.
   setoid_rewrite weq_spec.
   intros He Hf. split; intro w.
@@ -696,7 +696,7 @@ Proof.
     congruence.
 Qed.
 
-Lemma gl_nildot a n m (e: glang n m): exists e', gl (tatom n a * e) ≡ latom n a * e'.
+Lemma gl_nildot a n m (e: glang n m): exists e', gl (tatom n a ⋅ e) ≡ latom n a ⋅ e'.
 Proof.
   exists (fun w => exists g, proj1_sig e g /\ thead g = a /\ w = gword_to_word' g).
   rewrite weq_spec. split; intro w.
@@ -708,8 +708,8 @@ Qed.
 
 (** key auxiliary lemma for iteration: we need to use an atom as bounds *)
 Lemma gl_itr n (e: glang n n) a (e': lang): 
-  gl (tatom n a * e * tatom n a) ≡ e' * latom n a ->  
-  gl ((tatom n a * e)^+ * tatom n a) ≡ e'^+ * latom n a.
+  gl (tatom n a ⋅ e ⋅ tatom n a) ≡ e' ⋅ latom n a ->  
+  gl ((tatom n a ⋅ e)^+ ⋅ tatom n a) ≡ e'^+ ⋅ latom n a.
 Proof.
   rename n into m.
   intro H. rewrite <-itr_dot. apply antisym.
@@ -727,7 +727,7 @@ Proof.
     repeat eexists; eauto.
      rewrite Hu, <-(tapp_head H'). apply tapp_nil_x.
      rewrite Hn; apply tapp_x_nil.
-    assert (Hext: e' * (e'^+ * latom m a) ≦ e'^+ * latom m a).
+    assert (Hext: e' ⋅ (e'^+ ⋅ latom m a) ≦ e'^+ ⋅ latom m a).
      now rewrite dotA, itr_cons.
     apply Hext. clear Hext.
     eexists. eassumption. eexists. apply IHn. apply Haw. 
@@ -736,7 +736,7 @@ Proof.
   - apply itr_ind_l.
     now rewrite <-H, <-itr_ext, dotA.
     rewrite <-itr_cons at 2.
-    destruct (gl_nildot a ((e * tatom m a)^+)) as [f' Hf].
+    destruct (gl_nildot a ((e ⋅ tatom m a)^+)) as [f' Hf].
     rewrite 2dotA. rewrite gl_dot by eassumption.
     now rewrite Hf, dotA.
 Qed.
@@ -802,10 +802,10 @@ Proof. apply clean_map. intros. apply clean_pred. Qed.
 
 Lemma clean_inner_dot n m (e: guard n m) (He: clean1 e):
   forall p (f: guard m p), clean1 f -> 
-   gl (tatom n (fst e) * G (g_inner_dot e f) * tatom p (fst e)) ≡
-   latom n (fst e) * R (v (o (g_inner_dot e f))) * latom p (fst e).
+   gl (tatom n (fst e) ⋅ G (g_inner_dot e f) ⋅ tatom p (fst e)) ≡
+   latom n (fst e) ⋅ R (v (o (g_inner_dot e f))) ⋅ latom p (fst e).
 Proof.
-  assert (Z: forall n m p q (e: glang n m) (f: glang p q) e' f', gl (e*G 0*f) ≡ e'*R 0*f').
+  assert (Z: forall n m p q (e: glang n m) (f: glang p q) e' f', gl (e⋅G 0⋅f) ≡ e'⋅R 0⋅f').
    intros. rewrite G.lang_0, dotx0, dot0x, gl_bot. setoid_rewrite R.lang_0. ra. 
   destruct e as [n a|n m a e b]; destruct f as [p c|p q c f d]; intros Hf;
     simpl fst; simpl lst; simpl g_inner_dot.

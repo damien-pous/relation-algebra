@@ -61,8 +61,8 @@ Section e.
    - an interpretation [fo] of syntactic types ([I])
    - a properly typed interpretation [fs] of each Kleene variable
    - an interpretation [fp] of each predicate variable into the tests of X, at each type n
-   (consider for instance, the expression [p]*a*[q], with [a: X n m, p: tst n, q: tst m],
-   which can be represented by the term [@g_prd 1 (e_var 1) * g_var 1 * @g_prd 2 (e_var 1)],
+   (consider for instance, the expression [p]⋅a*[q], with [a: X n m, p: tst n, q: tst m],
+   which can be represented by the term [@g_prd 1 (e_var 1) ⋅ g_var 1 ⋅ @g_prd 2 (e_var 1)],
    with the environments [fo(1)=n], [fo(2)=m], [fs(1)=1], [fp(1)(1)=p], [fp(2)(1)=q]). *)
 Context {X: kat.ops}.
 Variable fo: I -> ob X.
@@ -74,7 +74,7 @@ Fixpoint eval n m (e: gregex n m): X (fo n) (fo m) :=
     | g_zer => 0
     | @g_prd n p => [lsyntax.eval (fp n) p]
     | g_pls e f => eval e + eval f
-    | g_dot e f => eval e * eval f
+    | g_dot e f => eval e ⋅ eval f
     | g_itr e => (eval e)^+
     | g_var i => fs i
   end.
@@ -206,7 +206,7 @@ Proof. intros [|]; simpl; intuition. Qed.
 Lemma lang_pls n m (e f: gregex n m): lang (e+f) = lang e + lang f.
 Proof. reflexivity. Qed.
 
-Lemma lang_dot n m p (e: gregex n m) (f: gregex m p): lang (e*f) = lang e * lang f.
+Lemma lang_dot n m p (e: gregex n m) (f: gregex m p): lang (e⋅f) = lang e ⋅ lang f.
 Proof. reflexivity. Qed.
 
 Lemma lang_itr n (e: gregex n n): lang (e^+) = (lang e)^+.

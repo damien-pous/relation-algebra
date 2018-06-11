@@ -45,7 +45,7 @@ Fixpoint to_expr (e: regex): expr_(BKA) (fun _ => xH) (fun _ => xH) xH xH :=
     | r_zer => 0
     | r_one => 1
     | r_pls e f => to_expr e + to_expr f
-    | r_dot e f => to_expr e * to_expr f
+    | r_dot e f => to_expr e ⋅ to_expr f
     | r_str e => (to_expr e)^*
     | r_var a => e_var a
   end.
@@ -116,17 +116,17 @@ Inductive is_01: regex' -> Prop :=
 | is_01_zer: is_01 0
 | is_01_one: is_01 1
 | is_01_pls: forall e f, is_01 e -> is_01 f -> is_01 (e+f)
-| is_01_dot: forall e f, is_01 e -> is_01 f -> is_01 (e*f)
+| is_01_dot: forall e f, is_01 e -> is_01 f -> is_01 (e⋅f)
 | is_01_str: forall e, is_01 e -> is_01 (e^*).
 
 (** simple regular expressions are those reducing to a sum of variables, possibly plus [1]
-   (actually a bit less, since, e.g., [0*a*b] reduces to [0] but is forbidden) *)
+   (actually a bit less, since, e.g., [0⋅a*b] reduces to [0] but is forbidden) *)
 Inductive is_simple: regex' -> Prop := 
 | is_simple_zer: is_simple 0
 | is_simple_one: is_simple 1
 | is_simple_var: forall a, is_simple (var a)
 | is_simple_pls: forall e f, is_simple e -> is_simple f -> is_simple (e+f)
-| is_simple_dot: forall e f, is_01 e -> is_simple f -> is_simple (e*f)
+| is_simple_dot: forall e f, is_01 e -> is_simple f -> is_simple (e⋅f)
 | is_simple_str: forall e, is_01 e -> is_simple (e^*).
 
 (** pure regular expressions are those without star, which reduce to a sum of variables 
@@ -135,7 +135,7 @@ Inductive is_pure: regex' -> Prop :=
 | is_pure_zer: is_pure 0
 | is_pure_var: forall a, is_pure (var a)
 | is_pure_pls: forall e f, is_pure e -> is_pure f -> is_pure (e+f)
-| is_pure_dot: forall e f, is_01 e -> is_pure f -> is_pure (e*f).
+| is_pure_dot: forall e f, is_01 e -> is_pure f -> is_pure (e⋅f).
 
 (** [ofbool] produces 01 expressions *)
 Lemma is_01_ofbool b: is_01 (ofbool b). 
@@ -165,8 +165,8 @@ Fixpoint deriv a (e: regex'): regex' :=
 match e with
   | r_zer | r_one => 0
   | r_pls e f => deriv a e + deriv a f
-  | r_dot e f => deriv a e * f + eps e * deriv a f
-  | r_str e => deriv a e * (e: regex')^*
+  | r_dot e f => deriv a e ⋅ f + eps e ⋅ deriv a f
+  | r_str e => deriv a e ⋅ (e: regex')^*
   | r_var b => ofbool (eqb_pos a b)
 end.
 
@@ -189,7 +189,7 @@ end.
 (** ** fundamental expansion theorem  *)
 
 Theorem expand' (e: regex') A: vars e ≦ A -> 
-  e ≡ eps e + \sum_(a\in A) var a * deriv a e. 
+  e ≡ eps e + \sum_(a\in A) var a ⋅ deriv a e. 
 Proof. 
   induction e; simpl vars; intro HA; simpl deriv; fold_regex. 
   + rewrite sup_b, cupxb; ra. 
@@ -209,7 +209,7 @@ Proof.
     ra. 
   + specialize (IHe HA). clear HA. 
     simpl epsilon. setoid_rewrite dotA. rewrite <-dotsumx.
-    set (f := \sum_(i\in A) var i * deriv i e) in *. clearbody f. 
+    set (f := \sum_(i\in A) var i ⋅ deriv i e) in *. clearbody f. 
     rewrite IHe. case epsilon; ra_normalise; rewrite ?str_pls1x; apply str_unfold_l. 
   + setoid_rewrite cupbx. apply antisym. 
     rewrite <- (leq_xsup _ _ a) by (apply HA; now left). 
@@ -217,11 +217,11 @@ Proof.
     apply leq_supx. intros b _. case eqb_spec; try intros <-; ra. 
 Qed.
 
-Corollary expand e: e ≡ eps e + \sup_(a\in vars e) var a * deriv a e.
+Corollary expand e: e ≡ eps e + \sup_(a\in vars e) var a ⋅ deriv a e.
 Proof. apply expand'. reflexivity. Qed.
 
 (* not used currently ; can easily be proved directly *)
-Corollary deriv_cancel a e: var a * deriv a e ≦ e.
+Corollary deriv_cancel a e: var a ⋅ deriv a e ≦ e.
 Proof. 
   rewrite (@expand' e ([a]++vars e)) at 2 by lattice.
   simpl. fold_regex. ra.
@@ -330,7 +330,7 @@ Qed.
 Fixpoint pure_part (e: regex'): regex' :=
   match e with
     | r_pls e f => pure_part e + pure_part f
-    | r_dot e f => eps e * pure_part f
+    | r_dot e f => eps e ⋅ pure_part f
     | r_str _ | r_one | r_zer => 0
     | r_var _ => e
   end.
@@ -378,7 +378,7 @@ Proof.
   rewrite deriv_01 by assumption. case (epsilon e); simpl; fold_regex; ra.
 Qed.
 
-Lemma expand_pure e A: is_pure e -> vars e ≦ A -> e ≡ \sum_(a \in A) var a * deriv a e .
+Lemma expand_pure e A: is_pure e -> vars e ≦ A -> e ≡ \sum_(a \in A) var a ⋅ deriv a e .
 Proof.
   intros He HA. rewrite (expand' e HA) at 1. 
   rewrite epsilon_pure by assumption. apply cupbx.  
@@ -480,7 +480,7 @@ Proof. now rewrite 3lang_eval. Qed.
 Corollary lang_sup I J (f: I -> _): lang (sup f J) ≡ \sup_(i\in J) lang (f i).
 Proof. apply f_sup_weq. apply lang_0. apply lang_pls. Qed.
 
-Corollary lang_dot e f: lang (e*f) ≡ lang e * lang f.
+Corollary lang_dot e f: lang (e⋅f) ≡ lang e ⋅ lang f.
 Proof. now rewrite 3lang_eval. Qed.
 
 Corollary lang_itr e: lang (e^+) ≡ (lang e)^+.

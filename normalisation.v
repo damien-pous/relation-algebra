@@ -39,7 +39,7 @@ Ltac fold_expr l := ra_fold (expr_ops s t l).
    - the level of the resulting expression cannot increase w.r.t. the
      level of the initial one, and
    - it yields an expression which is equal to the starting one, 
-     *at the level of that expression* 
+     ⋅at the level of that expression⋅ 
    (in particular unions cannot be used to simplify lonely iterations)
 *)
 
@@ -165,18 +165,18 @@ Variable distribute: bool.
 Ltac case_distribute :=
   match goal with |- context[distribute] => case distribute | _ => idtac end.
 
-(* [dot_l x y ≡ x*y] *)
+(* [dot_l x y ≡ x⋅y] *)
 Fixpoint dot_l n m (x: expr n m): forall p, expr m p -> expr n p :=
   match x in syntax.expr _ _ n m return forall p, expr m p -> expr n p with
     | e_zer _ _ => fun p y => 0
     | e_one _ => fun p y => y
     | e_pls x1 x2 => fun p y => 
       if distribute then pls' (dot_l x1 y) (dot_l x2 y)
-      else (x1+x2)*y
-    | x => fun p y => x * y 
+      else (x1+x2)⋅y
+    | x => fun p y => x ⋅ y 
   end%ast.
 
-(* [dot_r y x ≡ x*y] *)
+(* [dot_r y x ≡ x⋅y] *)
 Fixpoint dot_r m p (y: expr m p): forall n, expr n m -> expr n p :=
   match y in syntax.expr _ _ m p return forall n, expr n m -> expr n p with
     | e_zer _ _ => fun n x => 0
@@ -211,7 +211,7 @@ Lemma dot'_level n m p (x: expr n m) (y: expr m p):
 Proof. apply dot_r_level. Qed.
 
 Lemma dot_l_weq l n m p (x: expr n m) (y: expr m p) {Hl: e_level x + e_level y << l}: 
-  x*y ==_[l] dot_l x y.
+  x⋅y ==_[l] dot_l x y.
 Proof.
   revert p y Hl. 
   induction x; intros q z Hl; simpl dot_l; case_distribute; simpl e_level in Hl; try reflexivity. 
@@ -221,7 +221,7 @@ Proof.
 Qed.
 
 Lemma dot'dot l n m p (x: expr n m) (y: expr m p) {Hl: e_level y+e_level x << l}: 
-  dot' x y ==_[l] x*y.
+  dot' x y ==_[l] x⋅y.
 Proof.
   symmetry. unfold dot'. revert n x Hl. 
   induction y; simpl e_level; intros q z Hl; simpl dot_r; case_distribute;

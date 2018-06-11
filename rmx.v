@@ -40,7 +40,7 @@ Lemma epsilon_sup I J (f: I -> regex'): eps (\sup_(i\in J) f i) ≡ \sup_(i\in J
 Proof. induction J. reflexivity. simpl. fold_regex. now rewrite <-IHJ, orb_pls. Qed.
 
 Lemma epsilon_mx_dot n m p (M: rmx n m) (N: rmx m p): 
-  epsilon_mx (M*N) ≡ epsilon_mx M * epsilon_mx N.
+  epsilon_mx (M⋅N) ≡ epsilon_mx M ⋅ epsilon_mx N.
 Proof.
   intros i j. simpl. unfold epsilon_mx, mx_map, mx_dot. 
   rewrite epsilon_sup. now setoid_rewrite andb_dot. 
@@ -60,8 +60,8 @@ Proof.
   - intros n m a b c d e be ec f fbe ecf He Hf. 
     unfold epsilon_mx. rewrite 2mx_map_blk, mx_str_blk. 
     fold (epsilon_mx). 
-    assert (H1: (epsilon_mx (a+be*c))^*
-             ≡ (epsilon_mx a + epsilon_mx b * (epsilon_mx d)^* * epsilon_mx c) ^*)
+    assert (H1: (epsilon_mx (a+be⋅c))^*
+             ≡ (epsilon_mx a + epsilon_mx b ⋅ (epsilon_mx d)^* ⋅ epsilon_mx c) ^*)
       by (unfold be; rewrite epsilon_mx_pls, 2epsilon_mx_dot, He; reflexivity). 
     apply blk_mx_weq.
     + rewrite Hf. exact H1.
@@ -78,7 +78,7 @@ Lemma deriv_mx_pls a n m (M N: rmx n m): deriv_mx a (M+N) ≡ deriv_mx a M + der
 Proof. reflexivity. Qed.
 
 Lemma deriv_mx_dot a n m p (M: rmx n m) (N: rmx m p): 
-  deriv_mx a (M*N) ≡ deriv_mx a M * N + epsilon_mx M * deriv_mx a N. 
+  deriv_mx a (M⋅N) ≡ deriv_mx a M ⋅ N + epsilon_mx M ⋅ deriv_mx a N. 
 Proof. intros i j. setoid_rewrite deriv_sup. simpl deriv; fold_regex. apply supcup. Qed.
 
 Instance deriv_mx_weq a n m: Proper (weq ==> weq) (@mx_map _ _ (deriv a) n m).
@@ -87,21 +87,21 @@ Proof. apply mx_map_weq. Qed.
 (** [deriv_mx] commutes with Kleene star on "strict" matrices, 
    those whose epsilon matrix is empty *)
 Lemma deriv_mx_str_strict a: forall n (M: rmx n n), 
-  epsilon_mx M ≡ 0 -> deriv_mx a (M^*) ≡ deriv_mx a M * M^*.
+  epsilon_mx M ≡ 0 -> deriv_mx a (M^*) ≡ deriv_mx a M ⋅ M^*.
 Proof.
   refine (mx_str_ind' (fun n M sM => 
-    epsilon_mx M ≡ 0 -> deriv_mx a sM ≡ deriv_mx a M * sM) _ _ _ _).
+    epsilon_mx M ≡ 0 -> deriv_mx a sM ≡ deriv_mx a M ⋅ sM) _ _ _ _).
    intros n ? ? H ? ? H'. now rewrite H, H'. 
    intros M _ i. elim (ord_0_empty i).
    intros M _ i j. setoid_rewrite ord0_unique. symmetry. apply cupxb. 
    rename a into l. intros n m a b c d e be ec f fbe ecf He Hf HM.
    rewrite 2mx_map_blk, mx_dot_blk. 
    unfold epsilon_mx in HM. rewrite mx_map_blk in HM. apply blk_mx_0 in HM as (Ha&Hb&Hc&Hd).
-   assert (Hf': epsilon_mx (a+be*c) ≡ 0).
+   assert (Hf': epsilon_mx (a+be⋅c) ≡ 0).
      rewrite epsilon_mx_pls, epsilon_mx_dot, Ha, Hc; ra. 
    specialize (He Hd). specialize (Hf Hf'). 
    unfold be in Hf. rewrite deriv_mx_pls, <-dotA, deriv_mx_dot, Hb, dot0x, cupxb in Hf.
-   assert (Hecf: deriv_mx l ecf ≡ deriv_mx l c * f + deriv_mx l d * ecf). 
+   assert (Hecf: deriv_mx l ecf ≡ deriv_mx l c ⋅ f + deriv_mx l d ⋅ ecf). 
      unfold ecf at 1, ec. rewrite <-dotA, deriv_mx_dot.
      rewrite He. unfold e at 2. rewrite epsilon_mx_str, Hd. 
      rewrite deriv_mx_dot, Hc. unfold ecf, ec. ra. 
@@ -176,7 +176,7 @@ Proof. repeat intro. simpl. unfold mx_one. case ordinal.eqb_ord; constructor. Qe
 Lemma is_01_mx_cup n m (M N: rmx n m): is_01_mx M -> is_01_mx N -> is_01_mx (M+N).
 Proof. repeat intro. now constructor. Qed.
 
-Lemma is_01_mx_dot n m p (M: rmx n m) (N: rmx m p): is_01_mx M -> is_01_mx N -> is_01_mx (M*N).
+Lemma is_01_mx_dot n m p (M: rmx n m) (N: rmx m p): is_01_mx M -> is_01_mx N -> is_01_mx (M⋅N).
 Proof. repeat intro. apply is_01_sup. now constructor. Qed.
 
 Lemma is_01_mx_scal e: is_01 e -> is_01_mx (scal_mx e).
@@ -230,7 +230,7 @@ Lemma is_simple_mx_pls n m (M N: rmx n m):
 Proof. now constructor. Qed.
 
 Lemma is_simple_mx_dot n m p (M: rmx n m) (N: rmx m p): 
-  is_01_mx M -> is_simple_mx N -> is_simple_mx (M*N).
+  is_01_mx M -> is_simple_mx N -> is_simple_mx (M⋅N).
 Proof. repeat intro. apply is_simple_sup. now constructor. Qed.
 
 Hint Resolve is_simple_mx_var is_simple_mx_pls is_simple_mx_dot: mx_predicates.
@@ -247,7 +247,7 @@ Proof. constructor. Qed.
 Lemma is_pure_mx_pls n m (M N: rmx n m): is_pure_mx M -> is_pure_mx N -> is_pure_mx (M+N).
 Proof. now constructor. Qed.
 
-Lemma is_pure_mx_dot n m p (M: rmx n m) (N: rmx m p): is_01_mx M -> is_pure_mx N -> is_pure_mx (M*N).
+Lemma is_pure_mx_dot n m p (M: rmx n m) (N: rmx m p): is_01_mx M -> is_pure_mx N -> is_pure_mx (M⋅N).
 Proof. repeat intro. apply is_pure_sup. now constructor. Qed.
 
 Lemma is_pure_pure_part_mx n m (M: rmx n m): is_pure_mx (pure_part_mx M).

@@ -53,7 +53,7 @@ Definition lang_one n: lang := eq nil.
 (** language of reversed words *)
 Definition lang_cnv n m x: lang := fun w => x (rev w).
 
-(** finite iterations of a language (with a slight generalisation: [y*x^n]) *)
+(** finite iterations of a language (with a slight generalisation: [y⋅x^n]) *)
 Fixpoint iter i y x: lang := 
   match i with O => y | S i => lang_dot tt tt tt x (iter i y x) end.
 
@@ -103,7 +103,7 @@ Qed.
 
 (** languages form a residuated Kleene lattice 
    (we do not have an allegory, since the converse operation does not
-   satisfy the law [x ≦x*x°*x]) *)
+   satisfy the law [x ≦x⋅x°⋅x]) *)
 Global Instance lang_laws: laws (BDL+STR+DIV) lang_ops.
 Proof.
   constructor; (try (intro; discriminate)); (try now left); repeat right; intros. 
@@ -128,14 +128,14 @@ Proof.
 Qed.
 
 (** empty word property for concatenated languages *)
-Lemma lang_dot_nil (L L': lang'): (L*L')%ra nil <-> L nil /\ L' nil.
+Lemma lang_dot_nil (L L': lang'): (L⋅L')%ra nil <-> L nil /\ L' nil.
 Proof. 
   split. 2:firstorder. intros [h H [k K E]].
   apply eq_sym, List.app_eq_nil in E. intuition congruence.
 Qed.
 
 (** concatenation of singleton languages *)
-Lemma eq_app_dot u v: eq (u++v) ≡ (eq u: lang') * (eq v: lang').
+Lemma eq_app_dot u v: eq (u++v) ≡ (eq u: lang') ⋅ (eq v: lang').
 Proof. split. intros <-. repeat eexists; eauto. now intros [? <- [? <- <-]]. Qed.
 
 
@@ -154,7 +154,7 @@ Lemma lang_deriv_pls a (H K: lang'):
 Proof. intro. now apply cup_weq. Qed.
 
 Lemma lang_deriv_dot_1 a (H K: lang'): H nil ->
-  lang_deriv a (H*K) ≡ lang_deriv a H * K + lang_deriv a K.
+  lang_deriv a (H⋅K) ≡ lang_deriv a H ⋅ K + lang_deriv a K.
 Proof.
   intros Hnil w; simpl; unfold lang_deriv, lang_dot.
    split. 
@@ -165,7 +165,7 @@ Proof.
 Qed.
 
 Lemma lang_deriv_dot_2 a (H K: lang'): ~ (H nil) ->
-  lang_deriv a (H*K) ≡ lang_deriv a H * K.
+  lang_deriv a (H⋅K) ≡ lang_deriv a H ⋅ K.
 Proof.
   intros Hnil w; simpl; unfold lang_deriv, lang_dot.
    split. 
@@ -176,7 +176,7 @@ Proof.
 Qed.
 
 Lemma lang_deriv_str a (H: lang'): 
-  lang_deriv a (H^*) ≡ lang_deriv a H * H^*.
+  lang_deriv a (H^*) ≡ lang_deriv a H ⋅ H^*.
 Proof.
   intro w. split. 
   intros [n Hn]. induction n in a, w, Hn; simpl in Hn. 

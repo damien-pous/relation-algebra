@@ -79,7 +79,7 @@ Proof.
    case eqb_pos. 2: reflexivity. now rewrite sup_singleton. 
    reflexivity.
    rewrite union_app, sup_app. now apply cup_weq.
-   assert (H: deriv a i e1 * e2 ≡ sup id (map (tod e2) (pderiv (set.mem a) i e1))).
+   assert (H: deriv a i e1 ⋅ e2 ≡ sup id (map (tod e2) (pderiv (set.mem a) i e1))).
     rewrite sup_map. setoid_rewrite <-(dotsumx (X:=ugregex_monoid_ops _)).
     now apply dot_weq.
    case epsilon.
@@ -187,7 +187,7 @@ Fixpoint ofold X Y (f: X -> Y -> option Y) (l: list X) (y: Y): option Y :=
 
 (** [loop_aux e f a todo] checks the accepting status of [e] and [f] along [a], 
    - if a mismatch is found, we can stop (a counter example has bee found)
-   - otherwise, it inserts all derivatives of the pair [(e,f)] along [{a}*I] into [todo] *)
+   - otherwise, it inserts all derivatives of the pair [(e,f)] along [{a}⋅I] into [todo] *)
 Definition loop_aux e f := 
   fun a todo => 
     if eqb_bool (epsilon' a e) (epsilon' a f) 

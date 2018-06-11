@@ -74,11 +74,11 @@ Definition pls e f := mk
    states of the second one *)
 Definition dot e f := mk 
   (row_mx e^u 0) 
-  (blk_mx e^M (e^v*f^u) 0 f^M) 
+  (blk_mx e^M (e^v⋅f^u) 0 f^M) 
   (col_mx 0 f^v).
 (** strict iteration is obtained simply by adding epsilon transitions
    from accepting states to initial ones *)
-Definition itr e := mk e^u (e^M+e^v*e^u) e^v.
+Definition itr e := mk e^u (e^M+e^v⋅e^u) e^v.
 (** Kleene star is derived from the other operations *)
 Definition str e := pls one (itr e).
 
@@ -112,17 +112,17 @@ Proof. set (o:=eval one). vm_compute in o; subst o. ra. Qed.
 Lemma eval_pls e f: eval (pls e f) ≡ eval e + eval f.
 Proof.
   destruct e as [n u M v]. destruct f as [m s N t].
-  change (mx_scal (row_mx u s * (blk_mx M 0 0 N)^* * col_mx v t) ≡ mx_scal (u * M ^* * v) + mx_scal (s * N ^* * t)).
+  change (mx_scal (row_mx u s ⋅ (blk_mx M 0 0 N)^* ⋅ col_mx v t) ≡ mx_scal (u ⋅ M ^* ⋅ v) + mx_scal (s ⋅ N ^* ⋅ t)).
   rewrite <-mx_scal_pls. apply mx_scal_weq.
   rewrite mx_str_diagonal.
   setoid_rewrite mx_dot_rowcol. rewrite dotplsx. 
   rewrite <-2dotA, 2mx_dot_rowcol. ra.
 Qed.
 
-Lemma eval_dot e f: eval (dot e f) ≡ eval e * eval f.
+Lemma eval_dot e f: eval (dot e f) ≡ eval e ⋅ eval f.
 Proof.
   destruct e as [n u M v]. destruct f as [m s N t].
-  change (mx_scal (row_mx u 0 * (blk_mx M (v * s) 0 N)^* * col_mx 0 t) ≡ mx_scal (u * M ^* * v) * mx_scal (s * N ^* * t)).
+  change (mx_scal (row_mx u 0 ⋅ (blk_mx M (v ⋅ s) 0 N)^* ⋅ col_mx 0 t) ≡ mx_scal (u ⋅ M ^* ⋅ v) ⋅ mx_scal (s ⋅ N ^* ⋅ t)).
   rewrite <-mx_scal_dot. apply mx_scal_weq.
   rewrite mx_str_trigonal. setoid_rewrite mx_dot_rowcol. rewrite dotplsx. 
   rewrite <-dotA, mx_dot_rowcol. ra. 
@@ -131,7 +131,7 @@ Qed.
 Lemma eval_itr e: eval (itr e) ≡ (eval e)^+.
 Proof.
   rewrite itr_str_l. destruct e as [n u M v].
-  change (mx_scal (u * (M + v * u) ^* * v) ≡ mx_scal (u * M ^* * v) * (mx_scal (u * M ^* * v))^*).
+  change (mx_scal (u ⋅ (M + v ⋅ u) ^* ⋅ v) ≡ mx_scal (u ⋅ M ^* ⋅ v) ⋅ (mx_scal (u ⋅ M ^* ⋅ v))^*).
   rewrite <-mx_scal_str, <-mx_scal_dot. apply mx_scal_weq. 
   rewrite str_pls. rewrite <-3dotA, <-str_dot. ra. 
 Qed.
@@ -175,7 +175,7 @@ End Thompson.
 Definition nfa e := 
   let e := Thompson.enfa e in
   let J := (epsilon_mx e^M)^* in
-  mk e^u (J * pure_part_mx e^M) (J * e^v).
+  mk e^u (J ⋅ pure_part_mx e^M) (J ⋅ e^v).
 
 (** ** correctness *)
 
@@ -183,9 +183,9 @@ Theorem eval_nfa e: eval (nfa e) ≡ e.
 Proof.
   rewrite <- (Thompson.correct e) at 2. unfold nfa.
   change (mx_scal
-    ((Thompson.enfa e) ^u *
-     ((epsilon_mx (Thompson.enfa e)^M)^* * pure_part_mx (Thompson.enfa e) ^M)
-     ^* * ((epsilon_mx (Thompson.enfa e)^M)^* * (Thompson.enfa e) ^v)) ≡
+    ((Thompson.enfa e)^u ⋅
+     ((epsilon_mx (Thompson.enfa e)^M)^* ⋅ pure_part_mx (Thompson.enfa e) ^M)
+     ^* ⋅ ((epsilon_mx (Thompson.enfa e)^M)^* ⋅ (Thompson.enfa e) ^v)) ≡
     eval (Thompson.enfa e)).
   set (f := Thompson.enfa e). set (J := epsilon_mx f^M). apply mx_scal_weq.
   rewrite (@expand_simple_mx _ _ f^M) at 2 by apply Thompson.is_enfa.
@@ -238,7 +238,7 @@ Notation vars := (mx_vars M ⊔ vars').
 (** (unlabelled) transition matrix of the NFA, restricted to [a] *)
 Let T_ a := epsilon_mx (deriv_mx a M).
 (** transition matrix of the NFA restricted to [a] *)
-Let M_ a: rmx _ _ := fun i j => var a * T_(a) i j.
+Let M_ a: rmx _ _ := fun i j => var a ⋅ T_(a) i j.
 (** decoding matrix, establishing the link between the state of the
    determinised automaton (i.e., sets of states), with those of the starting one.
    We exploit for this the aforementioned bijection ;
@@ -256,20 +256,20 @@ Let X: rmx (pow2 n) n := fun x i => ofbool (set.mem x i).
   *)
 Definition det := dfa.mk
   (of_row u)
-  (fun x a => of_row (to_row x * T_(a)))
-  (fun j => epsilon ((X * v) j ord0))
+  (fun x a => of_row (to_row x ⋅ T_(a)))
+  (fun j => epsilon ((X ⋅ v) j ord0))
   vars.
 
 
 (** ** correctness *)
 
 (** the correctness is establish by using the bisimulation rule, to
-   let the decoding matrix [X] go through [u * M^* * v]:
+   let the decoding matrix [X] go through [u ⋅ M^* ⋅ v]:
    denoting by [(u',M',v')] the determinised automaton, 
-   we easily deduce [u*M^**v ≡ u'*M'^**v']
-   from [u ≡u'*X], [X*M ≡ M'*X], and [X*v ≡ v']. *)
+   we easily deduce [u⋅M^*⋅v ≡ u'⋅M'^*⋅v']
+   from [u ≡u'⋅X], [X⋅M ≡ M'⋅X], and [X⋅v ≡ v']. *)
 
-Lemma det_uX: u ≡ det^u * X.
+Lemma det_uX: u ≡ det^u ⋅ X.
 Proof.
   intros i j. cbn. rewrite mx_dot_fun, dot1x. 
   symmetry. apply mem_of_row, Hnfa. 
@@ -285,7 +285,7 @@ Proof.
   intro a. now rewrite <-epsilon_deriv_pure by apply Hnfa.
 Qed.
 
-Lemma det_MX: X * M^* ≡ det^M^* * X.
+Lemma det_MX: X ⋅ M^* ≡ det^M^* ⋅ X.
 Proof.
   apply str_move.
   rewrite M_sum. cbn. rewrite dotxsum, dotsumx. apply sup_weq. 2: reflexivity. 
@@ -298,7 +298,7 @@ Proof.
   now rewrite 2dotA, dot_ofboolx.
 Qed.
 
-Lemma det_Xv: X*v ≡ det^v.
+Lemma det_Xv: X⋅v ≡ det^v.
 Proof. 
   intros x j. setoid_rewrite ord0_unique. apply expand_01.
   apply is_01_mx_dot. intros ? ?. apply is_01_ofbool. apply Hnfa.
@@ -379,24 +379,24 @@ Definition R: rmx (n B) (n A) := fun j i => ofbool (dfa.lang_incl_dec _ _ Hvars 
 
 (** the algebraic proof is quite similar to that of determinisation: we use the
    bisimulation rule for inclusions, with [R]:
-   from [A^u ≦ B^u * R], [R * A^M ≦ B^M * R], and [R * A^v ≦ B^v],
-   we deduce [A^u*A^M^**A^v ≦ B^u*B^M^**B^v] 
+   from [A^u ≦ B^u ⋅ R], [R ⋅ A^M ≦ B^M ⋅ R], and [R ⋅ A^v ≦ B^v],
+   we deduce [A^u⋅A^M^*⋅A^v ≦ B^u⋅B^M^*⋅B^v] 
 
    the second and third hypotheses always hold, while the first one
    holds only if the language of [A] is contained in that of [B].
 
 *)
 
-Lemma R_v: R * A^v ≦ B^v. 
+Lemma R_v: R ⋅ A^v ≦ B^v. 
 Proof.
   intros j i'. apply leq_supx. intros i _. unfold dot; simpl. clear i'. 
- match goal with [|- ?P (_ ?x ?y) ?z ] => change (leq (x * y) z) end.
+ match goal with [|- ?P (_ ?x ?y) ?z ] => change (leq (x ⋅ y) z) end.
   setoid_rewrite <-andb_dot. apply ofbool_leq, le_bool_spec.
   setoid_rewrite Bool.andb_true_iff.  setoid_rewrite is_true_sumbool. 
   now intros [H H0%(H nil)].
 Qed.
 
-Lemma R_M: R * A^M^* ≦ B^M^* * R.
+Lemma R_M: R ⋅ A^M^* ≦ B^M^* ⋅ R.
 Proof.                          (* this proof also requires Hvars *)
   apply str_move_l.
   setoid_rewrite dotxsum. setoid_rewrite dotsumx. apply sup_leq'. exact Hvars.
@@ -408,7 +408,7 @@ Proof.                          (* this proof also requires Hvars *)
 Qed.
 
 Hypothesis HAB: regex.lang (eval A) ≦ regex.lang (eval B).
-Lemma R_u: A^u ≦ B^u * R. 
+Lemma R_u: A^u ≦ B^u ⋅ R. 
 Proof. 
   intros z i. cbn. rewrite mx_dot_fun, dot1x. unfold mx_fun. clear z. 
   case eqb_ord_spec. 2: intro; apply leq_bx. 

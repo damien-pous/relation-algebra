@@ -23,7 +23,7 @@ Require Export comparisons.
 Require Import kleene sums normalisation.
 
 (** A matrix of size [(n,m)] over a set [X] is just a curried function
-   from indices ([ord n * ord m]) to [X] *)
+   from indices ([ord n ⋅ ord m]) to [X] *)
 Definition mx X n m := ord n -> ord m -> X.
 
 (** * [(n,m)]-matrices as a lattice *)
@@ -195,7 +195,7 @@ Definition mx_one n: mx n n :=
 
 (** matrix product  *)
 Definition mx_dot n m p (M: mx n m) (N: mx m p): mx n p := 
-  fun i k => \sum_(j<m) M i j * N j k.
+  fun i k => \sum_(j<m) M i j ⋅ N j k.
 Local Infix "**" := (mx_dot _ _ _) (at level 40).
 
 (** left and right residuals (using infimums, as explained above)  *)
@@ -264,7 +264,7 @@ Notation mx := (mx U).
 Import lset.Fix.
 
 (** matrix product is associative *)
-Lemma mx_dotA n m p q (M: mx n m) N (P: mx p q): M*(N*P) ≡ (M*N)*P.
+Lemma mx_dotA n m p q (M: mx n m) N (P: mx p q): M⋅(N⋅P) ≡ (M⋅N)⋅P.
 Proof.
   intros i j. simpl. unfold mx_dot.
   setoid_rewrite dotxsum. rewrite sup_swap. 
@@ -273,7 +273,7 @@ Proof.
 Qed.
 
 (** and admits identities as left and right units *)
-Lemma mx_dot1x n m (M: mx n m): 1*M ≡ M.
+Lemma mx_dot1x n m (M: mx n m): 1⋅M ≡ M.
 Proof.
   intros i j. simpl. unfold mx_dot, mx_one. apply antisym.
    apply leq_supx. intros i' _. case eqb_ord_spec; simpl.
@@ -283,7 +283,7 @@ Proof.
    rewrite eqb_refl. simpl. now rewrite dot1x.
 Qed.
 
-Lemma mx_dotx1 n m (M: mx m n): M*1 ≡ M.
+Lemma mx_dotx1 n m (M: mx m n): M⋅1 ≡ M.
 Proof.
   intros i j. simpl. unfold mx_dot, mx_one. apply antisym.
    apply leq_supx. intros i' _. case eqb_ord_spec; simpl.
@@ -304,19 +304,19 @@ Qed.
 
 Import lset.Fix.
 
-Lemma mx_dotplsx_ n m p (M N: mx n m) (P: mx m p): (M+N)*P ≦ M*P+N*P.
+Lemma mx_dotplsx_ n m p (M N: mx n m) (P: mx m p): (M+N)⋅P ≦ M⋅P+N⋅P.
 Proof. intros i j. simpl. unfold mx_dot. setoid_rewrite dotplsx. now rewrite supcup. Qed.
 
-Lemma mx_dotxpls_ n m p (M N: mx m n) (P: mx p m): P*(M+N) ≦ P*M+P*N.
+Lemma mx_dotxpls_ n m p (M N: mx m n) (P: mx p m): P⋅(M+N) ≦ P⋅M+P⋅N.
 Proof. intros i j. simpl. unfold mx_dot. setoid_rewrite dotxpls. now rewrite supcup. Qed.
 
-Lemma mx_dot0x_ n m p (P: mx m p): (zer n m)*P ≦ 0.
+Lemma mx_dot0x_ n m p (P: mx m p): (zer n m)⋅P ≦ 0.
 Proof. 
   intros i j. simpl. unfold mx_dot. setoid_rewrite dot0x. 
   apply leq_supx. intros. apply leq_bx. 
 Qed.
 
-Lemma mx_dotx0_ n m p (P: mx p m): P*(zer m n) ≦ 0.
+Lemma mx_dotx0_ n m p (P: mx p m): P⋅(zer m n) ≦ 0.
 Proof. 
   intros i j. simpl. unfold mx_dot. setoid_rewrite dotx0. 
   apply leq_supx. intros. apply leq_bx. 
@@ -340,19 +340,19 @@ Qed.
 (** ** properties of block matrix multiplication *)
 
 Lemma mx_dot_colx n1 n2 m p (M1: mx n1 m) (M2: mx n2 m) (N: mx m p):
-  col_mx M1 M2 * N ≡ col_mx (M1*N) (M2*N).
+  col_mx M1 M2 ⋅ N ≡ col_mx (M1⋅N) (M2⋅N).
 Proof. intros i j. simpl. unfold mx_dot, col_mx. now case split_spec; intros i' ->. Qed.
 
 Lemma mx_dot_xrow n m1 m2 p (M1: mx n m1) (M2: mx n m2) (N: mx p n):
-  N * row_mx M1 M2 ≡ row_mx (N*M1) (N*M2).
+  N ⋅ row_mx M1 M2 ≡ row_mx (N⋅M1) (N⋅M2).
 Proof. intros i j. simpl. unfold mx_dot, row_mx. now case split_spec; intros i' ->. Qed.
 
 Lemma mx_dot_colrow n1 n2 m p1 p2 (M1: mx n1 m) (M2: mx n2 m) (N1: mx m p1) (N2: mx m p2):
-  col_mx M1 M2 * row_mx N1 N2 ≡ blk_mx (M1*N1) (M1*N2) (M2*N1) (M2*N2).
+  col_mx M1 M2 ⋅ row_mx N1 N2 ≡ blk_mx (M1⋅N1) (M1⋅N2) (M2⋅N1) (M2⋅N2).
 Proof. now rewrite mx_dot_colx, 2mx_dot_xrow. Qed.
 
 Lemma mx_dot_rowcol n m1 m2 p (M1: mx n m1) (M2: mx n m2) (N1: mx m1 p) (N2: mx m2 p):
-  row_mx M1 M2 * col_mx N1 N2 ≡ M1*N1 + M2*N2.
+  row_mx M1 M2 ⋅ col_mx N1 N2 ≡ M1⋅N1 + M2⋅N2.
 Proof.
   intros i j. setoid_rewrite sup_cut. unfold row_mx, col_mx. 
   setoid_rewrite split_lshift. setoid_rewrite split_rshift. reflexivity. (* LONG *)
@@ -361,8 +361,8 @@ Qed.
 Lemma mx_dot_blk n1 n2 m1 m2 p1 p2 
   (M11: mx n1 m1) (M12: mx n1 m2) (M21: mx n2 m1) (M22: mx n2 m2)
   (N11: mx m1 p1) (N12: mx m1 p2) (N21: mx m2 p1) (N22: mx m2 p2):
-  blk_mx M11 M12 M21 M22 * blk_mx N11 N12 N21 N22 ≡ 
-  blk_mx (M11*N11+M12*N21) (M11*N12+M12*N22) (M21*N11+M22*N21) (M21*N12+M22*N22).
+  blk_mx M11 M12 M21 M22 ⋅ blk_mx N11 N12 N21 N22 ≡ 
+  blk_mx (M11⋅N11+M12⋅N21) (M11⋅N12+M12⋅N22) (M21⋅N11+M22⋅N21) (M21⋅N12+M22⋅N22).
 Proof.
   setoid_rewrite blk_mx' at 2. setoid_rewrite mx_dot_colrow.
   now rewrite 4mx_dot_rowcol.
@@ -393,7 +393,7 @@ Canonical Structure lset_ops A := lattice.mk_ops (list A)
   (fun h k => forall a, List.In a h <-> List.In a k)
   (@app A) (@app A) (assert_false id) (@nil A) (@nil A).
 
-Lemma mx_cnvdot_ n m p (M: mx n m) (N: mx m p): (M*N)° ≦ N°*M°.
+Lemma mx_cnvdot_ n m p (M: mx n m) (N: mx m p): (M⋅N)° ≦ N°⋅M°.
 Proof. intros i j. setoid_rewrite cnvsum. now setoid_rewrite cnvdot. Qed.
 
 Lemma mx_cnv_invol n m (M: mx n m): M°° ≡ M.
@@ -402,7 +402,7 @@ Proof. intros i j. apply cnv_invol. Qed.
 Lemma mx_cnv_leq n m: Proper (leq ==> leq) (mx_cnv X u n m).
 Proof. intros ? ? H i j. apply cnv_leq, H. Qed.
 
-Lemma mx_cnv_ext n m (M: mx n m): M ≦ M*M°*M.
+Lemma mx_cnv_ext n m (M: mx n m): M ≦ M⋅M°⋅M.
 Proof. 
   intros i j. simpl. unfold mx_dot, mx_cnv. setoid_rewrite dotsumx. 
   rewrite <- (leq_xsup _ _ i) by apply in_seq. 
@@ -450,14 +450,14 @@ Ltac unfold_s M :=
   set (c := sub10_mx M);
   set (d := sub11_mx M);
   set (e := sm d);
-  set (f := sn (a + (b*e)*c));
-  change (s M) with (blk_mx f (f*(b*e)) ((e*c)*f) (e+((e*c)*f)*(b*e))).
+  set (f := sn (a + (b⋅e)⋅c));
+  change (s M) with (blk_mx f (f⋅(b⋅e)) ((e⋅c)⋅f) (e+((e⋅c)⋅f)⋅(b⋅e))).
 
 (** [mx_str_build] preserves the left star unfolding axiom *)
-Lemma mx_str_build_unfold_l: transfers (fun n M sM => 1+M*sM ≦ sM).
+Lemma mx_str_build_unfold_l: transfers (fun n M sM => 1+M⋅sM ≦ sM).
 Proof.
   intros Hf He M. rewrite (to_blk_mx M) at 1. unfold_s M.
-  specialize (Hf (a+b*e*c)). specialize (He d). fold e in He. fold f in Hf.
+  specialize (Hf (a+b⋅e⋅c)). specialize (He d). fold e in He. fold f in Hf.
   clearbody a b c d e f. clear - He Hf L Hl. apply leq_cupx.
   
   (* TODO: optimize the line below *)
@@ -471,11 +471,11 @@ Proof.
 Qed.
 
 (** [mx_str_build] preserves the left induction rule for star *)
-Lemma mx_str_build_ind_l: transfers (fun n M sM => forall p (N: mx n p), M*N ≦ N -> sM*N ≦ N).
+Lemma mx_str_build_ind_l: transfers (fun n M sM => forall p (N: mx n p), M⋅N ≦ N -> sM⋅N ≦ N).
 Proof.
   intros Hf He M p N. rewrite (to_blk_mx M) at 1. unfold_s M. 
   rewrite (to_col_mx N). set (h := tsub_mx N). set (k:= bsub_mx N).
-  specialize (Hf (a+b*e*c) p h). specialize (He d p k). fold e in He. fold f in Hf.  
+  specialize (Hf (a+b⋅e⋅c) p h). specialize (He d p k). fold e in He. fold f in Hf.  
   clearbody a b c d e f h k. clear - He Hf L Hl. 
   rewrite 2blk_mx', 2mx_dot_rowcol, 4mx_dot_colx. setoid_rewrite <-col_mx_cup.
   setoid_rewrite col_mx_leq_iff. rewrite 2cup_spec. intros [[Ha Hb] [Hc Hd]].
@@ -485,11 +485,11 @@ Proof.
 Qed.
 
 (** [mx_str_build] preserves the right induction rule for star *)
-Lemma mx_str_build_ind_r: transfers (fun n M sM => forall p (N: mx p n), N*M ≦ N -> N*sM ≦ N).
+Lemma mx_str_build_ind_r: transfers (fun n M sM => forall p (N: mx p n), N⋅M ≦ N -> N⋅sM ≦ N).
 Proof.
   intros Hf He M p N. rewrite (to_blk_mx M) at 1. unfold_s M. 
   rewrite (to_row_mx N). set (h := lsub_mx N). set (k:= rsub_mx N).
-  specialize (Hf (a+b*e*c) p h). specialize (He d p k). fold e in He. fold f in Hf.  
+  specialize (Hf (a+b⋅e⋅c) p h). specialize (He d p k). fold e in He. fold f in Hf.  
   clearbody a b c d e f h k. clear - He Hf L Hl. unfold blk_mx.
   rewrite 2mx_dot_rowcol, 4mx_dot_xrow. setoid_rewrite <-row_mx_cup.
   setoid_rewrite row_mx_leq_iff. rewrite 2cup_spec. intros [[Ha Hb] [Hc Hd]].
@@ -503,7 +503,7 @@ End build.
 (** *** packing everything by induction to get properties of the
    Kleene star matrix construction *)
 
-Lemma mx_str_unfold_l n (M: mx n n): 1 + M * mx_str _ _ _ M ≦ mx_str _ _ _ M.
+Lemma mx_str_unfold_l n (M: mx n n): 1 + M ⋅ mx_str _ _ _ M ≦ mx_str _ _ _ M.
 Proof.
   induction n. intro i; elim (ord_0_empty i).
   simpl mx_str. apply (mx_str_build_unfold_l 1); trivial. 
@@ -514,10 +514,10 @@ Qed.
 Lemma mx_str_refl n (M: mx n n): 1 ≦ mx_str _ _ _ M.
 Proof. rewrite <-mx_str_unfold_l. apply leq_xcup. now left. Qed.
 
-Lemma mx_str_cons n (M: mx n n): M * mx_str _ _ _ M ≦ mx_str _ _ _ M.
+Lemma mx_str_cons n (M: mx n n): M ⋅ mx_str _ _ _ M ≦ mx_str _ _ _ M.
 Proof. rewrite <-mx_str_unfold_l at 2. apply leq_xcup. now right. Qed.
 
-Lemma mx_str_ind_l n m (M: mx n n) (N: mx n m): M * N ≦ N -> mx_str _ _ _ M * N ≦ N.
+Lemma mx_str_ind_l n m (M: mx n n) (N: mx n m): M ⋅ N ≦ N -> mx_str _ _ _ M ⋅ N ≦ N.
 Proof.
   revert m N. induction n. intros ? ? _ i; elim (ord_0_empty i).
   simpl mx_str. apply (mx_str_build_ind_l 1); trivial. clear M IHn.
@@ -527,7 +527,7 @@ Proof.
   apply weq_geq. apply cupxb.
 Qed.
 
-Lemma mx_str_ind_r n m (M: mx n n) (N: mx m n): N * M ≦ N -> N * mx_str _ _ _ M ≦ N.
+Lemma mx_str_ind_r n m (M: mx n n) (N: mx m n): N ⋅ M ≦ N -> N ⋅ mx_str _ _ _ M ≦ N.
 Proof.
   revert m N. induction n. intros ? ? _ ? i; elim (ord_0_empty i).
   simpl mx_str. apply (mx_str_build_ind_r 1); trivial. clear M IHn.

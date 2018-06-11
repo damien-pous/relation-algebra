@@ -26,11 +26,11 @@ Notation "\sum_ ( i < n ) f" := (\sum_(i \in seq n) f)
 
 (** [dot] distributes over sums *)
 Lemma dotxsum `{laws} `{BSL<<l} I J n m p (f: I -> X m n) (x: X p m): 
-  x * (\sum_(i\in J) f i) ≡ \sum_(i\in J) (x * f i).
+  x ⋅ (\sum_(i\in J) f i) ≡ \sum_(i\in J) (x ⋅ f i).
 Proof. apply f_sup_weq. apply dotx0. intros; apply dotxpls. Qed.
 
 Lemma dotsumx `{laws} `{BSL<<l} I J n m p (f: I -> X n m) (x: X m p): 
-  (\sum_(i\in J) f i) * x ≡ \sum_(i\in J) (f i * x).
+  (\sum_(i\in J) f i) ⋅ x ≡ \sum_(i\in J) (f i ⋅ x).
 Proof. dual @dotxsum. Qed.
 
 (** converse commutes with sums *)
