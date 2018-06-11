@@ -58,6 +58,7 @@ Notation gword := (trace Atom).
 Notation glang := (tglang_kat_ops pred src tgt). 
 Notation g_atom n a := (@g_prd pred src tgt n (@atom pred a)).
 Notation test := (lsyntax.expr (ord pred)).
+Local Open Scope list_scope.
 
 (** * 1. Definition of the [hat] function, and correctness *)
 
