@@ -167,7 +167,7 @@ Definition update x e m := set x (eval e m) m.
 Notation upd x e := (frel (update x e)).
 
 (** Bigstep semantics, as a fixpoint *)
-Fixpoint bstep (p: prog): rel state state :=
+Fixpoint bstep (p: prog): hrel state state :=
   match p with
     | p_tst p => [eval p: dset state]
     | p_aff x e => upd x e
@@ -259,8 +259,8 @@ Proof.
   split; try discriminate; try (simpl; tauto).
   intros x y H. apply inj_leq. intro m. apply H.
   intros x y H. apply inj_weq. intro m. apply H.
-  intros _ x y. apply (inj_cup (X:=rel_kat_ops)).
-  intros _ x y. apply (inj_cap (X:=rel_kat_ops)).
+  intros _ x y. apply (inj_cup (X:=hrel_kat_ops)).
+  intros _ x y. apply (inj_cap (X:=hrel_kat_ops)).
 Qed.
 
 (** ** variables read by a program *)
@@ -286,8 +286,8 @@ Notation del y := (y<-O).
 
 (** * Laws of schematic KAT *)
 
-Arguments rel_monoid_ops : simpl never.
-Arguments rel_lattice_ops : simpl never. 
+Arguments hrel_monoid_ops : simpl never.
+Arguments hrel_lattice_ops : simpl never. 
 
 (** (the numbering corresponds to Angus and Kozen's paper)  *)
 Lemma eq_6 (x y: loc) (s t: expr nat): 
@@ -318,7 +318,7 @@ Qed.
 
 Lemma eq_9 (x: loc) (t: expr nat) (phi: test): [subst x t phi: test];x<-t ≡ x<-t;[phi].
 Proof.
-  Transparent rel_lattice_ops. intros m m'. split. Opaque rel_lattice_ops. 
+  Transparent hrel_lattice_ops. intros m m'. split. Opaque hrel_lattice_ops. 
    intros [m0 [<- H] ->]. eexists. reflexivity. split; trivial. now rewrite eval_update.
    intros [m0 -> [<- H]]. eexists. 2: reflexivity. split; trivial. now rewrite <-eval_update.
 Qed.
@@ -331,8 +331,8 @@ Proof. rewrite landb_spec. intros [? ?]. now rewrite eq_6, subst_free. Qed.
 Lemma eq_9' (x: loc) (t: expr nat) (phi: test): free x phi -> [phi];x<-t ≡ x<-t;[phi].
 Proof. intro. now rewrite <-eq_9, subst_free. Qed.
 
-Transparent rel_lattice_ops.
-Arguments rel_lattice_ops : simpl never.
+Transparent hrel_lattice_ops.
+Arguments hrel_lattice_ops : simpl never.
 
 Lemma same_value (f: state -> state) (p: prog') (a b: test):
   bstep p ≡ frel f -> (forall m, eval a (f m) = eval b (f m)) -> 

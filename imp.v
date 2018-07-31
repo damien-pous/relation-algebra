@@ -58,7 +58,7 @@ Notation upd x e := (frel (fun s => update x (e s) s)).
    the semantics can then be given by induction on the program, using
    a simple fixpoint *)
 
-Fixpoint bstep (p: prog): rel state state :=
+Fixpoint bstep (p: prog): hrel state state :=
   match p with
     | skp => 1
     | aff x e => upd x e
@@ -69,7 +69,7 @@ Fixpoint bstep (p: prog): rel state state :=
 
 (** ** using an inductive predicate, as in standard textbooks *)
 
-Inductive bstep': prog -> rel state state :=
+Inductive bstep': prog -> hrel state state :=
 | s_skp: forall s, bstep' skp s s
 | s_aff: forall x e s, bstep' (x <- e) s (update x (e s) s)
 | s_seq: forall p q s s' s'', bstep' p s s' -> bstep' q s' s'' -> bstep' (p ;; q) s s''
@@ -90,7 +90,7 @@ Proof.
      right. eexists. split. reflexivity. simpl; now rewrite H. assumption.
      left. eexists. split. reflexivity. assumption. assumption. 
      exists s. apply (str_refl ([b] ⋅ bstep p)). reflexivity.
-      simpl. unfold rel_inj. simpl. now rewrite H.
+      simpl. unfold hrel_inj. simpl. now rewrite H.
      destruct IHbstep' as [t ? [t' ? ?]]. exists t'. 2: assumption. 
      apply (str_cons ([b] ⋅ bstep p)). exists t. 2: assumption.
      eexists; eauto. now split. 
