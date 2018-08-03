@@ -35,9 +35,14 @@ Notation "a <<< b" := (if (a:bool) then (b:bool) else true) (at level 49).
 Notation "a &&& b" := (if (a:bool) then (b:bool) else false) (right associativity, at level 59).
 Notation "a ||| b" := (if (a:bool) then true else (b:bool)) (right associativity, at level 60).
 
+
+(** Booleans inclusion *)
+Definition le_bool (a b : bool) := a -> b.
+Hint Unfold le_bool.
+
 (** specification in Prop of the above operations *)
-Lemma le_bool_spec a b: is_true (a<<<b) <-> (a -> b).
-Proof. case a; intuition. discriminate.  Qed.
+Lemma le_bool_spec a b: is_true (a<<<b) <-> le_bool a b.
+Proof. case a; intuition. discriminate. Qed.
 Lemma landb_spec a b: is_true (a&&&b) <-> a /\ b.
 Proof. case a; intuition. discriminate. Qed.
 Lemma lorb_spec a b: is_true (a|||b) <-> a \/ b.
@@ -50,11 +55,6 @@ Proof.
   split. unfold is_true. 2: now intros <-. 
   case a; case b; intuition discriminate.
 Qed.
-
-(** Booleans inclusion *)
-Definition le_bool a b := is_true (a <<< b). 
-Hint Unfold le_bool.
-
 
 (** coercion from sums to Booleans  *)
 Fixpoint bool_of_sumbool A B (c: sumbool A B): bool := if c then true else false.

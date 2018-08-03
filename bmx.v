@@ -89,9 +89,9 @@ split.
     apply rt_clot_S_S, Hj'j. 
 - induction 1 as [i|i j k Hij Hjk IH]. 
   + pose proof (str_refl (X:=bmx) M i i). simpl in H. 
-    setoid_rewrite le_bool_spec in H. apply H. unfold mx_one. now rewrite eqb_refl. 
+    apply H. unfold mx_one. now rewrite eqb_refl. 
   + pose proof (str_cons (X:=bmx) M i k). simpl in H. 
-    setoid_rewrite le_bool_spec in H. apply H. clear H. 
+    apply H. clear H. 
     unfold mx_dot. rewrite is_true_sup. eexists. split. apply in_seq.  
     apply Bool.andb_true_iff. split; eassumption. 
 Qed.

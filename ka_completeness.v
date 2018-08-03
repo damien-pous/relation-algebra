@@ -391,7 +391,7 @@ Lemma R_v: R ⋅ A^v ≦ B^v.
 Proof.
   intros j i'. apply leq_supx. intros i _. unfold dot; simpl. clear i'. 
  match goal with [|- ?P (_ ?x ?y) ?z ] => change (leq (x ⋅ y) z) end.
-  setoid_rewrite <-andb_dot. apply ofbool_leq, le_bool_spec.
+  setoid_rewrite <-andb_dot. apply ofbool_leq. unfold leq;simpl; unfold le_bool.
   setoid_rewrite Bool.andb_true_iff.  setoid_rewrite is_true_sumbool. 
   now intros [H H0%(H nil)].
 Qed.
@@ -403,7 +403,7 @@ Proof.                          (* this proof also requires Hvars *)
   intros a Ha j i'. apply leq_supx. intros i _. 
   rewrite mx_dot_fun. setoid_rewrite <-dot_ofboolx.  
   unfold mx_fun. case eqb_spec. 2: ra. 
-  intros ->. apply dot_leq. 2: reflexivity. apply ofbool_leq, le_bool_spec. 
+  intros ->. apply dot_leq. 2: reflexivity. apply ofbool_leq. unfold leq;simpl; unfold le_bool. 
   setoid_rewrite is_true_sumbool. intros H w Hw. apply (H (cons a w)). now split. 
 Qed.
 

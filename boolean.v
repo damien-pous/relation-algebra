@@ -26,8 +26,8 @@ Canonical Structure bool_lattice_ops: lattice.ops := {|
    (Actually a Boolean lattice homomorphism, but we don't need it here.) *)
 Instance mm_bool_Prop: morphism BDL is_true.
 Proof.
-  constructor; simpl. 
-  apply le_bool_spec.
+  constructor; simpl.
+  now auto.
   intros ? ?. now rewrite eq_bool_iff. 
   intros _ [|] [|]; firstorder. 
   intros _ [|] [|]; firstorder. 
@@ -43,7 +43,7 @@ Instance bool_lattice_laws: lattice.laws (BL+STR+CNV+DIV) bool_lattice_ops.
 Proof. 
   assert(H: lattice.laws BDL bool_lattice_ops).
    apply (laws_of_injective_morphism is_true mm_bool_Prop).
-   intros x y. apply le_bool_spec.
+   auto. 
    intros x y. apply eq_bool_iff.
   constructor; try apply H; (try now left); intros _ [|]; reflexivity. 
 Qed.
@@ -102,12 +102,8 @@ Proof.
    reflexivity.
    now intros ? ? ?.
    reflexivity.
-   case x; reflexivity.
-   simpl. reflexivity. 
-   case x; reflexivity.
-   case x; reflexivity.
-   case x; case z; reflexivity.
-   case x; case z; reflexivity.
+   all: try setoid_rewrite <- le_bool_spec.
+   all: try case x; try case y; try case z; reflexivity.
 Qed.
 
 
