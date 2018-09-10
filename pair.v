@@ -14,6 +14,7 @@ Require Import ordinal.
 
 Set Asymmetric Patterns.
 Set Implicit Arguments.
+Local Open Scope ltb_scope.
 
 (** equivalence between our Boolean strict order on [nat],
    and the standard one from the standard library  *)

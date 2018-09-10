@@ -22,8 +22,10 @@ Fixpoint ltb i j :=
     | _,O   => false
     | S i, S j => ltb i j
   end.
-Notation "i < j" := (ltb i j = true).
-Notation "i <= j" := (ltb j i = false).
+Notation "i < j" := (ltb i j = true) : ltb_scope.
+Notation "i <= j" := (ltb j i = false) : ltb_scope.
+Delimit Scope ltb_scope with ltb.
+Local Open Scope ltb_scope.
 
 Lemma ltb_plus_l i m n: i<m -> i<m+n.
 Proof. revert i; induction m; destruct i; simpl; auto; discriminate. Qed.
