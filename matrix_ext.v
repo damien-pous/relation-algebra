@@ -29,11 +29,11 @@ Lemma mx_scal_pls `{lattice.laws} (M N: mx X 1 1):
   mx_scal (M ⊔ N) ≡ mx_scal M ⊔ mx_scal N.
 Proof. reflexivity.  Qed.
 
-Lemma mx_scal_dot `{laws} `{BOT+CUP<<l} u (M N: mx (X u u) 1 1): 
+Lemma mx_scal_dot `{laws} `{BOT+CUP ≪ l} u (M N: mx (X u u) 1 1): 
   mx_scal (M ⋅ N) ≡ mx_scal M ⋅ mx_scal N.
 Proof. apply cupxb. Qed.
 
-Lemma mx_scal_str `{laws} `{BKA<<l} u (M: mx (X u u) 1 1): 
+Lemma mx_scal_str `{laws} `{BKA ≪ l} u (M: mx (X u u) 1 1): 
   mx_scal (M^*) ≡ (mx_scal M)^*.
 Proof. 
   apply str_weq. unfold mx_scal, sub00_mx, tsub_mx, lsub_mx. simpl. 
@@ -89,7 +89,7 @@ Qed.
 
 (** * Kleene star of a block matrix *)
 Section h.
-Context `{L:laws} `{Hl:BKA<<l} (u: ob X).
+Context `{L:laws} `{Hl:BKA ≪ l} (u: ob X).
 
 Local Instance mx_bka_laws: laws BKA (mx_ops X u) := mx_laws (L:=lower_laws) _.
 
@@ -211,7 +211,7 @@ Proof. reflexivity. Qed.
 Definition mx_fun {X: lattice.ops} n m f z: mx X n m := 
   fun x y => if eqb_ord y (f x) then z else bot. 
 
-Lemma mx_dot_fun `{laws} `{BSL<<l} u n m f z p (M: mx (X u u) m p) i j: 
+Lemma mx_dot_fun `{laws} `{BSL ≪ l} u n m f z p (M: mx (X u u) m p) i j: 
   (mx_fun (n:=n) f z ⋅ M) i j ≡ z ⋅ M (f i) j.
 Proof.
   simpl. unfold mx_dot. apply antisym. 
@@ -222,7 +222,7 @@ Proof.
   unfold mx_fun. now rewrite eqb_refl.
 Qed.
 
-Lemma mx_dot_kfun1 `{laws} `{BSL<<l} u n m i p (M: mx (X u u) m p): 
+Lemma mx_dot_kfun1 `{laws} `{BSL ≪ l} u n m i p (M: mx (X u u) m p): 
   (mx_fun (n:=n) (fun _ => i) 1 ⋅ M) ≡ fun _ j => M i j.
 Proof. intros j k. rewrite mx_dot_fun. apply dot1x. Qed.
 

@@ -117,19 +117,19 @@ Implicit Types a b c: bool.
 Context {X: ops} {l} {L: laws l X} {n: ob X}.
 Notation ofbool := (@ofbool X n).
 
-Lemma andb_dot `{BOT<<l} a b: ofbool (a&&b) ≡ ofbool a ⋅ ofbool b.
+Lemma andb_dot `{BOT ≪ l} a b: ofbool (a&&b) ≡ ofbool a ⋅ ofbool b.
 Proof. 
   symmetry. case a. apply dot1x. 
   apply antisym. now apply weq_leq, dot0x. apply leq_bx. 
 Qed.
 
-Lemma orb_pls `{CUP+BOT<<l} a b: ofbool (a||b) ≡ ofbool a + ofbool b.
+Lemma orb_pls `{CUP+BOT ≪ l} a b: ofbool (a||b) ≡ ofbool a + ofbool b.
 Proof. symmetry. case a; simpl. case b; simpl; lattice. lattice. Qed.
 
-Global Instance ofbool_leq `{BOT<<l}: Proper (leq ==> leq) ofbool.
+Global Instance ofbool_leq `{BOT ≪ l}: Proper (leq ==> leq) ofbool.
 Proof. intros [|] b E; simpl. now rewrite E. apply leq_bx. Qed.
 
-Lemma dot_ofboolx `{BOT<<l} b (x: X n n): ofbool b⋅x ≡ x⋅ofbool b.
+Lemma dot_ofboolx `{BOT ≪ l} b (x: X n n): ofbool b⋅x ≡ x⋅ofbool b.
 Proof. case b; simpl. now rewrite dot1x, dotx1. now rewrite dot0x, dotx0. Qed.
 
 End ofbool.

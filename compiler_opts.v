@@ -31,7 +31,7 @@ Infix " ;" := (dot _ _ _) (left associativity, at level 40): ra_terms.
 
 (** ** preliminary lemmas  *)
 
-Lemma lemma_1 `{L: monoid.laws} `{Hl: BKA<<l} n (x y: X n n): 
+Lemma lemma_1 `{L: monoid.laws} `{Hl: BKA ≪ l} n (x y: X n n): 
   x;y ≡ x;y;x -> x;y^* ≡ x;(y;x)^*.
 Proof. 
   intro H. apply antisym. apply str_ind_r'. ka. 
@@ -40,11 +40,11 @@ Proof.
   rewrite str_unfold_l. ra_normalise. rewrite <-H. ka.
 Qed.
 
-Lemma lemma_1' `{L: monoid.laws} `{Hl: BKA<<l} n (x y: X n n): 
+Lemma lemma_1' `{L: monoid.laws} `{Hl: BKA ≪ l} n (x y: X n n): 
   y;x ≡ x;(y;x) -> y^*;x ≡ (x;y)^*;x.
 Proof. monoid.dual @lemma_1. Qed.
 
-Lemma lemma_1'' `{L: monoid.laws} `{Hl: BKA<<l} n (p q r: X n n):
+Lemma lemma_1'' `{L: monoid.laws} `{Hl: BKA ≪ l} n (p q r: X n n):
   p;q ≡ q;p -> p;r ≡ r -> (p;q)^*;r ≡ q^*;r. 
 Proof.
   intros Hpq Hpr. apply antisym.
@@ -162,7 +162,7 @@ Qed.
 
 (** ** 3.8 Loop unrolling *)
 
-Lemma lemma_3 `{L: monoid.laws} `{Hl: BKA<<l} n (u: X n n): u^* ≡ (1+u);(u;u)^*.
+Lemma lemma_3 `{L: monoid.laws} `{Hl: BKA ≪ l} n (u: X n n): u^* ≡ (1+u);(u;u)^*.
 Proof. ka. Qed.
 
 Lemma opti_3_8 `{L: laws} n a (p: X n n): 

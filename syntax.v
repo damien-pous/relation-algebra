@@ -257,11 +257,11 @@ Notation "y o- x" := (e_rdv x y) (left associativity, at level 61): ast_scope.
 (** * weakening (in)equations *)
 (** any equation holding at some level holds at all higher levels  *)
 
-Lemma e_leq_weaken {h k} {Hl: h<<k} A s t n m (x y: @expr A s t n m): 
+Lemma e_leq_weaken {h k} {Hl: h ≪ k} A s t n m (x y: @expr A s t n m): 
   x <==_[h] y -> x <==_[k] y. 
 Proof. intros H X L f' f. eapply @H, lower_laws. Qed.
 
-Lemma e_weq_weaken {h k} {Hl: h<<k} A s t n m (x y: @expr A s t n m): 
+Lemma e_weq_weaken {h k} {Hl: h ≪ k} A s t n m (x y: @expr A s t n m): 
   x ==_[h] y -> x ==_[k] y. 
 Proof. intros H X L f' f. eapply @H, lower_laws. Qed.
 

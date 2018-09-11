@@ -40,20 +40,21 @@ Definition dual l := mk_level
 
 (** * Level constraints *)
 
-(** [lower k k'], or [k << k'], denotes the fact that there are less 
+(** [lower k k'], or [k ≪ k'], denotes the fact that there are less 
    operations/axioms at level [k] than at level [k'] *)
 Class lower (k k': level) := mk_lower:
   let 'mk_level a  b  c  d  e  f  g  h  := k in
   let 'mk_level a' b' c' d' e' f' g' h' := k' in
   is_true (a<<<a'&&& b<<<b' &&& c<<<c' &&& d<<<d' 
            &&& e<<<e' &&& f<<<f' &&& g<<<g' &&& h <<< h').
-Infix "<<" := lower (at level 79): ra_scope.
+(** Notation ≪ : \ll (company coq) or MUCH LESS-THAN (was '<<') *)
+Infix " ≪ " := lower (at level 79): ra_scope.
 Arguments lower _ _: simpl never.
 
 Local Open Scope ra_scope.
 
-(** alternative specifiaction of [h << k] *)
-Lemma lower_spec h k: h<<k <->
+(** alternative specifiaction of [h ≪ k] *)
+Lemma lower_spec h k: h ≪ k <->
   (has_cup h -> has_cup k) /\
   (has_bot h -> has_bot k) /\
   (has_cap h -> has_cap k) /\
@@ -67,7 +68,7 @@ Proof.
   rewrite !landb_spec, !le_bool_spec. reflexivity. 
 Qed.  
 
-(** [<<] is a preorder *)
+(** [≪] is a preorder *)
 Instance lower_refl: Reflexive lower.
 Proof. intro. setoid_rewrite lower_spec. tauto. Qed.  
 
@@ -89,17 +90,17 @@ Definition merge h k := mk_level
 Infix "+" := merge: level_scope.
 Arguments merge _ _: simpl never.
 
-(** [merge] is a supremum for the [<<] preorder *)
-Lemma merge_spec h k l: h+k<<l <-> h<<l /\ k<<l.
+(** [merge] is a supremum for the [≪] preorder *)
+Lemma merge_spec h k l: h+k ≪ l <-> h ≪ l /\ k ≪ l.
 Proof. setoid_rewrite lower_spec. setoid_rewrite lorb_spec. tauto. Qed.
 
-Lemma lower_xmerge h k l: l<<h \/ l<<k -> l << (h + k).
+Lemma lower_xmerge h k l: l ≪ h \/ l ≪ k -> l ≪ (h + k).
 Proof. 
   assert (C:= merge_spec h k (h+k)). 
   intros [E|E]; (eapply lower_trans; [eassumption|]); apply C, lower_refl.
 Qed.
 
-Lemma lower_mergex h k l: h<<l -> k<<l -> h+k << l.
+Lemma lower_mergex h k l: h ≪ l -> k ≪ l -> h+k ≪ l.
 Proof. rewrite merge_spec. tauto. Qed.
 
 Instance merge_lower: Proper (lower ==> lower ==> lower) merge.
@@ -115,20 +116,20 @@ Ltac solve_lower := solve
   | eassumption                 (* context assumption *)
   | repeat 
     match goal with
-      | H: ?h << ?l , H': ?k << ?l |- _ << ?l => 
+      | H: ?h ≪ ?l , H': ?k ≪ ?l |- _ ≪ ?l => 
         (* merge assumptions about [l] *)
         apply (lower_mergex h k l H) in H'; clear H
-      | H: ?k << ?l |- ?h << _ => 
+      | H: ?k ≪ ?l |- ?h ≪ _ => 
         (* use assumptions by transitivity *)
         apply (lower_trans h k l eq_refl H)
     end ] || fail "could not prove this entailment".
-Hint Extern 0 (_ << _) => solve_lower: typeclass_instances.
+Hint Extern 0 (_ ≪ _) => solve_lower: typeclass_instances.
 
 (** heavier and more complete tactic, which we use in a selfdom way *)
 Ltac solve_lower' := solve [
   (repeat
     match goal with 
-      H: _ + _ << _ |- _ => apply merge_spec in H as [? ?]
+      H: _ + _ ≪ _ |- _ => apply merge_spec in H as [? ?]
     end); 
   (repeat apply lower_mergex); 
   auto 100 using lower_xmerge, lower_refl ] || fail "could not prove this entailment".
@@ -137,7 +138,7 @@ Ltac solve_lower' := solve [
 Ltac discriminate_levels := solve [
   intros; repeat discriminate || 
     match goal with
-      | H: _ + _ << _ |- _ => apply merge_spec in H as [? ?]
+      | H: _ + _ ≪ _ |- _ => apply merge_spec in H as [? ?]
     end ].
 
 (** * Concrete levels *)
@@ -172,10 +173,10 @@ End levels.
 
 (* sanity checks for the [solve_lower] tactic *)
 (*
-Goal forall l, CUP<<l -> AL<<l -> CNV+CUP<<l.
+Goal forall l, CUP ≪ l -> AL ≪ l -> CNV+CUP ≪ l.
 intros. solve_lower || fail "bad". Abort.
-Goal forall l, KA<<l -> AL<<l -> CNV+CUP<<l.
+Goal forall l, KA ≪ l -> AL ≪ l -> CNV+CUP ≪ l.
 intros. solve_lower || fail "bad". Abort.
-Goal forall l, CAP<<l -> AL<<l -> CNV+CUP<<l.
+Goal forall l, CAP ≪ l -> AL ≪ l -> CNV+CUP ≪ l.
 intros. Fail solve_lower. Abort.
 *)

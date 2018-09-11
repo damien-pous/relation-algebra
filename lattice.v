@@ -101,13 +101,13 @@ Notation "! x" := (neg x) (right associativity, at level 20, format "! x"): ra_t
 Class laws (l: level) (X: ops) := {
   leq_PreOrder:> PreOrder leq;
   weq_spec            : forall x y , x ≡ y <-> x ≦ y /\ y ≦ x;
-  cup_spec {Hl:CUP<<l}: forall x y z, x ⊔ y ≦ z <-> x ≦ z /\ y ≦ z;
-  cap_spec {Hl:CAP<<l}: forall x y z, z ≦ x ⊓ y <-> z ≦ x /\ z ≦ y;
-  leq_bx_  {Hl:BOT<<l}: NEG+CAP<<l \/ forall x, bot ≦ x;
-  leq_xt_  {Hl:TOP<<l}: NEG+CUP<<l \/ forall x, x ≦ top;
-  cupcap_  {Hl:DL <<l}: forall x y z, (x ⊔ y) ⊓ (x ⊔ z) ≦ x ⊔ (y ⊓ z);
-  capneg   {Hl:NEG+CAP+BOT<<l}: forall x, x ⊓ !x ≡ bot;
-  cupneg   {Hl:NEG+CUP+TOP<<l}: forall x, x ⊔ !x ≡ top
+  cup_spec {Hl:CUP ≪ l}: forall x y z, x ⊔ y ≦ z <-> x ≦ z /\ y ≦ z;
+  cap_spec {Hl:CAP ≪ l}: forall x y z, z ≦ x ⊓ y <-> z ≦ x /\ z ≦ y;
+  leq_bx_  {Hl:BOT ≪ l}: NEG+CAP ≪ l \/ forall x, bot ≦ x;
+  leq_xt_  {Hl:TOP ≪ l}: NEG+CUP ≪ l \/ forall x, x ≦ top;
+  cupcap_  {Hl:DL ≪ l}: forall x y z, (x ⊔ y) ⊓ (x ⊔ z) ≦ x ⊔ (y ⊓ z);
+  capneg   {Hl:NEG+CAP+BOT ≪ l}: forall x, x ⊓ !x ≡ bot;
+  cupneg   {Hl:NEG+CUP+TOP ≪ l}: forall x, x ⊔ !x ≡ top
 }.
 
 
@@ -189,43 +189,43 @@ Typeclasses Opaque (* weq *) leq cup cap neg bot top.
 
 (** * Basic properties of [⊔], [⊓], [bot], and [top] *)
 
-Lemma leq_cupx `{laws} `{CUP<<l}: forall x y z, x ≦ z -> y ≦ z -> x ⊔ y ≦ z.
+Lemma leq_cupx `{laws} `{CUP ≪ l}: forall x y z, x ≦ z -> y ≦ z -> x ⊔ y ≦ z.
 Proof. intros. apply cup_spec. split; assumption. Qed.
 
-Lemma leq_xcup `{laws} `{CUP<<l}: forall x y z, z ≦ x \/ z ≦ y -> z ≦ x ⊔ y.
+Lemma leq_xcup `{laws} `{CUP ≪ l}: forall x y z, z ≦ x \/ z ≦ y -> z ≦ x ⊔ y.
 Proof. 
   intros x y z. assert (C:= cup_spec x y (x ⊔ y)). 
   intros [E|E]; rewrite E; apply C; reflexivity.
 Qed.
 
-Lemma leq_xcap `{laws} `{CAP<<l}: forall x y z, z ≦ x -> z ≦ y -> z ≦ x ⊓ y.
+Lemma leq_xcap `{laws} `{CAP ≪ l}: forall x y z, z ≦ x -> z ≦ y -> z ≦ x ⊓ y.
 Proof. intros. apply cap_spec. split; assumption. Qed.
 
-Lemma leq_capx `{laws} `{CAP<<l}: forall x y z, x ≦ z \/ y ≦ z -> x ⊓ y ≦ z.
+Lemma leq_capx `{laws} `{CAP ≪ l}: forall x y z, x ≦ z \/ y ≦ z -> x ⊓ y ≦ z.
 Proof. 
   intros x y z. assert (C:= cap_spec x y (x ⊓ y)). 
   intros [E|E]; rewrite <- E; apply C; reflexivity.
 Qed.
 
-Lemma leq_bx `{L: laws} {Hl:BOT<<l}: forall x, bot ≦ x.
+Lemma leq_bx `{L: laws} {Hl:BOT ≪ l}: forall x, bot ≦ x.
 Proof.
   destruct leq_bx_ as [Hl'|H]. 2: apply H. 
   intro x. rewrite <-(capneg x). apply leq_capx. left. reflexivity. 
 Qed.
 
-Lemma leq_xb_iff `{L: laws} {Hl:BOT<<l}: forall x, x ≦ bot <-> x ≡ bot.
+Lemma leq_xb_iff `{L: laws} {Hl:BOT ≪ l}: forall x, x ≦ bot <-> x ≡ bot.
 Proof.
   split; intro. apply antisym. assumption. apply leq_bx. 
   now apply weq_leq.
 Qed.
 
-Lemma leq_xt `{L: laws} {Hl:TOP<<l}: forall x, x ≦ top.
+Lemma leq_xt `{L: laws} {Hl:TOP ≪ l}: forall x, x ≦ top.
 Proof.
   destruct leq_xt_ as [Hl'|H]. 2: apply H. 
   intro x. rewrite <-(cupneg x). apply leq_xcup. left. reflexivity. 
 Qed.
 
-Lemma leq_tx_iff `{L: laws} {Hl:TOP<<l}: forall x, top ≦ x <-> x ≡ top.
+Lemma leq_tx_iff `{L: laws} {Hl:TOP ≪ l}: forall x, top ≦ x <-> x ≡ top.
 Proof.
   split; intro. apply antisym. apply leq_xt. assumption. 
   now apply weq_leq.
@@ -234,8 +234,8 @@ Qed.
 
 (** * Subtyping / weakening *)
 
-(** laws that hold at any level [h] hold for all level [k << h]  *)
-Lemma lower_lattice_laws {h k} {X} {H: laws h X} {le: k<<h}: laws k X.
+(** laws that hold at any level [h] hold for all level [k ≪ h]  *)
+Lemma lower_lattice_laws {h k} {X} {H: laws h X} {le: k ≪ h}: laws k X.
 Proof. 
   constructor; try solve [ apply H | intro; apply H; eauto using lower_trans ]. 
    intro. right. eapply @leq_bx. apply H. eauto using lower_trans. 
@@ -291,7 +291,7 @@ Definition dual (X: ops) := {|
   bot := top;
   top := bot |}.
 
-Lemma capcup_ `{laws} `{DL<<l}: forall x y z, x ⊓ (y ⊔ z) ≦ (x ⊓ y) ⊔ (x ⊓ z).
+Lemma capcup_ `{laws} `{DL ≪ l}: forall x y z, x ⊓ (y ⊔ z) ≦ (x ⊓ y) ⊔ (x ⊓ z).
 Proof.
   intros. rewrite <- cupcap_. apply leq_xcap. lattice.
   transitivity (z ⊔ x ⊓ y). 2: lattice. 
@@ -313,8 +313,8 @@ Proof.
 Qed.
 
 (** this gives us a tactic to prove properties by lattice duality *)
-Lemma dualize {h} {P: ops -> Prop} (L: forall l X, laws l X -> h<<l -> P X) 
-  {l X} {H: laws l X} {Hl:level.dual h<<l}: P (dual X).
+Lemma dualize {h} {P: ops -> Prop} (L: forall l X, laws l X -> h ≪ l -> P X) 
+  {l X} {H: laws l X} {Hl:level.dual h ≪ l}: P (dual X).
 Proof. 
   apply L with (level.dual l). apply dual_laws. 
   destruct l; apply H. 
@@ -327,97 +327,97 @@ Ltac dual x := apply (dualize x).
 
 (** * [(⊔,bot)] forms a commutative, idempotent monoid *)
 
-Lemma cupA `{laws} `{CUP<<l}: forall x y z, x ⊔ (y ⊔ z) ≡ (x ⊔ y) ⊔ z.
+Lemma cupA `{laws} `{CUP ≪ l}: forall x y z, x ⊔ (y ⊔ z) ≡ (x ⊔ y) ⊔ z.
 Proof. intros. lattice. Qed.
-Lemma cupC `{laws} `{CUP<<l}: forall x y, x ⊔ y ≡ y ⊔ x.
+Lemma cupC `{laws} `{CUP ≪ l}: forall x y, x ⊔ y ≡ y ⊔ x.
 Proof. intros. lattice. Qed.
-Lemma cupI `{laws} `{CUP<<l}: forall x, x ⊔ x ≡ x.
+Lemma cupI `{laws} `{CUP ≪ l}: forall x, x ⊔ x ≡ x.
 Proof. intros. lattice. Qed.
-Lemma cupbx `{laws} `{CUP+BOT<<l}: forall x, bot ⊔ x ≡ x.
+Lemma cupbx `{laws} `{CUP+BOT ≪ l}: forall x, bot ⊔ x ≡ x.
 Proof. intros. lattice. Qed.
-Lemma cupxb `{laws} `{CUP+BOT<<l}: forall x, x ⊔ bot ≡ x.
-Proof. intros. lattice. Qed.
-
-Lemma cuptx `{laws} `{CUP+TOP<<l}: forall x, top ⊔ x ≡ top.
-Proof. intros. lattice. Qed.
-Lemma cupxt `{laws} `{CUP+TOP<<l}: forall x, x ⊔ top ≡ top.
+Lemma cupxb `{laws} `{CUP+BOT ≪ l}: forall x, x ⊔ bot ≡ x.
 Proof. intros. lattice. Qed.
 
-Lemma leq_cup_l `{laws} `{CUP<<l} x y: x ≦ x ⊔ y.
+Lemma cuptx `{laws} `{CUP+TOP ≪ l}: forall x, top ⊔ x ≡ top.
+Proof. intros. lattice. Qed.
+Lemma cupxt `{laws} `{CUP+TOP ≪ l}: forall x, x ⊔ top ≡ top.
+Proof. intros. lattice. Qed.
+
+Lemma leq_cup_l `{laws} `{CUP ≪ l} x y: x ≦ x ⊔ y.
 Proof. lattice. Qed.
-Lemma leq_cup_r `{laws} `{CUP<<l} x y: y ≦ x ⊔ y.
+Lemma leq_cup_r `{laws} `{CUP ≪ l} x y: y ≦ x ⊔ y.
 Proof. lattice. Qed.
 
-Instance cup_leq `{laws} `{CUP<<l}: Proper (leq ==> leq ==> leq) cup.
+Instance cup_leq `{laws} `{CUP ≪ l}: Proper (leq ==> leq ==> leq) cup.
 Proof. intros x x' Hx y y' Hy. lattice. Qed.
 
-Instance cup_weq `{laws} `{CUP<<l}: Proper (weq ==> weq ==> weq) cup.
+Instance cup_weq `{laws} `{CUP ≪ l}: Proper (weq ==> weq ==> weq) cup.
 Proof. apply op_leq_weq_2. Qed.
 
 (** distribution of [⊔] over [⊓] *)
-Lemma cupcap `{laws} `{DL<<l}: forall x y z, x ⊔ (y ⊓ z) ≡ (x ⊔ y) ⊓ (x ⊔ z).
+Lemma cupcap `{laws} `{DL ≪ l}: forall x y z, x ⊔ (y ⊓ z) ≡ (x ⊔ y) ⊓ (x ⊔ z).
 Proof. intros. apply antisym. lattice. apply cupcap_. Qed.
 
 (** characterisation of the preorder by the semilattice operations *)
-Lemma leq_iff_cup `{laws} `{CUP<<l} (x y: X): x ≦ y <-> x ⊔ y ≡ y. 
+Lemma leq_iff_cup `{laws} `{CUP ≪ l} (x y: X): x ≦ y <-> x ⊔ y ≡ y. 
 Proof. split. intro. hlattice. intro E. rewrite <- E. lattice. Qed.
 
 (* this lemma is used twice... *)
-Lemma comm4 `{laws} `{CUP<<l} (a b c d: X): a ⊔ b ⊔ c ⊔ d ≡ (a ⊔ c) ⊔ (b ⊔ d).
+Lemma comm4 `{laws} `{CUP ≪ l} (a b c d: X): a ⊔ b ⊔ c ⊔ d ≡ (a ⊔ c) ⊔ (b ⊔ d).
 Proof. lattice. Qed.
 
 
 (** * [(⊓,top)] forms a commutative, idempotent monoid (by duality) *)
 
-Lemma capA `{laws} `{CAP<<l}: forall x y z, x ⊓ (y ⊓ z) ≡ (x ⊓ y) ⊓ z.
+Lemma capA `{laws} `{CAP ≪ l}: forall x y z, x ⊓ (y ⊓ z) ≡ (x ⊓ y) ⊓ z.
 Proof. dual @cupA. Qed.
-Lemma capC `{laws} `{CAP<<l}: forall x y, x ⊓ y ≡ y ⊓ x.
+Lemma capC `{laws} `{CAP ≪ l}: forall x y, x ⊓ y ≡ y ⊓ x.
 Proof. dual @cupC. Qed.
-Lemma capI `{laws} `{CAP<<l}: forall x, x ⊓ x ≡ x.
+Lemma capI `{laws} `{CAP ≪ l}: forall x, x ⊓ x ≡ x.
 Proof. dual @cupI. Qed.
-Lemma captx `{laws} `{CAP+TOP<<l}: forall x, top ⊓ x ≡ x.
+Lemma captx `{laws} `{CAP+TOP ≪ l}: forall x, top ⊓ x ≡ x.
 Proof. dual @cupbx. Qed.
-Lemma capxt `{laws} `{CAP+TOP<<l}: forall x, x ⊓ top ≡ x.
+Lemma capxt `{laws} `{CAP+TOP ≪ l}: forall x, x ⊓ top ≡ x.
 Proof. dual @cupxb. Qed.
 
-Lemma capbx `{laws} `{CAP+BOT<<l}: forall x, bot ⊓ x ≡ bot.
+Lemma capbx `{laws} `{CAP+BOT ≪ l}: forall x, bot ⊓ x ≡ bot.
 Proof. dual @cuptx. Qed.
-Lemma capxb `{laws} `{CAP+BOT<<l}: forall x, x ⊓ bot ≡ bot.
+Lemma capxb `{laws} `{CAP+BOT ≪ l}: forall x, x ⊓ bot ≡ bot.
 Proof. dual @cupxt. Qed.
 
-Lemma leq_cap_l `{laws} `{CAP<<l} x y: x ⊓ y ≦ x.
+Lemma leq_cap_l `{laws} `{CAP ≪ l} x y: x ⊓ y ≦ x.
 Proof. lattice. Qed.
-Lemma leq_cap_r `{laws} `{CAP<<l} x y: x ⊓ y ≦ y.
+Lemma leq_cap_r `{laws} `{CAP ≪ l} x y: x ⊓ y ≦ y.
 Proof. lattice. Qed.
 
-Instance cap_leq `{laws} `{CAP<<l}: Proper (leq ==> leq ==> leq) cap.
+Instance cap_leq `{laws} `{CAP ≪ l}: Proper (leq ==> leq ==> leq) cap.
 Proof. intros x x' Hx y y' Hy. lattice. Qed.
 
-Instance cap_weq `{laws} `{CAP<<l}: Proper (weq ==> weq ==> weq) cap.
+Instance cap_weq `{laws} `{CAP ≪ l}: Proper (weq ==> weq ==> weq) cap.
 Proof. apply op_leq_weq_2. Qed.
 
-Lemma leq_iff_cap `{laws} `{CAP<<l} (x y: X): x ≦ y <-> x ⊓ y ≡ x. 
+Lemma leq_iff_cap `{laws} `{CAP ≪ l} (x y: X): x ≦ y <-> x ⊓ y ≡ x. 
 Proof. split. intro. hlattice. intro E. rewrite <- E. lattice. Qed.
 
-Lemma capcup `{laws} `{DL<<l}: forall x y z, x ⊓ (y ⊔ z) ≡ (x ⊓ y) ⊔ (x ⊓ z).
+Lemma capcup `{laws} `{DL ≪ l}: forall x y z, x ⊓ (y ⊔ z) ≡ (x ⊓ y) ⊔ (x ⊓ z).
 Proof. dual @cupcap. Qed.
 
-Lemma cupcap' `{laws} `{DL<<l}: forall x y z, (y ⊓ z) ⊔ x ≡ (y ⊔ x) ⊓ (z ⊔ x).
+Lemma cupcap' `{laws} `{DL ≪ l}: forall x y z, (y ⊓ z) ⊔ x ≡ (y ⊔ x) ⊓ (z ⊔ x).
 Proof. intros. now rewrite cupC, cupcap, 2(cupC x). Qed.
 
-Lemma capcup' `{laws} `{DL<<l}: forall x y z, (y ⊔ z) ⊓ x ≡ (y ⊓ x) ⊔ (z ⊓ x).
+Lemma capcup' `{laws} `{DL ≪ l}: forall x y z, (y ⊔ z) ⊓ x ≡ (y ⊓ x) ⊔ (z ⊓ x).
 Proof. dual @cupcap'. Qed.
 
 
 (** * Properties of negation *)
 
-Lemma neg_unique' `{laws} `{BL<<l} (x y: X): y ⊓ x ≦ bot -> y ≦ !x.
+Lemma neg_unique' `{laws} `{BL ≪ l} (x y: X): y ⊓ x ≦ bot -> y ≦ !x.
 Proof.
   intros E. rewrite <-(capxt y). rewrite <-(cupneg x). 
   rewrite capcup. rewrite E. lattice. 
 Qed.
 
-Lemma neg_unique `{laws} `{BL<<l} (x y: X):
+Lemma neg_unique `{laws} `{BL ≪ l} (x y: X):
   top ≦ y ⊔ x -> y ⊓ x ≦ bot -> y ≡ !x.
 Proof. 
   intros Ht Hb. apply antisym. 
@@ -425,28 +425,28 @@ Proof.
   revert Ht. dual @neg_unique'. 
 Qed.
 
-Instance neg_leq `{laws} `{BL<<l}: Proper (leq --> leq) neg.
+Instance neg_leq `{laws} `{BL ≪ l}: Proper (leq --> leq) neg.
 Proof.
   intros x y E. apply neg_unique'. 
   rewrite <-E, capC. now rewrite capneg.
 Qed.
 
-Instance neg_weq `{laws} `{BL<<l}: Proper (weq ==> weq) neg.
+Instance neg_weq `{laws} `{BL ≪ l}: Proper (weq ==> weq) neg.
 Proof. intros x y. rewrite 2weq_spec. intro E; split; apply neg_leq, E. Qed.
 
-Lemma negneg `{laws} `{BL<<l} (x: X): !!x ≡ x.
+Lemma negneg `{laws} `{BL ≪ l} (x: X): !!x ≡ x.
 Proof. symmetry. apply neg_unique. now rewrite cupneg. now rewrite capneg. Qed.
 
-Lemma negbot `{laws} `{BL<<l}: !bot ≡ top.
+Lemma negbot `{laws} `{BL ≪ l}: !bot ≡ top.
 Proof. symmetry. apply neg_unique; lattice. Qed.
   
-Lemma negtop `{laws} `{BL<<l}: !top ≡ bot.
+Lemma negtop `{laws} `{BL ≪ l}: !top ≡ bot.
 Proof. dual @negbot. Qed.
 
-Lemma negcap' `{laws} `{BL<<l} (x y: X): !x ⊔ !y ≦ !(x ⊓ y).
+Lemma negcap' `{laws} `{BL ≪ l} (x y: X): !x ⊔ !y ≦ !(x ⊓ y).
 Proof. apply leq_cupx; apply neg_leq; lattice. Qed.
 
-Lemma negcup `{laws} `{BL<<l} (x y: X): !(x ⊔ y) ≡ !x ⊓ !y.
+Lemma negcup `{laws} `{BL ≪ l} (x y: X): !(x ⊔ y) ≡ !x ⊓ !y.
 Proof. 
   apply antisym. dual @negcap'.
   rewrite <- (negneg x) at 2. 
@@ -454,22 +454,22 @@ Proof.
   now rewrite negcap', negneg. 
 Qed.
 
-Lemma negcap `{laws} `{BL<<l} (x y: X): !(x ⊓ y) ≡ !x ⊔ !y.
+Lemma negcap `{laws} `{BL ≪ l} (x y: X): !(x ⊓ y) ≡ !x ⊔ !y.
 Proof. dual @negcup. Qed.
 
 (** switching negations *)
-Lemma neg_leq_iff `{laws} `{BL<<l} (x y: X): !x ≦ !y <-> y ≦ x. 
+Lemma neg_leq_iff `{laws} `{BL ≪ l} (x y: X): !x ≦ !y <-> y ≦ x. 
 Proof. split. intro E. apply neg_leq in E. now rewrite 2negneg in E. apply neg_leq. Qed.
-Lemma neg_leq_iff' `{laws} `{BL<<l} (x y: X): x ≦ !y <-> y ≦ !x. 
+Lemma neg_leq_iff' `{laws} `{BL ≪ l} (x y: X): x ≦ !y <-> y ≦ !x. 
 Proof. now rewrite <- neg_leq_iff, negneg. Qed.
-Lemma neg_leq_iff'' `{laws} `{BL<<l} (x y: X): !x ≦ y <-> !y ≦ x. 
+Lemma neg_leq_iff'' `{laws} `{BL ≪ l} (x y: X): !x ≦ y <-> !y ≦ x. 
 Proof. now rewrite <- neg_leq_iff, negneg. Qed.
 
-Lemma neg_weq_iff `{laws} `{BL<<l} (x y: X): !x ≡ !y <-> y ≡ x. 
+Lemma neg_weq_iff `{laws} `{BL ≪ l} (x y: X): !x ≡ !y <-> y ≡ x. 
 Proof. now rewrite 2weq_spec, 2neg_leq_iff. Qed.
-Lemma neg_weq_iff' `{laws} `{BL<<l} (x y: X): x ≡ !y <-> !x ≡ y. 
+Lemma neg_weq_iff' `{laws} `{BL ≪ l} (x y: X): x ≡ !y <-> !x ≡ y. 
 Proof. now rewrite <-neg_weq_iff, negneg. Qed.
-Lemma neg_weq_iff'' `{laws} `{BL<<l} (x y: X): !x ≡ y <-> x ≡ !y.
+Lemma neg_weq_iff'' `{laws} `{BL ≪ l} (x y: X): !x ≡ y <-> x ≡ !y.
 Proof. now rewrite <-neg_weq_iff, negneg. Qed.
 
 Ltac neg_switch := first [
@@ -482,19 +482,19 @@ Ltac neg_switch := first [
   rewrite neg_weq_iff'' |
   rewrite <-neg_weq_iff ].
 
-Lemma leq_cap_neg `{laws} `{BL<<l} (x y: X): y ≦ x <-> y ⊓ !x ≦ bot.
+Lemma leq_cap_neg `{laws} `{BL ≪ l} (x y: X): y ≦ x <-> y ⊓ !x ≦ bot.
 Proof.
   split. intro E. now rewrite E, capneg.
   intro E. now rewrite (neg_unique' _ _ E), negneg.
 Qed.
 
-Lemma leq_cap_neg' `{laws} `{BL<<l} (x y: X): y ⊓ x ≦ bot <-> y ≦ !x.
+Lemma leq_cap_neg' `{laws} `{BL ≪ l} (x y: X): y ⊓ x ≦ bot <-> y ≦ !x.
 Proof. rewrite <-(negneg x) at 1. symmetry. apply leq_cap_neg. Qed.
 
-Lemma leq_cup_neg `{laws} `{BL<<l} (x y: X): x ≦ y <-> top ≦ y ⊔ !x.
+Lemma leq_cup_neg `{laws} `{BL ≪ l} (x y: X): x ≦ y <-> top ≦ y ⊔ !x.
 Proof. dual @leq_cap_neg. Qed.
 
-Lemma leq_cup_neg' `{laws} `{BL<<l} (x y: X): top ≦ y ⊔ x -> !x ≦ y.
+Lemma leq_cup_neg' `{laws} `{BL ≪ l} (x y: X): top ≦ y ⊔ x -> !x ≦ y.
 Proof. dual @leq_cap_neg'. Qed.
 
 
@@ -507,16 +507,16 @@ Proof. dual @leq_cap_neg'. Qed.
 Class morphism l {X Y: ops} (f: X -> Y) := {
   fn_leq: Proper (leq ==> leq) f;
   fn_weq: Proper (weq ==> weq) f;
-  fn_cup {Hl:CUP<<l}: forall x y, f (x ⊔ y) ≡ f x ⊔ f y;
-  fn_cap {Hl:CAP<<l}: forall x y, f (x ⊓ y) ≡ f x ⊓ f y;
-  fn_bot {Hl:BOT<<l}: f bot ≡ bot;
-  fn_top {Hl:TOP<<l}: f top ≡ top;
-  fn_neg {Hl:NEG<<l}: forall x, f (!x) ≡ !(f x)
+  fn_cup {Hl:CUP ≪ l}: forall x y, f (x ⊔ y) ≡ f x ⊔ f y;
+  fn_cap {Hl:CAP ≪ l}: forall x y, f (x ⊓ y) ≡ f x ⊓ f y;
+  fn_bot {Hl:BOT ≪ l}: f bot ≡ bot;
+  fn_top {Hl:TOP ≪ l}: f top ≡ top;
+  fn_neg {Hl:NEG ≪ l}: forall x, f (!x) ≡ !(f x)
 }.
 
 (** generating a structure by injective embedding *)
 
-Lemma laws_of_injective_morphism {h l X Y} {L: laws h Y} {Hl: l<<h} f:
+Lemma laws_of_injective_morphism {h l X Y} {L: laws h Y} {Hl: l ≪ h} f:
   @morphism l X Y f -> 
   (forall x y, f x ≦ f y -> x ≦ y) ->
   (forall x y, f x ≡ f y -> x ≡ y) ->

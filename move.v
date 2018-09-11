@@ -13,15 +13,15 @@ Require Import kat normalisation rewriting kat_tac.
 
 Local Infix " ;" := (dot _ _ _) (left associativity, at level 40): ra_terms. 
 
-Lemma rmov_x_str `{L: monoid.laws} `{Hl: STR<<l} {n} (x e: X n n):
+Lemma rmov_x_str `{L: monoid.laws} `{Hl: STR ≪ l} {n} (x e: X n n):
   x;e ≡ e;x -> x;e^* ≡ e^*;x.
 Proof. apply str_move. Qed.
 
-Lemma rmov_x_itr `{L: monoid.laws} `{Hl: STR<<l} {n} (x e: X n n):
+Lemma rmov_x_itr `{L: monoid.laws} `{Hl: STR ≪ l} {n} (x e: X n n):
   x;e ≡ e;x -> x;e^+ ≡ e^+;x.
 Proof. apply itr_move. Qed.
 
-Lemma rmov_x_pls `{L: monoid.laws} `{Hl: CUP<<l} {n m} x y (e f: X n m):
+Lemma rmov_x_pls `{L: monoid.laws} `{Hl: CUP ≪ l} {n m} x y (e f: X n m):
   x;e ≡ e;y -> x;f ≡ f;y -> x;(e+f) ≡ (e+f);y. 
 Proof. intros. ra_normalise. now apply cup_weq. Qed.
 
@@ -32,7 +32,7 @@ Proof. intros He Hf. rewrite dotA, He, <-dotA, Hf. apply dotA. Qed.
 Lemma rmov_x_1 `{L: monoid.laws} {n} (x: X n n): x;1 ≡ 1;x.
 Proof. ra. Qed.
 
-Lemma rmov_x_0 `{L: monoid.laws} `{Hl:BOT<<l} {n m p q} (x: X n m) (y: X p q): x;0 ≡ 0;y.
+Lemma rmov_x_0 `{L: monoid.laws} `{Hl:BOT ≪ l} {n m p q} (x: X n m) (y: X p q): x;0 ≡ 0;y.
 Proof. ra. Qed.
 
 Lemma rmov_x_cap `{L: laws} {n} (x: X n n) a b:

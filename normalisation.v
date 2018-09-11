@@ -17,7 +17,7 @@ Variables (s t: positive -> positive).
 Notation expr := (expr s t).
 Local Arguments weq {_} _ _: simpl never.
 Local Arguments leq {_} _ _: simpl never.
-Local Hint Extern 0 (_ << _) => solve_lower || solve_lower': typeclass_instances.
+Local Hint Extern 0 (_ ≪ _) => solve_lower || solve_lower': typeclass_instances.
 Ltac fold_expr l := ra_fold (expr_ops s t l).
 
 (** * normalisation procedure
@@ -72,17 +72,17 @@ Fixpoint pls' n m (y: expr n m): expr n m -> expr n m :=
     | y => fun x => insert_pls x y
   end%ast.
 
-Lemma insert_pls_level n m (x y: expr n m): e_level (insert_pls x y) << CUP+e_level x+e_level y.
+Lemma insert_pls_level n m (x y: expr n m): e_level (insert_pls x y) ≪ CUP+e_level x+e_level y.
 Proof. 
   induction x; simpl; try case cmp_spec; 
     simpl e_level; intros; try solve_lower'. 
   rewrite IHx1. solve_lower'. 
 Qed.
 
-Lemma insert_pls_pls: forall l n m (x y: expr n m) {Hl: CUP+e_level x << l},
+Lemma insert_pls_pls: forall l n m (x y: expr n m) {Hl: CUP+e_level x ≪ l},
   insert_pls x y ==_[l] y+x.
 Proof.
-  assert (D: forall n m (x y: expr n m) l, CUP+e_level x << l -> 
+  assert (D: forall n m (x y: expr n m) l, CUP+e_level x ≪ l -> 
     y+x ==_[l] match cmp x y with Lt => x+y | Gt => y+x | Eq => y end).
    intros. case cmp_spec; intros; try subst; lattice. 
 
@@ -95,13 +95,13 @@ Proof.
     lattice.
 Qed.
 
-Lemma pls'_level n m (x y: expr n m): e_level (pls' x y) << CUP+e_level x+e_level y.
+Lemma pls'_level n m (x y: expr n m): e_level (pls' x y) ≪ CUP+e_level x+e_level y.
 Proof.
   induction x; simpl pls'; simpl e_level;
     rewrite ?insert_pls_level, ?IHx1, ?IHx; solve_lower'. 
 Qed.
 
-Lemma pls'pls: forall l n m (x y: expr n m) {Hl: CUP+e_level x+e_level y<< l},
+Lemma pls'pls: forall l n m (x y: expr n m) {Hl: CUP+e_level x+e_level y ≪ l},
   pls' x y ==_[l] x+y.
 Proof.
   induction x; simpl e_level; simpl pls'; intros y Hl; 
@@ -111,10 +111,10 @@ Proof.
   rewrite insert_pls_pls, IHx1 by (rewrite ?pls'_level; solve_lower'). lattice.
 Qed.
 
-Lemma pls'x0_level n m (x: expr n m): e_level (pls' x 0) << e_level x.
+Lemma pls'x0_level n m (x: expr n m): e_level (pls' x 0) ≪ e_level x.
 Proof. induction x; try reflexivity. simpl. now rewrite insert_pls_level, IHx1. Qed.
 
-Lemma pls'x0 n m (x: expr n m) l `{CUP+e_level x<<l}: pls' x 0 ==_[l] x.
+Lemma pls'x0 n m (x: expr n m) l `{CUP+e_level x ≪ l}: pls' x 0 ==_[l] x.
 Proof. 
   induction x; try reflexivity. simpl pls'. simpl e_level in *.
   rewrite insert_pls_pls, IHx1. apply cupC. solve_lower'. 
@@ -132,7 +132,7 @@ Definition cap' n m (x y: expr n m) :=
   else if is_zer x ||| is_zer y then e_zer _ _
   else e_cap x y.
 
-Lemma cap'cap l n m (x y: expr n m) {Hl: CAP+e_level x+e_level y << l}: 
+Lemma cap'cap l n m (x y: expr n m) {Hl: CAP+e_level x+e_level y ≪ l}: 
   cap' x y ==_[l] x ∩ y.
 Proof.
   symmetry. unfold cap'. revert Hl. 
@@ -143,7 +143,7 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma cap'_level n m (x y: expr n m): e_level (cap' x y) << CAP+e_level x+e_level y.
+Lemma cap'_level n m (x y: expr n m): e_level (cap' x y) ≪ CAP+e_level x+e_level y.
 Proof. 
   unfold cap'. 
   case is_top_spec. solve_lower'. 
@@ -191,7 +191,7 @@ Fixpoint dot_r m p (y: expr m p): forall n, expr n m -> expr n p :=
 Definition dot' n m p (x: expr n m) (y: expr m p) := dot_r y x.
 
 Lemma dot_l_level n m p (x: expr n m) (y: expr m p): 
-  e_level (dot_l x y) << e_level x + e_level y.
+  e_level (dot_l x y) ≪ e_level x + e_level y.
 Proof.
   revert p y. 
   induction x; intros q z; simpl dot_l; case_distribute; simpl e_level; 
@@ -199,7 +199,7 @@ Proof.
 Qed.
 
 Lemma dot_r_level n m p (x: expr n m) (y: expr m p): 
-  e_level (dot_r y x) << e_level x + e_level y.
+  e_level (dot_r y x) ≪ e_level x + e_level y.
 Proof.
   revert n x. 
   induction y; intros q z; simpl dot_r; case_distribute; simpl e_level; 
@@ -207,10 +207,10 @@ Proof.
 Qed.
 
 Lemma dot'_level n m p (x: expr n m) (y: expr m p): 
-  e_level (dot' x y) << e_level x + e_level y.
+  e_level (dot' x y) ≪ e_level x + e_level y.
 Proof. apply dot_r_level. Qed.
 
-Lemma dot_l_weq l n m p (x: expr n m) (y: expr m p) {Hl: e_level x + e_level y << l}: 
+Lemma dot_l_weq l n m p (x: expr n m) (y: expr m p) {Hl: e_level x + e_level y ≪ l}: 
   x⋅y ==_[l] dot_l x y.
 Proof.
   revert p y Hl. 
@@ -220,7 +220,7 @@ Proof.
    now rewrite dotplsx, pls'pls, <-IHx1, <-IHx2 by (rewrite ?dot_l_level; solve_lower').
 Qed.
 
-Lemma dot'dot l n m p (x: expr n m) (y: expr m p) {Hl: e_level y+e_level x << l}: 
+Lemma dot'dot l n m p (x: expr n m) (y: expr m p) {Hl: e_level y+e_level x ≪ l}: 
   dot' x y ==_[l] x⋅y.
 Proof.
   symmetry. unfold dot'. revert n x Hl. 
@@ -254,13 +254,13 @@ Fixpoint cnv' n m (x: expr n m): expr m n :=
     | e_var a => (e_var a)°
   end%ast.
 
-Lemma cnv'_level n m (x: expr n m): e_level (cnv' x) << CNV+e_level x.
+Lemma cnv'_level n m (x: expr n m): e_level (cnv' x) ≪ CNV+e_level x.
 Proof. 
   induction x; simpl cnv'; simpl e_level; 
     rewrite ?dot'_level, ?pls'_level, ?cap'_level, ?IHx1, ?IHx2, ?IHx; solve_lower'.
 Qed.
 
-Lemma cnv'cnv l n m (x: expr n m) {Hl: CNV+e_level x << l}: cnv' x ==_[l] x°.
+Lemma cnv'cnv l n m (x: expr n m) {Hl: CNV+e_level x ≪ l}: cnv' x ==_[l] x°.
 Proof.
   symmetry. induction x; simpl cnv'; simpl e_level in Hl; 
   rewrite ?dot'dot, ?e_str' by (rewrite ?cnv'_level; solve_lower').
@@ -298,10 +298,10 @@ Definition str' n (x: expr n n): expr n n :=
   else if is_top x then top 
   else (remove x)^*)%ast.
 
-Lemma remove_level n m (x: expr n m): e_level (remove x) << e_level x.
+Lemma remove_level n m (x: expr n m): e_level (remove x) ≪ e_level x.
 Proof. induction x; cbn; rewrite ?pls'_level; solve_lower'. Qed.
 
-Lemma itr'_level n (x: expr n n): e_level (itr' x) << STR+e_level x.
+Lemma itr'_level n (x: expr n n): e_level (itr' x) ≪ STR+e_level x.
 Proof. 
   unfold itr'. 
   case is_zer_spec. reflexivity. 
@@ -309,7 +309,7 @@ Proof.
   cbn. now rewrite remove_level. 
 Qed.
 
-Lemma str'_level n (x: expr n n): e_level (str' x) << STR+e_level x.
+Lemma str'_level n (x: expr n n): e_level (str' x) ≪ STR+e_level x.
 Proof. 
   unfold str'. 
   case is_zer_spec. reflexivity. 
@@ -318,7 +318,7 @@ Proof.
 Qed.
 
 Lemma remove_spec_dep l n m (x: expr n m):
-  forall (H: n=m) {Hl: STR+e_level x << l}, (cast H eq_refl (remove x))^+ ==_[l] (cast H eq_refl x)^+.
+  forall (H: n=m) {Hl: STR+e_level x ≪ l}, (cast H eq_refl (remove x))^+ ==_[l] (cast H eq_refl x)^+.
 Proof.
   induction x; cbn; trivial; intros H Hl. 
   - subst. cbn. rewrite itr_pls_itr, pls'pls by (rewrite 2remove_level; solve_lower').
@@ -326,11 +326,11 @@ Proof.
   - now rewrite 2cast_eq, itr_invol. 
 Qed.
 
-Lemma remove_spec l n (x: expr n n) {Hl: STR+e_level x << l}:
+Lemma remove_spec l n (x: expr n n) {Hl: STR+e_level x ≪ l}:
   (remove x)^+ ==_[l] x^+.
 Proof. apply (remove_spec_dep _ eq_refl). Qed.
 
-Lemma itr'itr l n (x: expr n n) {Hl: STR+e_level x << l}: 
+Lemma itr'itr l n (x: expr n n) {Hl: STR+e_level x ≪ l}: 
   itr' x ==_[l] x^+.
 Proof.
   symmetry. unfold itr'. revert Hl. 
@@ -339,7 +339,7 @@ Proof.
   intros. symmetry. now apply remove_spec.
 Qed.
 
-Lemma remove_spec_dep' l n m (x: expr n m): forall (H: n=m) {Hl: STR+e_level x << l}, 
+Lemma remove_spec_dep' l n m (x: expr n m): forall (H: n=m) {Hl: STR+e_level x ≪ l}, 
   (cast H eq_refl (remove x))^* ==_[l] (cast H eq_refl x)^*.
 Proof.
   induction x; cbn; trivial; intros H Hl. 
@@ -352,11 +352,11 @@ Proof.
     apply str_ind_l1. apply str_refl. now rewrite itr_str_l, str_cons, str_trans.
 Qed.
 
-Lemma remove_spec' l n (x: expr n n) {Hl: STR+e_level x << l}:
+Lemma remove_spec' l n (x: expr n n) {Hl: STR+e_level x ≪ l}:
   (remove x)^* ==_[l] x^*.
 Proof. apply (remove_spec_dep' _ eq_refl). Qed.
 
-Lemma str'str l n (x: expr n n) {Hl: STR+e_level x << l}: 
+Lemma str'str l n (x: expr n n) {Hl: STR+e_level x ≪ l}: 
   str' x ==_[l] x^*.
 Proof.
   symmetry. unfold str'. revert Hl. 
@@ -385,14 +385,14 @@ Fixpoint norm n m (x: expr n m): expr n m :=
     | e_var a => e_var a
   end%ast.
 
-Lemma norm_level n m (x: expr n m): e_level (norm x) << e_level x.
+Lemma norm_level n m (x: expr n m): e_level (norm x) ≪ e_level x.
 Proof. 
   induction x; simpl norm; simpl e_level; 
     rewrite ?dot'_level, ?pls'_level, ?cap'_level, ?cnv'_level, 
       ?itr'_level, ?str'_level, ?IHx1, ?IHx2, ?IHx; solve_lower'.
 Qed.
   
-Lemma norm_weq l n m (x: expr n m) {Hl: e_level x << l}: norm x ==_[l] x.
+Lemma norm_weq l n m (x: expr n m) {Hl: e_level x ≪ l}: norm x ==_[l] x.
 Proof.
   induction x; simpl norm; simpl e_level in Hl; try reflexivity; 
     rewrite ?pls'pls, ?cap'cap, ?dot'dot, ?itr'itr, ?str'str, ?cnv'cnv, ?e_str' 
@@ -449,7 +449,7 @@ Definition expr_leq := powerfix 100
 Lemma expr_leq_correct_dep l: forall n m (x: expr n m) p q (y: expr p q),
   forall Hnp: n=p, forall Hmq: m=q, 
   expr_leq x y = true -> 
-  e_level x + e_level y << l ->
+  e_level x + e_level y ≪ l ->
   cast Hnp Hmq x <==_[l] y.
 Proof.
   (* TODO: this proof could be factorised, using a more appropriate
@@ -560,7 +560,7 @@ Qed.
 (** correctness of the comparison function *)
 Corollary expr_leq_correct l n m (x y: expr n m):
   expr_leq x y = true -> 
-  e_level x + e_level y << l ->
+  e_level x + e_level y ≪ l ->
   x <==_[l] y.
 Proof. apply (expr_leq_correct_dep x y eq_refl eq_refl). Qed.
 
@@ -575,7 +575,7 @@ Definition expr_leq_or_weq (b: bool) n m (x y: expr n m) :=
   if b then expr_leq x y else eqb x y.
 
 Lemma expr_leq_or_weq_correct b l n m (x y: expr n m):
-  e_level x + e_level y << l ->
+  e_level x + e_level y ≪ l ->
   expr_leq_or_weq b x y -> @leq_or_weq b (expr_lattice_ops _ _ l _ _) x y.
 Proof.
   intros Hl H. destruct b. apply expr_leq_correct; assumption. 
@@ -591,7 +591,7 @@ End n.
    interpretation function (using "unfold" selectively) *)
 
 Lemma ra_normalise d b `{L: laws} f' (f: positive -> Pack X f')
-  n m (x y: expr _ _ n m) (Hl: e_level x + e_level y << l):
+  n m (x y: expr _ _ n m) (Hl: e_level x + e_level y ≪ l):
   (let x' := norm d x in let y' := norm d y in packed_eval f x' <=[b]= packed_eval f y') -> 
   packed_eval f x <=[b]= packed_eval f y.
 Proof. 
@@ -604,7 +604,7 @@ Qed.
    reification *)
 
 Lemma ra b `{L: laws} f' (f: positive -> Pack X f')
-  n m (x y: expr _ _ n m) (Hl: e_level x + e_level y << l):
+  n m (x y: expr _ _ n m) (Hl: e_level x + e_level y ≪ l):
   expr_leq_or_weq b (norm true x) (norm true y) = true -> packed_eval f x <=[b]= packed_eval f y.
 Proof.
   intro H. apply (ra_normalise true b). assumption. 
@@ -633,7 +633,7 @@ Ltac ra :=
   let L:=fresh "L" in intro L;
   let l:=match type of L with laws ?l _ => l end in
   lazymatch goal with 
-  | H: ?h<<l |- _ => go h L ltac:(rewrite <- H; reflexivity)
+  | H: ?h ≪ l |- _ => go h L ltac:(rewrite <- H; reflexivity)
   | _ => go l L ltac:(reflexivity || destruct l; reflexivity)
   end.
 
@@ -671,7 +671,7 @@ Ltac ra_normalise_ distribute :=
   let L:=fresh "L" in intro L;
   let l:=match type of L with laws ?l _ => l end in
   lazymatch goal with 
-  | H: ?h<<l |- _ => go h L ltac:(rewrite <- H; reflexivity)
+  | H: ?h ≪ l |- _ => go h L ltac:(rewrite <- H; reflexivity)
   | _ => go l L ltac:(reflexivity || destruct l; reflexivity)
   end.
 

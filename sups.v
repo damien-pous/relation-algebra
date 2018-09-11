@@ -21,7 +21,7 @@ Require Import lset lattice.
 Require Export ordinal.
 
 Section s.
-Context `{L:laws} `{Hl:BSL<<l}.
+Context `{L:laws} `{Hl:BSL ≪ l}.
 
 Section i.
 Context {I: Type}.
@@ -136,7 +136,7 @@ Notation "\sup_ ( i < n ) f" := (\sup_(i \in seq n) f)
 
 (** two "meta" results, to prove that some operation commutes with supremums *)
 
-Lemma f_sup_weq {X: ops} {Y l} {L: laws l Y} `{Hl: CUP<<l} (f: X -> Y):
+Lemma f_sup_weq {X: ops} {Y l} {L: laws l Y} `{Hl: CUP ≪ l} (f: X -> Y):
   (f bot ≡ bot) ->
   (forall x y, f (x ⊔ y) ≡ f x ⊔ f y) ->
   forall I J (g: I -> X), f (sup g J) ≡ \sup_(i\in J) f (g i).
@@ -170,12 +170,12 @@ Qed.
 
 
 (** cutting a supremum over ordinals of size [n+m] *)
-Lemma sup_cut `{L:laws} `{BSL<<l} n m f:
+Lemma sup_cut `{L:laws} `{BSL ≪ l} n m f:
   \sup_(i<n+m) f i ≡ \sup_(i<n) f (lshift i) ⊔ \sup_(i<m) f (rshift i).
 Proof. now rewrite seq_cut, sup_app, 2sup_map. Qed.
 
 (** supremums where the indices come from a supremum *)
-Lemma sup_sup `{L: laws} `{BSL<<l} I (f: I -> X) A (J: A -> list I) h: 
+Lemma sup_sup `{L: laws} `{BSL ≪ l} I (f: I -> X) A (J: A -> list I) h: 
   sup f (sup J h) ≡ sup (fun a => sup f (J a)) h.
 Proof. induction h. reflexivity. simpl. now rewrite sup_app, IHh. Qed.
 
@@ -192,11 +192,11 @@ Proof. induction J; simpl; congruence. Qed.
 
 
 (** distribution of meets over supremums *)
-Lemma capxsup `{laws} `{BSL+CAP<<l} I J (f: I -> X) (x: X): 
+Lemma capxsup `{laws} `{BSL+CAP ≪ l} I J (f: I -> X) (x: X): 
   x ⊓ (\sup_(i\in J) f i) ≡ \sup_(i\in J) (x ⊓ f i).
 Proof. apply f_sup_weq. apply capxb. intros; apply capcup. Qed.
 
-Lemma capsupx `{laws} `{BSL+CAP<<l} I J (f: I -> X) (x: X): 
+Lemma capsupx `{laws} `{BSL+CAP ≪ l} I J (f: I -> X) (x: X): 
   (\sup_(i\in J) f i) ⊓ x ≡ \sup_(i\in J) (f i ⊓ x).
 Proof. rewrite capC, capxsup. now setoid_rewrite capC at 1. Qed.
 
@@ -216,7 +216,7 @@ Notation "\inf_ ( i < n ) f" := (\inf_(i \in seq n) f)
     format "'[' \inf_ ( i < n ) '/  '  f ']'"): ra_terms.
 
 Section inf.
-Context `{laws} `{CAP+TOP<<l} {I: Type}.
+Context `{laws} `{CAP+TOP ≪ l} {I: Type}.
 
 Global Instance inf_leq:
   Proper (pwr (@leq X) ==> leq --> @leq X) (@sup (dual X) I).

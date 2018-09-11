@@ -26,7 +26,7 @@ Variables (s t: Sigma -> positive).
 Notation expr := (expr s t).
 
 (** more aggressive hint for level constraint resolution *)
-Local Hint Extern 0 (_ << _) => solve_lower || solve_lower': typeclass_instances.
+Local Hint Extern 0 (_ ≪ _) => solve_lower || solve_lower': typeclass_instances.
 
 (** induction scheme for syntax.expr (in)equality:
 
@@ -117,7 +117,7 @@ Lemma is_zer_clean n m (x: expr n m): is_clean x -> is_zer x = false.
 Proof. induction x; simpl; intuition. Qed.
 
 (** an expression reduces either to [0] or to a clean expression *)
-Lemma clean_spec n m (x: expr n m): e_level x << BOT+CKA -> clean x = 0%ast \/ is_clean (clean x).
+Lemma clean_spec n m (x: expr n m): e_level x ≪ BOT+CKA -> clean x = 0%ast \/ is_clean (clean x).
 Proof.
   induction x; simpl e_level; simpl clean; 
     unfold e_pls', e_dot', e_itr', e_str', e_cnv'; 
@@ -155,39 +155,39 @@ Ltac destruct_tests :=
   end. 
 
 (** the cleaning function does not increase the level of the expressions *)
-Lemma clean_level n m (x: expr n m): e_level (clean x) << e_level x.
+Lemma clean_level n m (x: expr n m): e_level (clean x) ≪ e_level x.
 Proof.
   induction x; try reflexivity; simpl clean;
     revert_prop; destruct_tests; simpl e_level; 
       intros; solve_lower' || reflexivity. 
 Qed.
 
-Lemma is_zer_level n m (x: expr n m): is_zer x -> BOT << e_level x.
+Lemma is_zer_level n m (x: expr n m): is_zer x -> BOT ≪ e_level x.
 Proof. case is_zer_spec. reflexivity. discriminate. Qed.
 
 (** if an expression reduces to [0], then [0] was appearing somewhere in that expression *)
-Lemma clean_0_level n m (x: expr n m): clean x = 0%ast -> BOT << e_level x.
+Lemma clean_0_level n m (x: expr n m): clean x = 0%ast -> BOT ≪ e_level x.
 Proof. rewrite <-clean_level. now intros ->. Qed.
 
 (** cleaning constructors are "correct": they correspond to their syntactic counterparts *)
-Lemma e_pls_weq l n m x y: `{CUP + e_level x + e_level y << l} -> @e_pls' n m x y ==_[l] x+y.
+Lemma e_pls_weq l n m x y: `{CUP + e_level x + e_level y ≪ l} -> @e_pls' n m x y ==_[l] x+y.
 Proof. destruct_tests; intros; lattice. Qed.
 
-Lemma e_dot_weq l n m p x y: e_level x + e_level y << l -> @e_dot' n m p x y ==_[l] x⋅y.
+Lemma e_dot_weq l n m p x y: e_level x + e_level y ≪ l -> @e_dot' n m p x y ==_[l] x⋅y.
 Proof. destruct_tests; symmetry. apply dot0x. apply dotx0. Qed.
 
-Lemma e_itr_weq l n x: STR + e_level x << l -> @e_itr' n x ==_[l] x^+.
+Lemma e_itr_weq l n x: STR + e_level x ≪ l -> @e_itr' n x ==_[l] x^+.
 Proof. destruct_tests. intros. now rewrite itr0. Qed.
 
-Lemma e_str_weq l n x: STR + e_level x << l -> @e_str' n x ==_[l] x^*.
+Lemma e_str_weq l n x: STR + e_level x ≪ l -> @e_str' n x ==_[l] x^*.
 Proof. destruct_tests. intros. now rewrite str0. Qed.
 
-Lemma e_cnv_weq l n m x: CNV + e_level x << l -> @e_cnv' n m x ==_[l] x°.
+Lemma e_cnv_weq l n m x: CNV + e_level x ≪ l -> @e_cnv' n m x ==_[l] x°.
 Proof. destruct_tests. intros. now rewrite cnv0. Qed.
 
 (** the cleaning function thus returns an equivalent expression (at
    any level containing the operations appearing in that expression) *)
-Lemma clean_weq l n m (x: expr n m): e_level x << l -> clean x ==_[l] x. 
+Lemma clean_weq l n m (x: expr n m): e_level x ≪ l -> clean x ==_[l] x. 
 Proof.
   induction x; simpl e_level; simpl clean; try reflexivity; 
     rewrite ?merge_spec; intuition. 
@@ -201,14 +201,14 @@ Qed.
 (** simple tactic to discriminate unsatisfiable constraints *)
 Ltac discr_levels Hl tac :=
   repeat match goal with 
-           | |- _ << _ -> _ => let Hl' := fresh "Hl" in intro Hl'; try ((rewrite Hl in Hl'; discriminate Hl') || tac Hl')
+           | |- _ ≪ _ -> _ => let Hl' := fresh "Hl" in intro Hl'; try ((rewrite Hl in Hl'; discriminate Hl') || tac Hl')
            | |- _ \/ _ => right
          end;
   unfold Reflexive, Transitive, Proper, respectful; simpl;
   unfold e_dot', e_pls', e_cnv', e_itr', e_str'. 
 
 (** ** key lemma 1: equivalent expressions reduce to [0] simultaneously *)
-Lemma clean_leq_weq_0 l: l<<BOT+CKA -> 
+Lemma clean_leq_weq_0 l: l ≪ BOT+CKA -> 
   forall n m (x y: expr n m), 
        (x <==_[l] y ->  clean y = 0%ast  -> clean x = 0%ast)
     /\ (x  ==_[l] y -> (clean x = 0%ast <-> clean y = 0%ast)).
@@ -219,7 +219,7 @@ Proof.
       intuition (congruence || discriminate). 
 Qed.
 
-Corollary clean_leq_0 l: l<<BOT+CKA -> forall n m (x y: expr n m), 
+Corollary clean_leq_0 l: l ≪ BOT+CKA -> forall n m (x y: expr n m), 
   x <==_[l] y -> clean y = 0%ast -> clean x = 0%ast.
 Proof. apply clean_leq_weq_0. Qed.
 
@@ -230,14 +230,14 @@ Proof.
     intros; simpl; rewrite ?IHe1, ?IHe2, ?IHe; destruct_tests; congruence.
 Qed.
 
-Lemma lower_bot h k: has_bot h = false -> h << BOT + k -> h << k.
+Lemma lower_bot h k: has_bot h = false -> h ≪ BOT + k -> h ≪ k.
 Proof. rewrite 2lower_spec. simpl. intros ->. intuition discriminate. Qed.
 
 (** ** key lemma 2: proofs with bottom elements can be factorised
    into a preliminary cleaning phase, followed by a "clean" proof which
    does not use bottom elements laws (we move from (in)equality proofs
    at level [BOT+l] to (in)equality proofs at level [l]) *)
-Lemma clean_factorise_leq_weq l: l<<BOT+CKA -> 
+Lemma clean_factorise_leq_weq l: l ≪ BOT+CKA -> 
   forall n m (x y: expr n m), 
        (x <==_[BOT+l] y -> clean x = 0%ast \/ clean x <==_[l] clean y)
     /\ (x  ==_[BOT+l] y -> clean x ==_[l] clean y).
@@ -305,7 +305,7 @@ Proof.
    intros _ _. apply itr_str_l.
 Qed.
 
-Corollary clean_factorise_leq l: l<<BOT+CKA -> 
+Corollary clean_factorise_leq l: l ≪ BOT+CKA -> 
   forall n m (x y: expr n m), x <==_[BOT+l] y -> clean x = 0%ast \/ clean x <==_[l] clean y.
 Proof. apply clean_factorise_leq_weq. Qed.
 
@@ -567,7 +567,7 @@ Ltac not_involved Hl :=
   let H := fresh in intro H; apply (lower_trans _ _ _ H) in Hl; discriminate Hl. 
 
 
-Instance u_lattice_laws {Hl: l<<CKA}: lattice.laws l u_lattice_ops.
+Instance u_lattice_laws {Hl: l ≪ CKA}: lattice.laws l u_lattice_ops.
 Proof.
   constructor; try not_involved Hl. constructor.
    repeat intro; solve [eauto 6].
@@ -581,7 +581,7 @@ Proof.
   (* not that [bot] would work here, but [bot] breaks the unique typing property *)
 Qed.
 
-Instance u_laws {Hl: l<<CKA}: laws l u_ops.
+Instance u_laws {Hl: l ≪ CKA}: laws l u_ops.
 Proof.
   constructor; try not_involved Hl; repeat right.
   intros. apply u_lattice_laws.
@@ -619,7 +619,7 @@ Proof. induction e; simpl; unfold str; simpl; repeat f_equal; assumption. Qed.
 
 (** untyping theorem for bottom-free structures *)
 Theorem erase_faithful_leq_clean n m (x y: expr n m):
-  is_clean x -> is_clean y -> l<<CKA ->
+  is_clean x -> is_clean y -> l ≪ CKA ->
   erase x <==_[l] erase y -> x <==_[l] y.
 Proof.
   intros Hx Hy Hl H. 
@@ -656,7 +656,7 @@ Proof. destruct e; discriminate || reflexivity. Qed.
 
 (** final untyping theorem for equalities *)
 Theorem erase_faithful_leq l n m (x y: expr n m):
-  e_level x + e_level y << l -> l<<BOT+CKA -> erase l x <==_[l] erase l y -> x <==_[l] y.
+  e_level x + e_level y ≪ l -> l ≪ BOT+CKA -> erase l x <==_[l] erase l y -> x <==_[l] y.
 Proof.
   (* TODO: reprendre cette preuve immonde *)
   intros Hxy Hl H. 
@@ -671,8 +671,8 @@ Proof.
   set (l' :=                    (* l \ BOT *)
     mk_level (has_cup l) false (has_cap l) (has_top l) 
              (has_str l) (has_cnv l) (has_neg l) (has_div l)).
-  assert (L: l' << l). rewrite lower_spec. intuition discriminate. 
-  assert (L': l << BOT+l'). rewrite lower_spec. simpl. intuition. 
+  assert (L: l' ≪ l). rewrite lower_spec. intuition discriminate. 
+  assert (L': l ≪ BOT+l'). rewrite lower_spec. simpl. intuition. 
   assert (G: clean x <==_[l'] clean y). 
    apply erase_faithful_leq_clean.
     assumption.
@@ -688,7 +688,7 @@ Qed.
 
 (** final untyping theorem for (in)equalities *)
 Corollary erase_faithful_weq l n m (x y: expr n m):
-  e_level x + e_level y << l -> l<<BOT+CKA -> erase l x ==_[l] erase l y -> x ==_[l] y.
+  e_level x + e_level y ≪ l -> l ≪ BOT+CKA -> erase l x ==_[l] erase l y -> x ==_[l] y.
 Proof.
   intros Hxy Hl. rewrite 2weq_spec. 
   split; apply erase_faithful_leq; intuition solve_lower'.

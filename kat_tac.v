@@ -31,7 +31,7 @@ End j.
 
 (** we can thus refine the reification lemma provided in [kat_reification] *)
 Corollary kat_weq_dec `{L: laws} f' fs fp n m (e f: @kat_expr X f' fs n m): 
-  e_level e + e_level f << BKA ->
+  e_level e + e_level f ≪ BKA ->
   (let v := vars (e_pls e f) in 
     eqb_kat (gerase (to_gregex v n m e)) (gerase (to_gregex v n m f)) = Some true) -> 
   eval fp n m e ≡ eval fp n m f.
@@ -97,7 +97,7 @@ Ltac kat :=
 (* TODO: sync with conservativity once we got it *)
 Module bka_to_kat.
 Definition ops (X: monoid.ops) := mk_ops X (fun _ => bool_lattice_ops) (fun _ => ofbool). 
-Lemma laws `{monoid.laws} `{BKA<<l}: kat.laws (ops X).
+Lemma laws `{monoid.laws} `{BKA ≪ l}: kat.laws (ops X).
 Proof.
   constructor. 
   apply lower_laws. 
@@ -114,7 +114,7 @@ End bka_to_kat.
 
 (** the tactic is really similar to [kat], except that we catch the
    KAT laws using the lemma below, exploiting the above embedding *)
-Lemma catch_ka_weq {X l} {L: monoid.laws l X} {Hl: BKA<<l} n m (x y: X n m): 
+Lemma catch_ka_weq {X l} {L: monoid.laws l X} {Hl: BKA ≪ l} n m (x y: X n m): 
   (let L:=@bka_to_kat.laws l X L Hl in @weq (@kar (bka_to_kat.ops X) n m) x y) -> x ≡ y.
 Proof. trivial. Qed.
 
@@ -189,7 +189,7 @@ Proof. dual @cp_c. Qed.
 
 
 (** merging Hoare hypotheses *)
-Lemma join_leq `{lattice.laws} `{CUP<<l} (x y z: X):  x ≦z -> y ≦z -> x ⊔ y ≦z. 
+Lemma join_leq `{lattice.laws} `{CUP ≪ l} (x y z: X):  x ≦z -> y ≦z -> x ⊔ y ≦z. 
 Proof. rewrite cup_spec. tauto. Qed.
 
 (** eliminating Hoare hypotheses ; [u] and [v] are intended to be the

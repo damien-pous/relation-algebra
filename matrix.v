@@ -10,8 +10,8 @@
    
    Given an [l]-monoid structure, we build an [l]-monoid of matrices
    above it.  This works whenever we have unions and bottom elements
-   ([BSL<<l]) for structures without residuals; to build residuals, we
-   moreover need intersections and top elements ([BDL<<l]).
+   ([BSL ≪ l]) for structures without residuals; to build residuals, we
+   moreover need intersections and top elements ([BDL ≪ l]).
    
    We do these constructions once and forall, thanks to our
    first-class level constraints.
@@ -257,7 +257,7 @@ End m.
    proofs, notably for Kleene star. *)
 
 Section bsl.
-Context `{L: laws} `{Hl: BSL<<l} {u: ob X}.
+Context `{L: laws} `{Hl: BSL ≪ l} {u: ob X}.
 Notation U := (car (@mor X u u)).
 Notation mx := (mx U).
 
@@ -384,7 +384,7 @@ End bsl.
 (** ** matrices have a converse if the underlying monoid has one  *)
 
 Section cbsl.
-Context `{L: laws} `{Hl: BSL+CNV<<l} {u: ob X}.
+Context `{L: laws} `{Hl: BSL+CNV ≪ l} {u: ob X}.
 Notation U := (car (@mor X u u)).
 Notation mx := (mx U).
 
@@ -415,7 +415,7 @@ End cbsl.
 (** ** matrices have a Kleene star if the underlying monoid has one  *)
 
 Section ka.
-Context `{L: laws} `{Hl: BKA<<l} {u: ob X}.
+Context `{L: laws} `{Hl: BKA ≪ l} {u: ob X}.
 Notation U := (car (@mor X u u)).
 Notation mx := (mx U).
 
@@ -552,24 +552,24 @@ End ka.
 
 Definition mx_level l := (if has_div l then BDL+l else BSL+l)%level.
 
-Lemma mx_div_level l : DIV << l -> mx_level l << l -> BDL+DIV << l.
+Lemma mx_div_level l : DIV ≪ l -> mx_level l ≪ l -> BDL+DIV ≪ l.
 Proof.
   rewrite 3lower_spec. unfold mx_level. simpl. 
   case (has_div l). simpl. tauto. intuition discriminate. 
 Qed.
 
-Local Hint Extern 0 (_ << _) => solve_lower': typeclass_instances.
+Local Hint Extern 0 (_ ≪ _) => solve_lower': typeclass_instances.
 
 (* NOTE: the following instance could alternatively be stated as:
-   Instance mx_laws {l h X} {L: laws l X} {Hl: mx_level h<<l} u: laws h (mx_ops X u).
+   Instance mx_laws {l h X} {L: laws l X} {Hl: mx_level h ≪ l} u: laws h (mx_ops X u).
    
    We don't do this because we want inferred laws instances to be
    closed (evar free) and "maximal", the inferred instance has the
    maximal possible level. *)
 
-Instance mx_laws `{L: laws} `{Hl: mx_level l<<l} u: laws l (mx_ops X u) |1.
+Instance mx_laws `{L: laws} `{Hl: mx_level l ≪ l} u: laws l (mx_ops X u) |1.
 Proof.
-  assert (Hl': BSL<<l). revert Hl. unfold mx_level. case has_div; intro; solve_lower.  
+  assert (Hl': BSL ≪ l). revert Hl. unfold mx_level. case has_div; intro; solve_lower.  
   constructor; repeat right. 
   intros. apply pw_laws.
   exact mx_dotA.

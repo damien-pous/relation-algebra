@@ -442,8 +442,8 @@ with o_npred (x: test): expr3 n n :=
     | e_var a => syntax.e_var (l_neg n a)
   end.
 Import syntax.
-Lemma o_pred_level x: e_level (o_pred x) << BKA
-  with o_npred_level x: e_level (o_npred x) << BKA. 
+Lemma o_pred_level x: e_level (o_pred x) ≪ BKA
+  with o_npred_level x: e_level (o_npred x) ≪ BKA. 
 Proof.
   destruct x; simpl o_pred; simpl e_level; rewrite ?merge_spec; intuition. 
   destruct x; simpl o_npred; simpl e_level; rewrite ?merge_spec; intuition. 
@@ -463,7 +463,7 @@ Fixpoint o n m (e: gregex n m): expr3 n m:=
 Lemma o_sup n m I J (f: I -> gregex n m): o (sup f J) = \sup_(i\in J) (o (f i)).
 Proof. apply f_sup_eq; now f_equal. Qed.
 
-Lemma o_level n m (e: gregex n m): e_level (o e) << BKA. 
+Lemma o_level n m (e: gregex n m): e_level (o e) ≪ BKA. 
 Proof.
   pose proof o_pred_level. 
   induction e; simpl o; simpl e_level; rewrite ?merge_spec; intuition. 
@@ -528,7 +528,7 @@ Definition v: forall n m, expr3 n m -> regex :=
 Definition w (e: regex): uexpr3 :=
   eval (X:=expr_ops _ _ BKA) (f':=fun _ => xH) (fun p => e_var (pl p)) (to_expr e).
 
-Lemma wv_u n m (e: expr3 n m): e_level e << BKA -> w (v e) ≡ erase BKA e.
+Lemma wv_u n m (e: expr3 n m): e_level e ≪ BKA -> w (v e) ≡ erase BKA e.
 Proof.
   unfold w.
   induction e; simpl e_level; intro Hl; try discriminate_levels;
