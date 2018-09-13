@@ -73,6 +73,8 @@ kat_tac.v
 
 relalg.v
 
+all.v
+
 # examples of applications
 compiler_opts.v
 imp.v
