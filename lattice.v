@@ -59,8 +59,11 @@ Arguments top {ops} / : simpl nomatch.
 (** Notations *)
 (** 
     ≦ : \leqq  (company coq) or LESS THAN OVER EQUAL TO (was '<==')
+
     ≡ : \equiv (company coq) or IDENTIAL TO (was '==')
+
     ⊔ : \sqcup (company coq) or SQUARE CUP (was '\cup')
+
     ⊓ : \sqcap (company coq) or SQUARE CAP (was '\cap')
 *)
 

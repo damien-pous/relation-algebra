@@ -52,8 +52,9 @@ Arguments rdv {ops} n m p (x y)%ra / : simpl nomatch.
    notations "⊔" and "⊓", when these operations actually come
    from a monoid) *)
 
-(** 
+(**
    ∩ : \cap (company-coq) or INTERSECTION (0x2229)
+
    ⋅ : \cdot (company coq) or DOT OPERATOR (0x22c5)
 *)
 
