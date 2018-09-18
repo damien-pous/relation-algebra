@@ -1,5 +1,5 @@
 all: Makefile.coq
-	+make -f Makefile.coq all
+	$(MAKE) -f Makefile.coq all
 
 clean: Makefile.coq
 	+make -f Makefile.coq clean
@@ -9,12 +9,19 @@ cleanall: Makefile.coq
 	+make -f Makefile.coq cleanall
 	rm -f Makefile.coq
 
-Makefile.coq: Make
+Makefile.coq: 
 	$(COQBIN)coq_makefile -f _CoqProject -o Makefile.coq
 
-Make: ;
+enable:
+	sed -i '/fhrel\.v/d' _CoqProject
+	echo "fhrel.v" >>_CoqProject
+	$(COQBIN)coq_makefile -f _CoqProject -o Makefile.coq
+
+disable:
+	sed -i '/fhrel\.v/d' _CoqProject
+	$(COQBIN)coq_makefile -f _CoqProject -o Makefile.coq
 
 %: Makefile.coq
-	+make -f Makefile.coq $@
+	$(MAKE) -f Makefile.coq $@
 
-.PHONY: all clean
+.PHONY: all clean enable disable
