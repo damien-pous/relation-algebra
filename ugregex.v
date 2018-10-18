@@ -14,7 +14,6 @@
 Require Import kat lsyntax positives sups glang comparisons boolean.
 Set Implicit Arguments.
 
-
 Section l.
 Variable Pred: nat.
 Notation Sigma := positive.

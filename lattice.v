@@ -33,8 +33,10 @@ Open Scope ra_terms.
    case, where typeclass resolution will be called since unification
    will keep the hole unconstrained) *)
 
+Universe L.
+
 Class ops := mk_ops {
-  car: Type;                    (** carrier *)
+  car: Type@{L};                    (** carrier *)
   leq: relation car;            (** preorder *)
   weq: relation car;            (** underlying equality *)
   cup: car -> car -> car;       (** supremum *)
@@ -552,8 +554,10 @@ Arguments pw0 {Y X} _ _ /.
 Arguments pw1 {Y X} _ _ _ /.
 Arguments pw2 {Y X} _ _ _ _ /.
 
+Universe pw.
+
 (** As explained above, we use canonical structures for operations inference *)
-Canonical Structure pw_ops (X: ops) Y: ops := {|
+Canonical Structure pw_ops (X: ops) (Y : Type@{pw}) : ops := {|
   car := Y -> X;
   leq := pwr leq;
   weq := pwr weq;
@@ -567,7 +571,7 @@ Canonical Structure pw_ops (X: ops) Y: ops := {|
 (** In contrast, we use typeclass resolution for laws inference.
  Note the level polymorphism in the instance below: laws of level [l]
  on [X] yield laws of the same level [l] on [Y -> X]. *)
-Instance pw_laws `{laws} Y: laws l (pw_ops X Y).
+Instance pw_laws `{laws} (Y : Type@{pw}) : laws l (pw_ops X Y).
 Proof.
   constructor; simpl; intros. constructor.
    intros f x. reflexivity.

@@ -23,8 +23,11 @@ Require Export ordinal.
 Section s.
 Context `{L:laws} `{Hl:BSL ≪ l}.
 
+Universe S.
+
 Section i.
-Context {I: Type}.
+
+Context {I: Type@{S}}.
 
 (** * Supremums *)
 

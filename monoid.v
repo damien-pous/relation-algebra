@@ -24,8 +24,10 @@ Require Export lattice.
    Like for [lattice.ops], we use a Class but we mainly exploit
    Canonical structures inference mechanism. *)
 
+Universe M.
+
 Class ops := mk_ops {
-  ob: Type;                     (** objects of the category *)
+  ob: Type@{M};                     (** objects of the category *)
   mor: ob -> ob -> lattice.ops; (** morphisms (each homset is a partially ordered structure) *)
   dot: forall n m p, mor n m -> mor m p -> mor n p; (** composition  *)
   one: forall n, mor n n;                           (** identity *)

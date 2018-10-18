@@ -12,8 +12,13 @@ Require Bool.
 Require Export boolean prop.
 Require Import kat.
 
-(** a relation between two sets is just a predicate  *)
-Definition hrel (n m: Set) := n -> m -> Prop.
+Set Printing Universes.
+
+(** We fix a type universe U and show that heterogeneous relations
+between types in this universe form a kleene algebra.  *)
+
+Universe U.
+Definition hrel (n m: Type@{U}) := n -> m -> Prop.
 
 (** * Relations as a (bounded, distributive) lattice *)
 
@@ -27,6 +32,9 @@ Global Instance hrel_lattice_laws n m:
   lattice.laws (BDL+STR+CNV+DIV) (hrel_lattice_ops n m) := pw_laws _. 
 
 (** * Relations as a residuated Kleene allegory *)
+
+Section RepOps.
+  Implicit Types n m p : Type@{U}.
 
 (** relational composition *)
 Definition hrel_dot n m p (x: hrel n m) (y: hrel m p): hrel n p := 
@@ -44,7 +52,7 @@ Definition hrel_rdv n m p (x: hrel m n) (y: hrel p n): hrel p m :=
   fun j i => forall k, x i k -> y j k.
 
 Section i.
-  Variable n: Set.
+  Variable n: Type@{U}.
   Variable x: hrel n n.
   (** finite iterations of a relation *)
   Fixpoint iter u := match u with O => @eq _ | S u => hrel_dot _ _ _ x (iter u) end.
@@ -54,18 +62,25 @@ Section i.
   Definition hrel_itr: hrel n n := hrel_dot n n n x hrel_str.
 End i.
 
+End RepOps.
 
 (** packing all operations into a monoid; note that the unit on [n] is
    just the equality on [n], i.e., the identity relation on [n] *)
 
-Canonical Structure hrel_monoid_ops := 
-  monoid.mk_ops Set hrel_lattice_ops hrel_dot (@eq) hrel_itr hrel_str hrel_cnv hrel_ldv hrel_rdv.
+(** We need to eta-expand @eq here. This generates the universe
+constraint [U <= Coq.Init.Logic.8] (where the latter is the universe of
+the type argument to [eq]). Without the eta-expansion, the definition
+would yield the constraint [U = Coq.Init.Logig.8], which is too strong
+and leads to universe inconsistencies later on. *)
+
+Canonical Structure hrel_monoid_ops :=  
+  monoid.mk_ops Type@{U} hrel_lattice_ops hrel_dot (fun n => @eq n) hrel_itr hrel_str hrel_cnv hrel_ldv hrel_rdv.
 
 (** binary relations form a residuated Kleene allegory *)
 Instance hrel_monoid_laws: monoid.laws (BDL+STR+CNV+DIV) hrel_monoid_ops.
 Proof.
-  assert (dot_leq: forall n m p,
-    Proper (leq ==> leq ==> leq) (hrel_dot n m p)).
+  assert (dot_leq: forall n m p : Type@{U},
+   Proper (leq ==> leq ==> leq) (hrel_dot n m p)).
    intros n m p x y H x' y' H' i k [j Hij Hjk]. exists j. apply H, Hij. apply H', Hjk.
   constructor; (try now left); intros. 
    apply hrel_lattice_laws.
@@ -92,8 +107,13 @@ Qed.
 
 (** * Relations as a Kleene algebra with tests *)
 
-(** "decidable" sets or predicates: Boolean functions *)
-Definition dset: ob hrel_monoid_ops -> lattice.ops := pw_ops bool_lattice_ops.
+
+(** "decidable" sets or predicates: Boolean functions
+
+Similar to [hrel_monoid_ops] we need to eta-expand the definition of
+dset to avoid forcing [U = pw] and obtain [U <= pw] instead *)
+
+Definition dset: ob hrel_monoid_ops -> lattice.ops := fun Y => pw_ops bool_lattice_ops Y.
 
 (** injection of decidable predicates into relations, as sub-identities *)
 Definition hrel_inj n (x: dset n): hrel n n := fun i j => i=j /\ x i.
@@ -102,6 +122,13 @@ Definition hrel_inj n (x: dset n): hrel n n := fun i j => i=j /\ x i.
 Canonical Structure hrel_kat_ops := 
   kat.mk_ops hrel_monoid_ops dset hrel_inj.
 
+
+(** We need to impose the constraint [U < pw] before proving this
+lemma since otherwise we have [U = pw] afterwards. This leads to a
+universe inconsistency when trying load ugregex_dec, kat_completeness
+(as exported by kat_tac) and rel at the same time. *)
+
+Constraint U < pw.
 Instance hrel_kat_laws: kat.laws hrel_kat_ops.
 Proof.
   constructor. apply lower_laws. intro. apply (pw_laws (H:=lower_lattice_laws)).
