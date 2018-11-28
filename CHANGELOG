@@ -1,3 +1,10 @@
+== RelationAlgebra 1.7  (TODO) ==
+
+- compatiblity with Coq 8.8.2
+- unicode notations (i.e., "x ≡ y", "x ≦ y", "x⋅y")
+- support heterogeneous relations on large types (outside [Set])
+- [fhrel]: heterogeneous relations between finite types
+  (available if coq-mathcomp-ssreflect is present [optional dependency])
 
 == RelationAlgebra 1.6  (2016, May 10th) ==
 
