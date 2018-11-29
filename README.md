@@ -58,7 +58,9 @@ verification:
 
 ## INSTALLATION
 
-Run 'make' to compile the library, and 'make install' to install it. 
+Run 'make' to compile the library, and 'make install' to install it.
+Latest version compiles with Coq 8.8.2
+
 
 
 ## DOCUMENTATION
@@ -83,5 +85,6 @@ Public License version 3. See files LICENSE and COPYING.
   - Damien Pous (2012-), CNRS - LIP, ENS Lyon (UMR 5668), France
  
 * Additional authors
-  - Insa Stucke (2015-), Dpt of CS, University of Kiel, Germany
+  - Christian Doczkal (2018-), CNRS - LIP, ENS Lyon (UMR 5668), France
+  - Insa Stucke (2015-2016), Dpt of CS, University of Kiel, Germany
   - Coq development team (2013-)
