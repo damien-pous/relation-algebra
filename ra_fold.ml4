@@ -134,13 +134,15 @@ let ra_fold_term ops ob t goal =
     
 let ra_fold_concl ops ob goal =
   let f,goal = ra_fold_term ops ob (Tacmach.pf_concl goal) goal in
+  let env,map = (Tacmach.pf_env goal,Tacmach.project goal) in
   (try Proofview.V82.of_tactic (Tactics.convert_concl f DEFAULTcast) goal
-   with e -> Feedback.msg_warning (Printer.pr_leconstr f); raise e)
+   with e -> Feedback.msg_warning (Printer.pr_leconstr_env env map f); raise e)
 
 let ra_fold_hyp' ops ob decl goal =
   let typ,goal = ra_fold_term ops ob (get_type decl) goal in
+  let env,map = (Tacmach.pf_env goal,Tacmach.project goal) in
   (try Proofview.V82.of_tactic (Tactics.convert_hyp ~check:false decl) goal
-   with e -> Feedback.msg_warning (Printer.pr_leconstr typ); raise e)
+   with e -> Feedback.msg_warning (Printer.pr_leconstr_env env map typ); raise e)
 
 let ra_fold_hyp ops ob hyp goal =
   ra_fold_hyp' ops ob (Tacmach.pf_get_hyp goal hyp) goal
