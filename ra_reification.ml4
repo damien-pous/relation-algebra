@@ -145,8 +145,9 @@ let reify_goal l goal =
 
   (* reification of a term [e], with domain [s] and codomain [t] *)
   let rec reify (s,s' as ss) (t,t' as tt) e = 
-    let k' _ = 
-      if convertible goal e (Monoid.one ops s') then 
+    let k' _ =
+      (* conversion here is untyped, so we need to ensure s' = t' when recognizing one *)
+      if convertible goal e (Monoid.one ops s') && convertible goal s' t' then 
         Syntax.one src_ tgt_ s
       else if l.has_bot && convertible goal e (Lattice.bot (Monoid.mor ops s' t')) then
         Syntax.zer src_ tgt_ s t
