@@ -38,6 +38,9 @@
    
    (the converse is immediate, G being a model) *)
 
+(** enable notations for [positive] *)
+Require Import Coq.PArith.BinPosDef. 
+
 Require Import denum lset sums normalisation.
 Require Import kat ka_completeness untyping.
 Require Import regex gregex lsyntax syntax lang glang boolean atoms.
