@@ -14,7 +14,7 @@
 
 open Ltac_plugin
 open Ra_common
-open Term
+open Constr
 open EConstr
 open Context.Named.Declaration
 open Stdarg

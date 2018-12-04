@@ -16,7 +16,7 @@
 open Stdarg
 open Ltac_plugin
 open Ra_common
-open Term
+open Constr
 open EConstr
 open Names
 open Proof_type
