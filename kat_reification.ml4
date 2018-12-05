@@ -339,7 +339,7 @@ let reify_kat_goal ?kat check =
   (match if check then AST.equiv lhs_v rhs_v else None with Some t -> 
     let t = AST.parse_trace kops mops lops env penv (src,src') (tgt,tgt') t in
     Tacticals.tclFAIL 0 (Pp.(++) (Pp.str (" not a "^msg^" theorem:\n"))
-			   (Printer.pr_leconstr t)) goal
+			   (Printer.pr_leconstr_env (fst es) (snd es) t)) goal
     | None -> 
   	 
   (* turning the ast in to coq constr *)
@@ -389,7 +389,7 @@ let reify_kat_goal ?kat check =
       (mkApp (rel, [|lhs;rhs|])))))))))
   in	  
   (try Proofview.V82.of_tactic (Tactics.convert_concl reified DEFAULTcast) goal
-   with e -> Feedback.msg_warning (Printer.pr_leconstr reified); raise e))
+   with e -> Feedback.msg_warning (Printer.pr_leconstr_env (fst es) (snd es) reified); raise e))
   end
 
 

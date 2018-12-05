@@ -59,7 +59,7 @@ let fresh_name n goal =
 
 (* access to Coq constants *)
 let get_const dir s = 
-  lazy (EConstr.of_constr (Universes.constr_of_global (Coqlib.find_reference "RelationAlgebra.reification" dir s)))
+  lazy (EConstr.of_constr (UnivGen.constr_of_global (Coqlib.find_reference "RelationAlgebra.reification" dir s)))
 
 (* make an application using a lazy value *)
 let force_app f = fun x -> mkApp (Lazy.force f,x)
@@ -88,7 +88,7 @@ let ltac_apply ist (f: Tacinterp.value) (arg : constr) =
   let f_ = Id.of_string "f" in
   let x_ = Id.of_string "x" in
   let arg = Tacinterp.Value.of_constr arg in
-  let mkvar id = Misctypes.ArgVar (CAst.make id) in
+  let mkvar id = Locus.ArgVar (CAst.make id) in
   let ist = { ist with lfun = Id.Map.add f_ f (Id.Map.add x_ arg ist.lfun) } in
   Tacinterp.eval_tactic_ist ist (TacArg (None, TacCall (None,(mkvar f_, [Reference (mkvar x_)]))))
 

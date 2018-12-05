@@ -206,9 +206,9 @@ let reify_goal l goal =
     mkNamedLetIn lhs_n lhs_v x (
     mkNamedLetIn rhs_n rhs_v x (
     (mkApp (rel, [|lhs;rhs|]))))))))
-  in	  
+  in
     (try Tacticals.tclTHEN (retype reified) (Proofview.V82.of_tactic (Tactics.convert_concl reified DEFAULTcast)) goal
-     with e -> Feedback.msg_warning (Printer.pr_leconstr reified); raise e)
+     with e -> Feedback.msg_warning (Printer.pr_leconstr_env (fst es) (snd es) reified); raise e)
 
 	
 (* tactic grammar entries *)
