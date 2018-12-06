@@ -20,10 +20,10 @@ monoid.v
 kleene.v
 factors.v
 kat.v
-ra_fold.ml4
+ra_fold.mlg
 ra_fold.mllib
 
-mrewrite.ml4
+mrewrite.mlg
 mrewrite.mllib
 rewriting.v
 move.v
@@ -32,7 +32,7 @@ lsyntax.v
 syntax.v
 ra_common.ml
 ra_common.mllib
-ra_reification.ml4
+ra_reification.mlg
 ra_reification.mllib
 normalisation.v
 
@@ -67,7 +67,7 @@ kat_untyping.v
 kat_reification.v
 kat_dec.ml
 kat_dec.mli
-kat_reification.ml4
+kat_reification.mlg
 kat_reification.mllib
 kat_tac.v
 

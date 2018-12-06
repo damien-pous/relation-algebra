@@ -13,15 +13,15 @@
     [ra] tactics: we reify [monoid] and [lattice]
     operations into [syntax.expr] expressions *)
 
+DECLARE PLUGIN "ra_reification"
+
+{
 open Stdarg
 open Ltac_plugin
 open Ra_common
 open Constr
 open EConstr
 open Names
-open Proof_type
-
-DECLARE PLUGIN "ra_reification"
 
 (* RelationAlgebra.mono Coq module *)
 (* module Mono = struct *)
@@ -42,12 +42,12 @@ module Tbl : sig
   (* [insert gl t x y] adds the association [x->y] to [t] and returns 
      the corresponding (coq) index ; [gl] is the current goal, used 
      to compare terms *)
-  val insert: goal Evd.sigma -> t -> constr -> constr -> constr
+  val insert: Goal.goal Evd.sigma -> t -> constr -> constr -> constr
   (* [to_env t typ def] returns (coq) environment corresponding to [t], 
      yielding elements of type [typ], with [def] as default value *)
   val to_env: t -> constr -> constr -> constr
 end = struct
-  type t = ref ((constr*constr*constr) list * int)
+  type t = ((constr*constr*constr) list * int) ref
 
   let create () = ref([],1)
 
@@ -210,6 +210,7 @@ let reify_goal l goal =
     (try Tacticals.tclTHEN (retype reified) (Proofview.V82.of_tactic (Tactics.convert_concl reified DEFAULTcast)) goal
      with e -> Feedback.msg_warning (Printer.pr_leconstr_env (fst es) (snd es) reified); raise e)
 
-	
+}	
 (* tactic grammar entries *)
-TACTIC EXTEND ra_reify [ "ra_reify" constr(level) ] -> [ Proofview.V82.tactic (reify_goal level) ] END
+TACTIC EXTEND ra_reify 
+  | [ "ra_reify" constr(level) ] -> { Proofview.V82.tactic (reify_goal level) } END

@@ -89,7 +89,7 @@ let ltac_apply ist (f: Tacinterp.value) (arg : constr) =
   let arg = Tacinterp.Value.of_constr arg in
   let mkvar id = Locus.ArgVar (CAst.make id) in
   let ist = { ist with lfun = Id.Map.add f_ f (Id.Map.add x_ arg ist.lfun) } in
-  Tacinterp.eval_tactic_ist ist (TacArg (None, TacCall (None,(mkvar f_, [Reference (mkvar x_)]))))
+  Tacinterp.eval_tactic_ist ist (TacArg (CAst.make (TacCall (CAst.make (mkvar f_, [Reference (mkvar x_)])))))
 
 (* Coq constants *)
 module Coq = struct
