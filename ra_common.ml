@@ -41,7 +41,6 @@ let error s = Printf.kprintf (fun s -> CErrors.user_err (Pp.str s)) ("[RelationA
 let tc_find gl cls = Typeclasses.resolve_one_typeclass (Tacmach.pf_env gl) (Tacmach.project gl) cls
 
 (* creating new evars *)
-let e_new_evar = Evarutil.e_new_evar ~src:(None,Evar_kinds.GoalEvar)
 let new_evar = Evarutil.new_evar ~src:(None,Evar_kinds.GoalEvar)
 
 (* push a variable on the environment *)
