@@ -18,28 +18,28 @@ open Term
 open EConstr
 open Context.Named.Declaration
 open Stdarg
+open Proofview
 
 DECLARE PLUGIN "ra_fold"
 
 let ra_fold_term ops ob t goal =
   let env = Tacmach.pf_env goal in
   let tops = Tacmach.pf_unsafe_type_of goal ops in
-  let sigma,gl = Refiner.unpackage goal in
-  let rec fill ops tops =
-    if EConstr.eq_constr !sigma tops (Lazy.force Monoid.ops) then ops
-    else match kind !sigma (Termops.strip_outer_cast !sigma tops) with
+  let rec fill sigma ops tops =
+    if EConstr.eq_constr sigma tops (Lazy.force Monoid.ops) then (sigma,ops)
+    else
+      match kind sigma (Termops.strip_outer_cast sigma tops) with
       | Prod(_,s,t) -> 
-	let x = e_new_evar env sigma s in
-	fill (mkApp(ops,[|x|])) t
+	let sigma,x = new_evar env sigma s in
+	fill sigma (mkApp(ops,[|x|])) t
       | _ -> error "provided argument is not a monoid operation"
   in
-  let ops = fill ops tops in
+  let sigma,ops = fill (Tacmach.project goal) ops tops in  
+  let sigma = ref sigma in
   let obt = Monoid.ob ops in
-  let goal = Refiner.repackage sigma gl in
-  let goal = ref goal in
+  (* TOTKINK: Use  Evarconv.conv ? *)
   let unifiable sg env x y =
-    try sigma := Unification.w_unify env sg Reduction.CONV x y; 
-	goal := Refiner.repackage sigma gl; true
+    try sigma := Unification.w_unify env sg Reduction.CONV x y; true
     with _ -> false
   in
 
@@ -130,41 +130,49 @@ let ra_fold_term ops ob t goal =
 	else gen_fold env e
   in 
   let t = fold env t in
-  t,!goal
+  t,!sigma
     
-let ra_fold_concl ops ob goal =
-  let f,goal = ra_fold_term ops ob (Tacmach.pf_concl goal) goal in
-  let env,map = (Tacmach.pf_env goal,Tacmach.project goal) in
-  (try Proofview.V82.of_tactic (Tactics.convert_concl f DEFAULTcast) goal
-   with e -> Feedback.msg_warning (Printer.pr_leconstr_env env map f); raise e)
+let ra_fold_concl ops ob = Goal.enter (fun goal ->
+  (* get legacy goal *)
+  let goal = Goal.print goal in
+  let env = Tacmach.pf_env goal in
+  let f,sigma = ra_fold_term ops ob (Tacmach.pf_concl goal) goal in
+  (try tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_concl f DEFAULTcast)
+   with e -> Feedback.msg_warning (Printer.pr_leconstr_env env sigma f); raise e))
 
-let ra_fold_hyp' ops ob decl goal =
-  let typ,goal = ra_fold_term ops ob (get_type decl) goal in
-  let env,map = (Tacmach.pf_env goal,Tacmach.project goal) in
-  (try Proofview.V82.of_tactic (Tactics.convert_hyp ~check:false decl) goal
-   with e -> Feedback.msg_warning (Printer.pr_leconstr_env env map typ); raise e)
+let ra_fold_hyp' ops ob decl goal = 
+  let env = Tacmach.pf_env goal in
+  let id,otyp,sort = to_tuple decl in
+  match otyp with
+  | Some typ -> 
+     let typ,sigma = ra_fold_term ops ob typ goal in
+     let decl = LocalDef (id,typ,sort) in
+     (try tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_hyp ~check:true decl) 
+      with e -> Feedback.msg_warning (Printer.pr_leconstr_env env sigma typ); raise e)
+  | None -> tclUNIT()
 
-let ra_fold_hyp ops ob hyp goal =
-  ra_fold_hyp' ops ob (Tacmach.pf_get_hyp goal hyp) goal
+let ra_fold_hyp ops ob hyp = Goal.enter (fun goal ->
+  (* get legacy goal *)
+  let goal = Goal.print goal in
+  ra_fold_hyp' ops ob (Tacmach.pf_get_hyp goal hyp) goal)
 
 let ra_fold_hyps ops ob = 
-  List.fold_left (fun acc hyp -> Tacticals.tclTHEN (ra_fold_hyp ops ob hyp) acc) 
-    Tacticals.tclIDTAC 
+  List.fold_left (fun acc hyp -> tclTHEN (ra_fold_hyp ops ob hyp) acc) (tclUNIT()) 
 
-let ra_fold_all ops ob goal =
-  let hyps = Tacmach.pf_hyps goal in
-  List.fold_left (fun acc hyp -> Tacticals.tclTHEN (ra_fold_hyp' ops ob hyp) acc) 
-    (ra_fold_concl ops ob) hyps goal
+let ra_fold_all ops ob = Goal.enter (fun goal ->
+  let hyps = Goal.hyps goal in
+  List.fold_left (fun acc hyp -> tclTHEN (ra_fold_hyp ops ob (get_id hyp)) acc) 
+    (ra_fold_concl ops ob) hyps)
 
 (* tactic grammar entries *)
 TACTIC EXTEND ra_fold
-  | [ "ra_fold" constr(ops) ] -> [ Proofview.V82.tactic (ra_fold_concl ops None) ]
-  | [ "ra_fold" constr(ops) constr(ob)] -> [ Proofview.V82.tactic (ra_fold_concl ops (Some ob)) ]
-  | [ "ra_fold" constr(ops) "in" hyp_list(l)] -> [ Proofview.V82.tactic (ra_fold_hyps ops None l) ]
-  | [ "ra_fold" constr(ops) constr(ob) "in" hyp_list(l)] -> [ Proofview.V82.tactic (ra_fold_hyps ops (Some ob) l) ]
+  | [ "ra_fold" constr(ops) ] -> [ ra_fold_concl ops None ]
+  | [ "ra_fold" constr(ops) constr(ob)] -> [ ra_fold_concl ops (Some ob) ]
+  | [ "ra_fold" constr(ops) "in" hyp_list(l)] -> [ ra_fold_hyps ops None l ]
+  | [ "ra_fold" constr(ops) constr(ob) "in" hyp_list(l)] -> [ ra_fold_hyps ops (Some ob) l ]
 END
 
 TACTIC EXTEND ra_fold_in_star
-  | [ "ra_fold" constr(ops) "in" "*"] -> [ Proofview.V82.tactic (ra_fold_all ops None) ]
-  | [ "ra_fold" constr(ops) constr(ob) "in" "*"] -> [ Proofview.V82.tactic (ra_fold_all ops (Some ob)) ]
+  | [ "ra_fold" constr(ops) "in" "*"] -> [ ra_fold_all ops None ]
+  | [ "ra_fold" constr(ops) constr(ob) "in" "*"] -> [ ra_fold_all ops (Some ob) ]
 END
