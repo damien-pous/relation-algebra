@@ -28,7 +28,8 @@ Ltac Now tac := tac; solve [auto].
 
 (** coercion from Booleans to propositions *)
 Coercion is_true: bool >-> Sortclass.
-Hint Unfold is_true.
+(* TOTHINK: do we really want to pollute the core database? *)
+Hint Unfold is_true : core.
 
 (** lazy Boolean connectives *)
 Notation "a <<< b" := (if (a:bool) then (b:bool) else true) (at level 49).
@@ -38,7 +39,7 @@ Notation "a ||| b" := (if (a:bool) then true else (b:bool)) (right associativity
 
 (** Booleans inclusion *)
 Definition le_bool (a b : bool) := a -> b.
-Hint Unfold le_bool.
+Hint Unfold le_bool : core.
 
 (** specification in Prop of the above operations *)
 Lemma le_bool_spec a b: is_true (a<<<b) <-> le_bool a b.

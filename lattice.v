@@ -127,8 +127,8 @@ Proof. intros x y E. apply antisym; apply E; reflexivity. Qed.
 
 
 (** Trivial hints *)
-Hint Extern 0 (_ ≦ _) => reflexivity. 
-Hint Extern 0 (_ ≡ _) => reflexivity. 
+Hint Extern 0 (_ ≦ _) => reflexivity : core. 
+Hint Extern 0 (_ ≡ _) => reflexivity : core. 
 
 (** Instances to be used by the setoid_rewrite machinery *)
 Instance weq_Equivalence `{laws}: Equivalence weq.
