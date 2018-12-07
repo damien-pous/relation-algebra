@@ -14,6 +14,7 @@
 
 Require Export common level.
 
+Declare Scope ra_terms.
 Delimit Scope ra_terms with ra.
 Open Scope ra_scope.
 Open Scope ra_terms.

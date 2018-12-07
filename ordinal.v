@@ -22,6 +22,7 @@ Fixpoint ltb i j :=
     | _,O   => false
     | S i, S j => ltb i j
   end.
+Declare Scope ltb_scope.
 Notation "i < j" := (ltb i j = true) : ltb_scope.
 Notation "i <= j" := (ltb j i = false) : ltb_scope.
 Delimit Scope ltb_scope with ltb.

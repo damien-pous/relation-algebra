@@ -24,6 +24,7 @@ Record level := mk_level {
   has_neg: bool;                (** Boolean negation *)
   has_div: bool                 (** residuals, or factors *)
 }.
+Declare Scope level_scope.
 Bind Scope level_scope with level.
 Delimit Scope level_scope with level.
 
@@ -48,6 +49,8 @@ Class lower (k k': level) := mk_lower:
   is_true (a<<<a'&&& b<<<b' &&& c<<<c' &&& d<<<d' 
            &&& e<<<e' &&& f<<<f' &&& g<<<g' &&& h <<< h').
 (** Notation ≪ : \ll (company coq) or MUCH LESS-THAN (was '<<') *)
+
+Declare Scope ra_scope.
 Infix " ≪ " := lower (at level 79): ra_scope.
 Arguments lower _ _: simpl never.
 

@@ -227,6 +227,7 @@ Arguments e_one [A s t] n.
 Arguments e_zer [A s t] n m.
 Arguments e_top [A s t] n m.
 
+Declare Scope ast_scope.
 Bind Scope ast_scope with expr.
 Delimit Scope ast_scope with ast.
 

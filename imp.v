@@ -39,6 +39,7 @@ Inductive prog :=
 | whl (t: dset state) (p: prog).
 
 (** notations *)
+Declare Scope imp_scope.
 Bind Scope imp_scope with prog.
 Delimit Scope imp_scope with imp.
 Notation "x  <- y" := (aff x y) (at level 90): imp_scope.

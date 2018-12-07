@@ -136,6 +136,7 @@ Arguments e_var [A] a.
 Arguments e_bot [A].
 Arguments e_top [A].
 
+Declare Scope last_scope.
 Bind Scope last_scope with expr.
 Delimit Scope last_scope with last.
 
