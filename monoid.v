@@ -515,7 +515,8 @@ Qed.
 (** injection from Booleans into monoids (actually a functor, although we don't need it) *)
 Definition ofbool {X: ops} {n} (a: bool): X n n := if a then 1 else 0.
 Global Arguments ofbool {_ _} !_ /.
-Coercion ofbool: bool >-> car.
+(* does not respect the uniform inheritance condition *)
+(* Coercion ofbool: bool >-> car. *)
 
 
 (** ML modules *)
