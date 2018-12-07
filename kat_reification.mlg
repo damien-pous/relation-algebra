@@ -65,7 +65,7 @@ module Tbl : sig
      to [t] and returns the corresponding (Ocaml) index ; 
      [z] is an arbitrary information, to store with [x]
      [gl] is the current goal, used to compare terms *)
-  val insert: goal Evd.sigma -> 'a t -> constr -> constr -> 'a -> int
+  val insert: Goal.goal Evd.sigma -> 'a t -> constr -> constr -> 'a -> int
   (* [to_env t typ def] returns (coq) environment corresponding to [t], 
      yielding elements of type [typ], with [def] as default value *)
   val to_env: 'a t -> constr -> constr -> constr
