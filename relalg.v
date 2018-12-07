@@ -175,7 +175,6 @@ Proof. apply leq_tx_iff. rewrite nonempty. ra. Qed.
 
 
 (** instances for proof search  *)
-
 Global Instance point_surjective `{AL+TOP ≪ l} {n m} {p: X n m} {Hp: is_point p}: is_surjective p | 1.
 Proof. apply tx_surjective. rewrite nonempty at 1. now mrewrite vector. Qed.
 
@@ -188,34 +187,34 @@ Proof. unfold is_univalent. rewrite <-a'_top_a. rewrite <-(leq_xt 1). ra. Qed.
 Global Instance is_symmetric_neg1 `{BL+CNV ≪ l} {n}: is_symmetric (!one n).
 Proof. unfold is_symmetric. rewrite <-dotx1. apply Schroeder_. rewrite negneg. ra. Qed.
 
-Global Instance irreflexive_cnv `{AL+BOT ≪ l} {n} {x: X n n} {H: is_irreflexive x}: is_irreflexive (x°).
+Global Instance irreflexive_cnv `{AL+BOT ≪ l} {n} {x: X n n} {Hx: is_irreflexive x}: is_irreflexive (x°).
 Proof. unfold is_irreflexive. cnv_switch. now ra_normalise. Qed.
 
-Global Instance reflexive_cnv `{CNV ≪ l} {n} {x: X n n} {H: is_reflexive x}: is_reflexive (x°).
+Global Instance reflexive_cnv `{CNV ≪ l} {n} {x: X n n} {Hx: is_reflexive x}: is_reflexive (x°).
 Proof. unfold is_reflexive. cnv_switch. now ra_normalise. Qed.
 
-Global Instance transitive_cnv `{CNV ≪ l} {n} {x: X n n} {H: is_transitive x}: is_transitive (x°).
+Global Instance transitive_cnv `{CNV ≪ l} {n} {x: X n n} {Hx: is_transitive x}: is_transitive (x°).
 Proof. unfold is_transitive. cnv_switch. now ra_normalise. Qed.
 
-Global Instance symmetric_cnv `{CNV ≪ l} {n} {x: X n n} {H: is_symmetric x}: is_symmetric (x°).
+Global Instance symmetric_cnv `{CNV ≪ l} {n} {x: X n n} {Hx: is_symmetric x}: is_symmetric (x°).
 Proof. unfold is_symmetric. now cnv_switch. Qed.
 
-Global Instance antisymmetric_cnv `{AL ≪ l} {n} {x: X n n} {H: is_antisymmetric x}: is_antisymmetric (x°).
+Global Instance antisymmetric_cnv `{AL ≪ l} {n} {x: X n n} {Hx: is_antisymmetric x}: is_antisymmetric (x°).
 Proof. unfold is_antisymmetric. now rewrite cnv_invol, capC. Qed.
 
-Global Instance injective_cnv `{CNV ≪ l} {n m} {x: X n m} {H: is_univalent x}: is_injective (x°).
+Global Instance injective_cnv `{CNV ≪ l} {n m} {x: X n m} {Hx: is_univalent x}: is_injective (x°).
 Proof. unfold is_injective. now rewrite cnv_invol. Qed.
 
-Global Instance univalent_cnv `{CNV ≪ l} {n m} {x: X n m} {H: is_injective x}: is_univalent (x°).
+Global Instance univalent_cnv `{CNV ≪ l} {n m} {x: X n m} {Hx: is_injective x}: is_univalent (x°).
 Proof. unfold is_univalent. now rewrite cnv_invol. Qed.
 
-Global Instance surjective_cnv `{CNV ≪ l} {n m} {x: X n m} {H: is_total x}: is_surjective (x°).
+Global Instance surjective_cnv `{CNV ≪ l} {n m} {x: X n m} {Hx: is_total x}: is_surjective (x°).
 Proof. unfold is_surjective. now rewrite cnv_invol. Qed.
 
-Global Instance total_cnv `{CNV ≪ l} {n m} {x: X n m} {H: is_surjective x}: is_total (x°).
+Global Instance total_cnv `{CNV ≪ l} {n m} {x: X n m} {Hx: is_surjective x}: is_total (x°).
 Proof. unfold is_total. now rewrite cnv_invol. Qed.
 
-Global Instance preorder_cnv `{CNV ≪ l} {n} {x: X n n} {H: is_preorder x}: is_preorder (x°).
+Global Instance preorder_cnv `{CNV ≪ l} {n} {x: X n n} {Hx: is_preorder x}: is_preorder (x°).
 Proof. constructor; tc. Qed.
 
 Global Instance nonempty_cnv `{CNV+TOP ≪ l} {n m} {x: X n m} {Hx: is_nonempty x}: is_nonempty (x°).
