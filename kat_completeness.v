@@ -48,15 +48,15 @@ Set Implicit Arguments.
 Module R := regex.
 Module G := gregex.
 
-Section s.
+Section KatCompleteness.
 Notation Sigma := positive.
 Variable pred: nat.
-Variables src tgt: Sigma -> positive.
-Notation gregex := (gregex_kat_ops pred src tgt).
+Variables s t: Sigma -> positive.
+Notation gregex := (gregex_kat_ops pred s t).
 Notation Atom := (ord (pow2 pred)).
 Notation gword := (trace Atom).
-Notation glang := (tglang_kat_ops pred src tgt). 
-Notation g_atom n a := (@g_prd pred src tgt n (@atom pred a)).
+Notation glang := (tglang_kat_ops pred s t). 
+Notation g_atom n a := (@g_prd pred s t n (@atom pred a)).
 Notation test := (lsyntax.expr (ord pred)).
 Local Open Scope list_scope.
 
@@ -383,13 +383,13 @@ Canonical Structure cmp_letter := mk_simple_cmp _ compare_letter_spec.
 Definition src' l := 
   match l with
     | l_pos n _ | l_neg n _ => n
-    | l_var i => src i 
+    | l_var i => s i 
   end.
 
 Definition tgt' l := 
   match l with
     | l_pos n _ | l_neg n _ => n
-    | l_var i => tgt i 
+    | l_var i => t i 
   end.
 
 (** ** regular expressions on the extended alphabet *)
@@ -472,7 +472,7 @@ Qed.
 (** ** [o': expr3 n m -> gregex n m] *)
 
 Definition o': forall n m, expr3 n m -> gregex n m :=
-  @eval _ src' tgt' (gregex_monoid_ops pred src tgt) id 
+  @eval _ src' tgt' (gregex_monoid_ops pred s t) id 
   (fun l => match l return gregex (src' l) (tgt' l) with
               | l_pos n p => g_prd _ _ (lsyntax.e_var p)
               | l_neg n p => g_prd _ _ (! lsyntax.e_var p)
@@ -568,7 +568,7 @@ Definition atom_to_word n (a: Atom) :=
 Fixpoint gword_to_word n (w: gword) :=
   match w with
     | tnil a => atom_to_word n a
-    | tcons a i w => atom_to_word n a ++ lp (l_var i) :: gword_to_word (tgt i) w
+    | tcons a i w => atom_to_word n a ++ lp (l_var i) :: gword_to_word (t i) w
   end.
 
 (** we convert a guarded string language by converting its words *)
@@ -577,7 +577,7 @@ Definition gl n m (G: glang n m): lang :=
 
 
 Instance gl_leq n m: Proper (leq ==> leq) (@gl n m).
-Proof. intros G G' H w [t [? Hw]]. exists t. split. assumption. apply H, Hw. Qed.
+Proof. intros G G' H w [v [? Hv]]. exists v. split. assumption. apply H, Hv. Qed.
 Instance gl_weq n m: Proper (weq ==> weq) (@gl n m) := op_leq_weq_1.
 
 
@@ -587,7 +587,7 @@ Instance gl_weq n m: Proper (weq ==> weq) (@gl n m) := op_leq_weq_1.
 Definition gword_to_word' (w: gword) :=
   match w with
     | tnil a => []
-    | tcons a i w => lp (l_var i) :: gword_to_word (tgt i) w
+    | tcons a i w => lp (l_var i) :: gword_to_word (t i) w
   end.
 
 Lemma gword_to_word_cut n w: 
@@ -658,7 +658,7 @@ Qed.
 (** image of single letter traces under [gl] *)
 Lemma gl_single' a i b:
   gl (tsingle' a i b) ≡ 
-  eq (atom_to_word (src i) a++[lp (l_var i)]++atom_to_word (tgt i) b).
+  eq (atom_to_word (s i) a++[lp (l_var i)]++atom_to_word (t i) b).
 Proof.
   intro w; split. 
   intros [g [-> <-]]. reflexivity. 
@@ -927,4 +927,4 @@ Qed.
 Corollary kat_dec n m: forall e f: gregex n m, {e ≡f} + {~(e ≡f)}.
 Proof. intros. eapply sumbool_iff. symmetry. apply kat_reduces_to_ka. apply ka_weq_dec. Qed.
 
-End s.
+End KatCompleteness.
