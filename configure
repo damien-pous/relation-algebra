@@ -1,0 +1,16 @@
+#!/bin/sh
+
+while [ "$1" != "" ]; do
+    case "$1" in
+	--enable-ssr)
+	    echo "fhrel.v" >>_CoqProject
+	    ;;
+	--disable-ssr)
+	    sed --in-place '/fhrel\.v/d' _CoqProject
+	    ;;
+	*)
+	    echo "unknown option"
+	    ;;
+    esac
+    shift
+done
