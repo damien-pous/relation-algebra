@@ -6,7 +6,7 @@ while [ "$1" != "" ]; do
 	    echo "fhrel.v" >>_CoqProject
 	    ;;
 	--disable-ssr)
-	    sed --in-place '/fhrel\.v/d' _CoqProject
+	    sed --in-place '/fhrel\.v/d' _CoqProject || echo "warning: sed failed to remove fhrel.v"
 	    ;;
 	*)
 	    echo "unknown option"
