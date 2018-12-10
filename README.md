@@ -58,10 +58,18 @@ verification:
 
 ## INSTALLATION
 
-Run 'make' to compile the library, and 'make install' to install it.
-Latest version compiles with Coq 8.8.2
+The easiest way to install this library is via OPAM. For the current
+stable release of Coq, the library can be installed directly through
+the `released` repository:
+```
+opam repo add coq-released https://coq.inria.fr/opam/released
+opam install coq-relation-algebra
+```
+Otherwise, use the provided opam file using `opam pin add .` (from the project directory)
 
-
+To compile manually use `./configure --enable-ssr` to enable building
+the finite types model (requires `mathcomp-ssreflect`), and then
+compile using `make` and install using `make install`.
 
 ## DOCUMENTATION
 
