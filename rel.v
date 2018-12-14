@@ -161,3 +161,7 @@ Qed.
 
 Instance frel_weq {A B}: Proper (pwr eq ==> weq) (@frel A B).
 Proof. unfold frel; split; intros ->; simpl. apply H. apply eq_sym, H. Qed.
+
+Ltac fold_hrel := ra_fold hrel_monoid_ops.
+Tactic Notation "fold_hrel" "in" hyp_list(H) := ra_fold hrel_monoid_ops in H.
+Tactic Notation "fold_hrel" "in" "*" := ra_fold hrel_monoid_ops in *.
