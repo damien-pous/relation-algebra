@@ -395,3 +395,22 @@ End FHRel.
 Notation ftop A B := (ftop_def (Phant A) (Phant B)).
 Notation fzero A B := (fzero_def (Phant A) (Phant B)).
 Notation fone A := (fone_def (Phant A)).
+
+Ltac fold_fhrel := ra_fold fhrel_monoid_ops.
+Tactic Notation "fold_fhrel" "in" hyp_list(H) := ra_fold fhrel_monoid_ops in H.
+Tactic Notation "fold_fhrel" "in" "*" := ra_fold fhrel_monoid_ops in *.
+
+(** Note that, [subrel e f] (which is convertible to [e ≦ f] if [e]
+and [f] are homogeneous relations over some finite type) and [e =2 f]
+(which is convertible to [e ≡ f] even in the heterogeneous case) are
+used pervasively in MathComp. Consequently, [fold_fhrel] can be used
+to convert their statements into relation algebra statements. See
+below for an examle: *)
+
+(** This is [connect_sub] *)
+Goal forall (T : finType) (e e' : rel T), subrel e (connect e') -> subrel (connect e) (connect e'). 
+move => T e e'. fold_fhrel. move => H. rewrite H. ka. Abort.
+
+(** This is [connect_eq] *)
+Goal forall (T : finType) (e e' : rel T), e =2 e' -> connect e =2 connect e'.
+move => T e e'. fold_fhrel. move => H. by rewrite H. Abort.
