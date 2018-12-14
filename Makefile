@@ -13,7 +13,7 @@ clean: Makefile.coq
 
 cleanall: Makefile.coq
 	+make -f Makefile.coq cleanall
-	rm -f Makefile.coq* depend.dot depend.svg
+	rm -f Makefile.coq* depgraph.*
 
 depgraph:
 	coqdep *.v -dumpgraph depgraph.dot 1>/dev/null 2>/dev/null
