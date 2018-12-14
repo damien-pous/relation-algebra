@@ -140,16 +140,22 @@ let ra_fold_concl ops ob = Goal.enter (fun goal ->
   (try tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_concl f DEFAULTcast)
    with e -> Feedback.msg_warning (Printer.pr_leconstr_env env sigma f); raise e))
 
-let ra_fold_hyp' ops ob decl goal = 
-  let env = Tacmach.pf_env goal in
-  let id,otyp,sort = to_tuple decl in
-  match otyp with
-  | Some typ -> 
-     let typ,sigma = ra_fold_term ops ob typ goal in
-     let decl = LocalDef (id,typ,sort) in
-     (try tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_hyp ~check:true decl) 
-      with e -> Feedback.msg_warning (Printer.pr_leconstr_env env sigma typ); raise e)
-  | None -> tclUNIT()
+
+let ra_fold_hyp' ops ob decl goal =
+  let id,ddef,dtyp = to_tuple decl in
+  let decl,sigma = 
+    match ddef with
+    | Some def ->
+       (* try to fold both the body and the type of local definitions *)
+       let def,sg = ra_fold_term ops ob def goal in
+       let typ,sigma = ra_fold_term ops ob dtyp { goal with Evd.sigma = sg } in
+       LocalDef(id,def,typ),sigma
+    | None ->
+       (* only fold the type of local assumptions *)
+       let typ,sigma = ra_fold_term ops ob dtyp goal in
+       LocalAssum(id,typ),sigma
+  in
+  tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_hyp ~check:true decl)
 
 let ra_fold_hyp ops ob hyp = Goal.enter (fun goal ->
   (* get legacy goal *)
