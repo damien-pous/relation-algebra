@@ -1,4 +1,4 @@
-== RelationAlgebra 1.7  (TODO) ==
+== RelationAlgebra 1.7  (2018, December 17th) ==
 
 - compatiblity with Coq 8.8.2 (intermediate versions for Coq 8.6 and 8.7 can be found on github)
 - unicode notations (i.e., "x ≡ y", "x ≦ y", "x⋅y")
