@@ -7,12 +7,12 @@ license: "LGPL"
 depends: [ "coq" {>= "8.8" & < "8.9~"} ]
 depopts: [ "coq-mathcomp-ssreflect" ]
 build: [
-  [make "%{coq-mathcomp-ssreflect:enable}%"]
+  ["sh" "-exc" "./configure --%{coq-mathcomp-ssreflect:enable}%-ssr"]
   [make "-j%{jobs}%"]
   [make "install"]
 ]
 logpath: "RelationAlgebra"
-remove: [ "sh" "-c" "rm -r '%{lib}%/coq/user-contrib/RelationAlgebra'" ]
+remove: [ "sh" "-exc" "rm -r '%{lib}%/coq/user-contrib/RelationAlgebra'" ]
 tags: [
   "keyword:relation algebra"
   "keyword:kleene algebra with tests"
