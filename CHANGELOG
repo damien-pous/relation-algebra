@@ -1,3 +1,7 @@
+== RelationAlgebra 1.7.1  (2019, February 8th) ==
+
+- compatiblity with Coq 8.9
+
 == RelationAlgebra 1.7  (2018, December 17th) ==
 
 - compatiblity with Coq 8.8.2 (intermediate versions for Coq 8.6 and 8.7 can be found on github)
