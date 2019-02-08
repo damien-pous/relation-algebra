@@ -1,6 +1,10 @@
+== RelationAlgebra 1.7.1  (2019, February 8th) ==
+
+- compatibility with Coq 8.9
+
 == RelationAlgebra 1.7  (2018, December 17th) ==
 
-- compatiblity with Coq 8.8.2 (intermediate versions for Coq 8.6 and 8.7 can be found on github)
+- compatibility with Coq 8.8.2 (intermediate versions for Coq 8.6 and 8.7 can be found on github)
 - unicode notations (i.e., "x ≡ y", "x ≦ y", "x⋅y")
 - support heterogeneous relations on large types (outside [Set])
 - [fhrel]: heterogeneous relations between finite types
@@ -33,7 +37,7 @@
 - [paterson]: proof of equivalence of two flowchart schemes, due to Paterson
 - [compiler_opts]: added the two missing compiler optimisations
 - [imp]: nicer presentation, using a partially shallow embedding
-- [move]: tools to easily move subterms inside a product 
+- [move]: tools to easily move subterms inside a product
 - [lset]: fixed a typo
 
 == RelationAlgebra 1.0  (2012, December 16th) ==
