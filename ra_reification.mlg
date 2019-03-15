@@ -63,8 +63,8 @@ end = struct
 	  t := ((x,j,y)::l,i+1); j
     
   let to_env t typ def = match fst !t with
-    | [] -> mkLambda (Anonymous,Lazy.force Pos.t,def)
-    | [_,_,x] -> mkLambda (Anonymous,Lazy.force Pos.t,x)
+    | [] -> mkLambda (Context.anonR,Lazy.force Pos.t,def)
+    | [_,_,x] -> mkLambda (Context.anonR,Lazy.force Pos.t,x)
     | (_,_,x)::q ->
 	Pos.sigma_get typ x
 	  (List.fold_left
@@ -199,10 +199,10 @@ let reify_goal l goal =
 
   (* reified goal conclusion: add the relation over the two evaluated members *)
   let reified = 
-    mkNamedLetIn tenv_n tenv (mkArrow (Lazy.force Pos.t) typ) (
-    mkNamedLetIn env_n env (mkArrow (Lazy.force Pos.t) pck) (
-    mkNamedLetIn src_n src_v (mkArrow (Lazy.force Pos.t) (Lazy.force Pos.t)) (
-    mkNamedLetIn tgt_n tgt_v (mkArrow (Lazy.force Pos.t) (Lazy.force Pos.t)) (
+    mkNamedLetIn tenv_n tenv (mkArrowR (Lazy.force Pos.t) typ) (
+    mkNamedLetIn env_n env (mkArrowR (Lazy.force Pos.t) pck) (
+    mkNamedLetIn src_n src_v (mkArrowR (Lazy.force Pos.t) (Lazy.force Pos.t)) (
+    mkNamedLetIn tgt_n tgt_v (mkArrowR (Lazy.force Pos.t) (Lazy.force Pos.t)) (
     mkNamedLetIn lhs_n lhs_v x (
     mkNamedLetIn rhs_n rhs_v x (
     (mkApp (rel, [|lhs;rhs|]))))))))
