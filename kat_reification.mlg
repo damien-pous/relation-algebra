@@ -26,8 +26,6 @@ open Ltac_plugin
 open Ra_common
 open Constr
 open EConstr
-open Names
-
 
 (* RelationAlgebra.kat Coq module *)
 module KAT = struct

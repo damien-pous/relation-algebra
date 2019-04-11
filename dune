@@ -1,0 +1,47 @@
+(env
+ (dev     (flags :standard -rectypes -w -9-27+40+60 -warn-error -3))
+ (release (flags :standard -rectypes)
+          (ocamlopt_flags -O3 -unbox-closures)))
+
+(coq.pp (modules ra_fold ra_reification mrewrite kat_reification))
+
+(library
+ (name ra_common)
+ (public_name relation-algebra.ra_common)
+ (modules Ra_common)
+ (libraries coq.plugins.ltac))
+
+(library
+ (name ra_fold)
+ (public_name relation-algebra.ra_fold)
+ (modules ra_fold)
+ (libraries ra_common))
+
+(library
+ (name ra_reification)
+ (public_name relation-algebra.ra_reification)
+ (modules ra_reification)
+ (libraries ra_common))
+
+(library
+ (name mrewrite)
+ (public_name relation-algebra.mrewrite)
+ (modules mrewrite)
+ (libraries ra_common))
+
+(library
+ (name kat_reification)
+ (public_name relation-algebra.kat_reification)
+ (modules kat_dec kat_reification)
+ (libraries ra_common))
+
+(coq.theory
+ (name RelationAlgebra)
+ (public_name relation-algebra)
+ (modules :standard \ fhrel)
+ (flags
+   -w -projection-no-head-constant
+   -w -notation-overridden
+   -w -redundant-canonical-projection
+   )
+ (libraries ra_fold ra_reification mrewrite kat_reification))

@@ -11,3 +11,6 @@ deps.jpg
 deps.map
 diff
 html
+_build
+.merlin
+*.install
