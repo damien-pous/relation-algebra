@@ -138,7 +138,7 @@ let ra_fold_concl ops ob = Goal.enter (fun goal ->
   let goal = Goal.print goal in
   let env = Tacmach.pf_env goal in
   let f,sigma = ra_fold_term ops ob (Tacmach.pf_concl goal) goal in
-  (try tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_concl f DEFAULTcast)
+  (try tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_concl ~check:true f DEFAULTcast)
    with e -> Feedback.msg_warning (Printer.pr_leconstr_env env sigma f); raise e))
 
 let ra_fold_hyp' ops ob decl goal =
@@ -155,7 +155,7 @@ let ra_fold_hyp' ops ob decl goal =
        let typ,sigma = ra_fold_term ops ob dtyp goal in
        LocalAssum(id,typ),sigma
   in
-  tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_hyp ~check:true decl)
+  tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_hyp ~check:true ~reorder:true decl)
 
 let ra_fold_hyp ops ob hyp = Goal.enter (fun goal ->
   (* get legacy goal *)
