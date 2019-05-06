@@ -387,7 +387,7 @@ let reify_kat_goal ?kat check =
     mkNamedLetIn rhs_n rhs_v x (
       (mkApp (rel, [|lhs;rhs|])))))))))
   in	  
-  (try Proofview.V82.of_tactic (Tactics.convert_concl reified DEFAULTcast) goal
+  (try Proofview.V82.of_tactic (Tactics.convert_concl ~check:true reified DEFAULTcast) goal
    with e -> Feedback.msg_warning (Printer.pr_leconstr_env (fst es) (snd es) reified); raise e))
   end
 
@@ -468,7 +468,7 @@ let get_kat_alphabet =
     mkNamedLetIn alph_n alph_v (Lattice.car (Monoid.mor mops src' tgt'))
       (Tacmach.pf_concl goal)
   in	  
-    (try Proofview.V82.of_tactic (Tactics.convert_concl reified DEFAULTcast) goal
+    (try Proofview.V82.of_tactic (Tactics.convert_concl ~check:true reified DEFAULTcast) goal
      with e -> (* Feedback.msg_warning (Printer.pr_lconstr reified); *) raise e)
   end
 }
