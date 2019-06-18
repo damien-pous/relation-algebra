@@ -86,7 +86,7 @@ let ra_fold_term ops ob t goal =
       | Prod(x,e,f) -> mkProd(x, fold env e, fold (push x e env) f)
       | Lambda(x,t,e) -> mkLambda(x, t, fold (push x t env) e)
       | LetIn(x,e,t,f) -> mkLetIn(x, fold env e, t, fold (push x t env )f)
-      | Case(i,t,e,f) -> mkCase(i, t, fold env e, Array.map (fold env) f)
+      | Case(i,t,iv,e,f) -> mkCase(i, t, iv, fold env e, Array.map (fold env) f)
       | _ -> e
 
   and fold env e =
