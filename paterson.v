@@ -249,7 +249,7 @@ Instance prog_monoid_laws: monoid.laws BKA prog_monoid_ops.
 Proof. 
   apply laws_of_faithful_functor with (fun _ => state) (fun _ _: unit => bstep); trivial.
   split; simpl; try discriminate; try tauto. 2: firstorder. 
-  split; simpl; try discriminate; try tauto. firstorder. 
+  split; simpl; try discriminate; try tauto. firstorder auto with bool.
 Qed.
 Instance prog_lattice_laws: lattice.laws BKA prog_lattice_ops := lattice_laws tt tt. 
 

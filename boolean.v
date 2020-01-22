@@ -31,9 +31,9 @@ Proof.
   intros ? ?. now rewrite eq_bool_iff. 
   intros _ [|] [|]; firstorder. 
   intros _ [|] [|]; firstorder. 
-  intros _. firstorder.
+  intros _. easy.
   tauto.
-  intros _ [|]; firstorder.
+  intros _ [|]. firstorder auto with bool. easy.
 Qed.
 
 (* Instance mm_negb l: morphism l bool_lops (dual_ops bool_ops) negb. *)
