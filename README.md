@@ -59,8 +59,6 @@ verification:
 ## INSTALLATION
 
 Run 'make' to compile the library, and 'make install' to install it.
-Latest version compiles with Coq 8.8.2
-
 
 
 ## DOCUMENTATION
