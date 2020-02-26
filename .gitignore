@@ -6,6 +6,8 @@
 *.cm*
 *.o
 *.a
+*.vos
+*.vok
 deps.dat
 deps.jpg
 deps.map
@@ -14,3 +16,12 @@ html
 _build
 .merlin
 *.install
+
+Makefile.coq
+Makefile.coq.conf
+depgraph.dot
+depgraph.svg
+kat_reification.ml
+mrewrite.ml
+ra_fold.ml
+ra_reification.ml
