@@ -7,7 +7,12 @@ clean: Makefile.coq
 
 cleanall: Makefile.coq
 	+make -f Makefile.coq cleanall
-	rm -f Makefile.coq
+	rm -f Makefile.coq* depend.dot depend.svg
+
+depgraph:
+	coqdep *.v -dumpgraph depgraph.dot 1>/dev/null 2>/dev/null
+	sed -i 's/\[label=\"\([^"]*\)\"]/[label="\1";URL=".\/html\/RelationAlgebra.\1.html"]/g' depgraph.dot
+	dot depgraph.dot -Tsvg -o depgraph.svg
 
 Makefile.coq: 
 	$(COQBIN)coq_makefile -f _CoqProject -o Makefile.coq
