@@ -1,3 +1,7 @@
+== RelationAlgebra 1.7.3  (2020, February 27th) ==
+
+- compatibility with Coq 8.11
+
 == RelationAlgebra 1.7.2  (2020, February 27th) ==
 
 - compatibility with Coq 8.10
