@@ -102,7 +102,9 @@ Qed.
 
 (** Enable rewriting of [lattice.leq] and [weq] using Ssreflect's rewrite tactic *)
 Global Instance leq_rewrite_relation ops : RewriteRelation (@lattice.leq ops).
+Qed.
 Global Instance weq_rewrite_relation ops : RewriteRelation (@weq ops).
+Qed.
 
 (** ** Monoid Operations
 
@@ -265,7 +267,7 @@ Definition fhrel_pred (aT rT: finType) (e : {fhrel aT & rT}) :=
   [pred x : aT * rT | e x.1 x.2].
 
 Canonical fhrelPredType (aT rT: finType) := 
-  @mkPredType (aT * rT) ({fhrel aT & rT}) (@fhrel_pred _ _).
+  @PredType (aT * rT) ({fhrel aT & rT}) (@fhrel_pred _ _).
 Coercion fhrel_pred : fhrel_of >-> simpl_pred.
 
 (* TOTHINK: Instanciate the cardinality development with this? *)
