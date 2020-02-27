@@ -206,7 +206,7 @@ Arguments itr : simpl never.
 Arguments lattice.leq : simpl never.
 Arguments lattice.weq : simpl never.
 Arguments monoid.one : simpl never.
-Hint Unfold monoid.one.
+Hint Unfold monoid.one : core.
 
 (** Lemmas to eliminate [1 n m] *)
 Lemma hrel_oneE (n : Set) a b : (1 : hrel n n) a b <-> a = b.
