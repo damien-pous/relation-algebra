@@ -15,7 +15,6 @@ build: [
   [make "-j%{jobs}%"]
 ]
 install: [make "install"]
-remove: [ "sh" "-exc" "rm -r '%{lib}%/coq/user-contrib/RelationAlgebra'" ]
 tags: [
   "keyword:relation algebra"
   "keyword:kleene algebra with tests"
