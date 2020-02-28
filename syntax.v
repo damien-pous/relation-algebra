@@ -6,7 +6,7 @@
 (*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
 (*******************************************************************)
 
-(** * lsyntax: syntactic model for types structures (monoid operations) *)
+(** * syntax: syntactic model for types structures (monoid operations) *)
 
 Require Export positives comparisons.
 Require Import Eqdep. 

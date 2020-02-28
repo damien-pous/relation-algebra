@@ -39,7 +39,7 @@ Ltac fold_expr l := ra_fold (expr_ops s t l).
    - the level of the resulting expression cannot increase w.r.t. the
      level of the initial one, and
    - it yields an expression which is equal to the starting one, 
-     ⋅at the level of that expression⋅ 
+     *at the level of that expression* 
    (in particular unions cannot be used to simplify lonely iterations)
 *)
 
