@@ -9,9 +9,9 @@ depends: [
   "ocaml"
   "coq" {>= "8.11"}
 ]
-depopts: [ "coq-mathcomp-ssreflect" ]
+depopts: [ "coq-mathcomp-ssreflect" "coq-aac-tactics" ]
 build: [
-  ["sh" "-exc" "./configure --%{coq-mathcomp-ssreflect:enable}%-ssr"]
+  ["sh" "-exc" "./configure --%{coq-mathcomp-ssreflect:enable}%-ssr --%{coq-aac-tactics:enable}%-aac"]
   [make "-j%{jobs}%"]
 ]
 install: [make "install"]

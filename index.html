@@ -249,9 +249,8 @@ and as a <a href="https://github.com/coq-contribs/relation-algebra">Coq contribu
   <ul>
     <li> <code>mrewrite</code>: rewriting modulo associativity of
     composition (ad-hoc tactic);
-    <li> the library can easily be interfaced with <code>AAC_tactics</code>,
-    to obtain more powerful AC rewriting tools (see the
-    <code>rewriting</code>) module).
+    <li> the library interfaces with <code>AAC_tactics</code>,
+    to obtain more powerful AC rewriting tools.
   </ul>  
   <li> Other tactics:
   <ul>
@@ -303,7 +302,7 @@ The coqdoc table of contents is <a href="html/toc.html">here</a>.</p>
     <li> <code><a href="html/RelationAlgebra.boolean.html">boolean</a></code>: Boolean trivial lattice, extended
     to a monoid.
     <li> <code><a href="html/RelationAlgebra.rel.html">rel</a></code>: heterogeneous binary relations
-    <li> <code><a href="html/RelationAlgebra.fhrel.html">fhrel</a></code>: heterogeneous binary relations over finite types
+    <li> <code><a href="html/RelationAlgebra.fhrel.html">fhrel</a></code>: heterogeneous binary relations over finite types (requires <code>ssreflect</code>)
     <li> <code><a href="html/RelationAlgebra.lang.html">lang</a></code>: word languages (untyped)
     <li> <code><a href="html/RelationAlgebra.traces.html">traces</a></code>: trace languages (typed and untyped)
     <li> <code><a href="html/RelationAlgebra.glang.html">glang</a></code>: guarded string languages (typed and untyped)
@@ -325,8 +324,8 @@ The coqdoc table of contents is <a href="html/toc.html">here</a>.</p>
   <ul>
     <li> <code><a href="html/RelationAlgebra.normalisation.html">normalisation</a></code>: normalisation and
     semi-decision tactics for relation algebra
-    <li> <code><a href="html/RelationAlgebra.rewriting.html">rewriting</a></code>: rewriting modulo associativity of
-    composition ; bridge with AAC_tactics (disabled by default)
+    <li> <code><a href="html/RelationAlgebra.rewriting.html">rewriting</a></code>: rewriting modulo associativity of composition
+    <li> <code><a href="html/RelationAlgebra.rewriting_aac.html">rewriting_aac</a></code>: bridge with AAC_tactics (requires <code>AAC_tactics</code>)
     <li> <code><a href="html/RelationAlgebra.move.html">move</a></code>: tools to easily move subterms inside a product 
   </ul>
   <li>Linear algebra
