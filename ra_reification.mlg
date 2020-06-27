@@ -30,7 +30,7 @@ open EConstr
 
 let retype c gl =
   let sigma, _ = Tacmach.pf_apply Typing.type_of gl c in
-    Refiner.tclEVARS sigma gl
+  { Evd.it = [gl.Evd.it]; Evd.sigma = sigma }
 
 module Syntax = Make_Syntax(struct let typ = Pos.t end)
 
