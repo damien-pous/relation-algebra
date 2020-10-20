@@ -139,19 +139,21 @@ Canonical Structure cmp_nat := mk_cmp _ eqb_nat_spec _ nat_compare_spec.
 
 
 (** * Booleans as a [cmpType] *)
-Fixpoint eqb_bool i j := 
+Definition eqb_bool i j := 
   match i,j with 
     | false,false | true,true => true
     | _,_ => false
   end.
+Arguments eqb_bool !i !j/.
 Lemma eqb_bool_spec: forall i j, reflect (i=j) (eqb_bool i j).
 Proof. destruct i; destruct j; constructor; congruence. Qed.
-Fixpoint bool_compare i j := 
+Definition bool_compare i j := 
   match i,j with 
     | false,false | true,true => Eq
     | false,true => Lt
     | true,false => Gt
   end.
+Arguments bool_compare !i !j/.
 Lemma bool_compare_spec: forall i j, compare_spec (i=j) (bool_compare i j).
 Proof. destruct i; destruct j; constructor; congruence. Qed.
 Canonical Structure cmp_bool := mk_cmp _ eqb_bool_spec _ bool_compare_spec.
