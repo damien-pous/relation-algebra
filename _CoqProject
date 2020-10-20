@@ -79,4 +79,3 @@ all.v
 compiler_opts.v
 imp.v
 paterson.v
-rewriting_aac.v
