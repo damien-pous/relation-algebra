@@ -58,7 +58,7 @@ Proof.
 Qed.
 
 (** coercion from sums to Booleans  *)
-Fixpoint bool_of_sumbool A B (c: sumbool A B): bool := if c then true else false.
+Definition bool_of_sumbool A B (c: sumbool A B): bool := if c then true else false.
 Coercion bool_of_sumbool: sumbool >-> bool.
 
 Lemma sumbool_true A (c: sumbool A (~A)): A -> c.

@@ -51,7 +51,7 @@ let convertible' (env,sigma) = Reductionops.is_conv env sigma
 (* in a given goal *)
 let convertible = Tacmach.pf_conv_x
 
-(* creating a name a reference to that name *)
+(* creating a name and a reference to that name *)
 let fresh_name n goal =
   let vname = Tactics.fresh_id Id.Set.empty (Id.of_string n) goal in
     Context.annotR vname, mkVar vname
