@@ -1,3 +1,9 @@
+== RelationAlgebra 1.7.4  (2020, October 20th) ==
+
+- compatibility with Coq 8.11 & 8.12
+- optional dependency on coq-aac-tactics (module [rewriting_aac])
+- a few compilation warnings removed
+
 == RelationAlgebra 1.7.3  (2020, February 27th) ==
 
 - compatibility with Coq 8.11
