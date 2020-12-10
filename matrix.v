@@ -158,7 +158,7 @@ Qed.
 
 Lemma to_blk_mx `{L: lattice.laws} {n1 n2 m1 m2} (M: mx X (n1+n2) (m1+m2)):
   M ≡ blk_mx (sub00_mx M) (sub01_mx M) (sub10_mx M) (sub11_mx M).
-Proof. rewrite to_row_mx at 1. rewrite to_col_mx at 1 2. reflexivity. Qed.
+Proof. rewrite to_row_mx at 1. rewrite to_col_mx. reflexivity. Qed.
 
 Lemma col_mx_cup `{L: lattice.laws} n1 n2 m M M' N N': 
   @col_mx X n1 n2 m (M ⊔ M') (N ⊔ N') ≡ col_mx M N ⊔ col_mx M' N'.
