@@ -1,4 +1,3 @@
-# This is a workflow example relying on docker-coq-action
 name: CI
 
 on:
@@ -8,25 +7,24 @@ on:
   pull_request:
     branches:
       - '**'
+
 jobs:
   build:
     runs-on: ubuntu-latest  # container actions require GNU/Linux
     strategy:
       matrix:
-        coq_version:
-          - 'dev'
-        ocaml_version:
-          - 'minimal'
-      # at most 20 concurrent jobs per free account:
-      # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#usage-limits
-      max-parallel: 4
-      # don't cancel all in-progress jobs if one matrix job fails:
+        image:
+          - 'coqorg/coq:dev'
+          - 'coqorg/coq:8.13'
       fail-fast: false
 
     steps:
       - uses: actions/checkout@v2
       - uses: coq-community/docker-coq-action@v1
         with:
-          opam_file: 'opam'
-          coq_version: ${{ matrix.coq_version }}
-          ocaml_version: ${{ matrix.ocaml_version }}
+          opam_file: 'coq-relation-algebra.opam'
+          custom_image: ${{ matrix.image }}
+
+# See also:
+# https://github.com/coq-community/docker-coq-action#readme
+# https://github.com/erikmd/docker-coq-github-action-demo
