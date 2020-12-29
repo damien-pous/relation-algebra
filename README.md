@@ -68,8 +68,8 @@ opam install coq-relation-algebra
 Otherwise, use the provided opam file using `opam pin add .` (from the project directory)
 
 To compile manually use `./configure --enable-ssr` to enable building
-the finite types model (requires `mathcomp-ssreflect`), and then
-compile using `make` and install using `make install`.
+the finite types model (requires `coq-mathcomp-ssreflect`). Also use `--enable-aac` to enable building the bridge with AAC rewriting tactics (requires `coq-aac-tactics`).
+Then compile using `make` and install using `make install`.
 
 
 ## DOCUMENTATION

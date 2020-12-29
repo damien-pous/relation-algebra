@@ -15,8 +15,7 @@ jobs:
       matrix:
         image:
           - 'coqorg/coq:dev'
-# not yet, need coq-aac-tactics for 8.13
-#          - 'coqorg/coq:8.13'
+          - 'coqorg/coq:8.13'
       fail-fast: false
 
     steps:
