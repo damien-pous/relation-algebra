@@ -9,6 +9,7 @@
 (** * ordinal: finite ordinals, sets of finite ordinals *)
 
 Require Import List.
+Require Plus.
 Require Import common comparisons.
 
 
