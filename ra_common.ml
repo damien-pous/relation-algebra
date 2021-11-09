@@ -53,7 +53,7 @@ let convertible = Tacmach.pf_conv_x
 
 (* creating a name and a reference to that name *)
 let fresh_name n goal =
-  let vname = Tactics.fresh_id Id.Set.empty (Id.of_string n) goal in
+  let vname = Tactics.fresh_id_in_env Id.Set.empty (Id.of_string n) (Tacmach.pf_env goal) in
     Context.annotR vname, mkVar vname
 
 (* access to Coq constants *)
