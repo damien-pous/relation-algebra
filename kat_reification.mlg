@@ -221,7 +221,7 @@ let reify_kat_goal ?kat check =
   Proofview.V82.tactic begin fun goal ->
   let msg = 
     match kat with 
-      | Some b when EConstr.eq_constr (Tacmach.project goal) b (Lazy.force Coq.true_) -> "KAT"
+      | Some b when EConstr.eq_constr (Tacmach.Old.project goal) b (Lazy.force Coq.true_) -> "KAT"
       | _ -> "KA"
   in
 
@@ -250,11 +250,11 @@ let reify_kat_goal ?kat check =
     in Tbl.insert goal t x x ()
   in
 
-  let sigma = Tacmach.project goal in
+  let sigma = Tacmach.Old.project goal in
 
   (* get the (in)equation *)
   let rel,ca = 
-    match kind sigma (Termops.strip_outer_cast sigma (Tacmach.pf_concl goal)) with
+    match kind sigma (Termops.strip_outer_cast sigma (Tacmach.Old.pf_concl goal)) with
       | App(c,ca) ->
 	if EConstr.eq_constr sigma c (Lazy.force Lattice.weq) then mkApp (c,[|ca.(0)|]), ca
 	else if EConstr.eq_constr sigma c (Lazy.force Lattice.leq) then mkApp (c,[|ca.(0)|]), ca
@@ -282,7 +282,7 @@ let reify_kat_goal ?kat check =
   let src_v,(src_n,src_) = Pack.s' kops tenv_ref env_ref, fresh_name "src" goal in
   let tgt_v,(tgt_n,tgt_) = Pack.t' kops tenv_ref env_ref, fresh_name "tgt" goal in
 
-  let es = Tacmach.pf_env goal, Tacmach.project goal in
+  let es = Tacmach.Old.pf_env goal, Tacmach.Old.project goal in
   let is_pls s' t' = is_cup es max_level (Monoid.mor mops s' t') in
   let is_dot = is_dot es mops insert_type in
   let is_itr = is_itr es max_level mops in
@@ -337,7 +337,7 @@ let reify_kat_goal ?kat check =
   (* checking the equivalence in OCaml, and displaying potential counter-examples *)
   (match if check then AST.equiv lhs_v rhs_v else None with Some t -> 
     let t = AST.parse_trace kops mops lops env penv (src,src') (tgt,tgt') t in
-    Tacticals.tclFAIL 0 (Pp.(++) (Pp.str (" not a "^msg^" theorem:\n"))
+    Tacticals.Old.tclFAIL 0 (Pp.(++) (Pp.str (" not a "^msg^" theorem:\n"))
 			   (Printer.pr_leconstr_env (fst es) (snd es) t)) goal
     | None -> 
   	 
@@ -402,11 +402,11 @@ let get_kat_alphabet =
     | x'::q as l -> if convertible goal x x' then l else x'::insert x q
   in
 
-  let sigma = Tacmach.project goal in
+  let sigma = Tacmach.Old.project goal in
 
   (* get the (in)equation *)
   let ca = 
-    match kind sigma (Termops.strip_outer_cast sigma (Tacmach.pf_concl goal)) with
+    match kind sigma (Termops.strip_outer_cast sigma (Tacmach.Old.pf_concl goal)) with
       | App(c,ca) ->
 	if EConstr.eq_constr sigma c (Lazy.force Lattice.weq) then ca
 	else if EConstr.eq_constr sigma c (Lazy.force Lattice.leq) then ca
@@ -427,7 +427,7 @@ let get_kat_alphabet =
       | _ -> error "could not find KAT operations"
   in
 
-  let es = Tacmach.pf_env goal, Tacmach.project goal in
+  let es = Tacmach.Old.pf_env goal, Tacmach.Old.project goal in
   let is_pls s' t' = is_cup es max_level (Monoid.mor mops s' t') in
   let is_dot = is_dot es mops ignore () in
   let is_itr = is_itr es max_level mops in
@@ -466,7 +466,7 @@ let get_kat_alphabet =
   (* add the alphabet with a let-in *)
   let reified = 
     mkNamedLetIn alph_n alph_v (Lattice.car (Monoid.mor mops src' tgt'))
-      (Tacmach.pf_concl goal)
+      (Tacmach.Old.pf_concl goal)
   in	  
     (try Proofview.V82.of_tactic (Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast) goal
      with e -> (* Feedback.msg_warning (Printer.pr_lconstr reified); *) raise e)

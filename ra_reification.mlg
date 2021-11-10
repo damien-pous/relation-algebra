@@ -29,7 +29,7 @@ open EConstr
 (* end *)
 
 let retype c gl =
-  let sigma, _ = Tacmach.pf_apply Typing.type_of gl c in
+  let sigma, _ = Tacmach.Old.pf_apply Typing.type_of gl c in
   { Evd.it = [gl.Evd.it]; Evd.sigma = sigma }
 
 module Syntax = Make_Syntax(struct let typ = Pos.t end)
@@ -106,11 +106,11 @@ let reify_goal l goal =
     ))
   in
 
-  let sigma = Tacmach.project goal in
+  let sigma = Tacmach.Old.project goal in
 
   (* get the (in)equation *)
   let rel,lops,lhs,rhs = 
-    match kind sigma (Termops.strip_outer_cast sigma (Tacmach.pf_concl goal)) with
+    match kind sigma (Termops.strip_outer_cast sigma (Tacmach.Old.pf_concl goal)) with
       | App(c,ca) when EConstr.eq_constr sigma c (Lazy.force Lattice.leq_or_weq)
 		  -> mkApp (c,[|ca.(0);ca.(1)|]), ca.(1), ca.(2), ca.(3)
       | App(c,ca) when EConstr.eq_constr sigma c (Lazy.force Lattice.leq) || EConstr.eq_constr sigma c (Lazy.force Lattice.weq)
@@ -131,7 +131,7 @@ let reify_goal l goal =
   let src_v,(src_n,src_) = Syntax.src_ ops tenv_ref env_ref, fresh_name "src" goal in
   let tgt_v,(tgt_n,tgt_) = Syntax.tgt_ ops tenv_ref env_ref, fresh_name "tgt" goal in
 
-  let es = Tacmach.pf_env goal, Tacmach.project goal in
+  let es = Tacmach.Old.pf_env goal, Tacmach.Old.project goal in
   let is_pls s' t' = is_cup es l (Monoid.mor ops s' t') in
   let is_cap s' t' = is_cap es l (Monoid.mor ops s' t') in
   let is_neg s' t' = is_neg es l (Monoid.mor ops s' t') in
@@ -206,7 +206,7 @@ let reify_goal l goal =
     mkNamedLetIn rhs_n rhs_v x (
     (mkApp (rel, [|lhs;rhs|]))))))))
   in
-    (try Tacticals.tclTHEN (retype reified) (Proofview.V82.of_tactic (Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast)) goal
+    (try Tacticals.Old.tclTHEN (retype reified) (Proofview.V82.of_tactic (Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast)) goal
      with e -> Feedback.msg_warning (Printer.pr_leconstr_env (fst es) (snd es) reified); raise e)
 
 }	

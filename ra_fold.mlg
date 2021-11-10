@@ -24,8 +24,8 @@ open Stdarg
 open Proofview
 
 let ra_fold_term ops ob t goal =
-  let env = Tacmach.pf_env goal in
-  let _,tops = Tacmach.pf_type_of goal ops in
+  let env = Tacmach.Old.pf_env goal in
+  let _,tops = Tacmach.Old.pf_type_of goal ops in
   let rec fill sigma ops tops =
     if EConstr.eq_constr sigma tops (Lazy.force Monoid.ops) then (sigma,ops)
     else
@@ -35,7 +35,7 @@ let ra_fold_term ops ob t goal =
 	fill sigma (mkApp(ops,[|x|])) t
       | _ -> error "provided argument is not a monoid operation"
   in
-  let sigma,ops = fill (Tacmach.project goal) ops tops in  
+  let sigma,ops = fill (Tacmach.Old.project goal) ops tops in  
   let sigma = ref sigma in
   let obt = Monoid.ob ops in
   (* TOTKINK: Use  Evarconv.conv ? *)
@@ -141,8 +141,8 @@ let ra_fold_term ops ob t goal =
 let ra_fold_concl ops ob = Goal.enter (fun goal ->
   (* get legacy goal *)
   let goal = Goal.print goal in
-  let env = Tacmach.pf_env goal in
-  let f,sigma = ra_fold_term ops ob (Tacmach.pf_concl goal) goal in
+  let env = Tacmach.Old.pf_env goal in
+  let f,sigma = ra_fold_term ops ob (Tacmach.Old.pf_concl goal) goal in
   (try tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_concl ~cast:false ~check:true f DEFAULTcast)
    with e -> Feedback.msg_warning (Printer.pr_leconstr_env env sigma f); raise e))
 
@@ -165,7 +165,7 @@ let ra_fold_hyp' ops ob decl goal =
 let ra_fold_hyp ops ob hyp = Goal.enter (fun goal ->
   (* get legacy goal *)
   let goal = Goal.print goal in
-  ra_fold_hyp' ops ob (Tacmach.pf_get_hyp goal hyp) goal)
+  ra_fold_hyp' ops ob (Tacmach.Old.pf_get_hyp goal hyp) goal)
 
 let ra_fold_hyps ops ob = 
   List.fold_left (fun acc hyp -> tclTHEN (ra_fold_hyp ops ob hyp) acc) (tclUNIT()) 
