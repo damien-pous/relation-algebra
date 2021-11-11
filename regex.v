@@ -156,7 +156,7 @@ Fixpoint epsilon (e: regex') :=
     | r_str _ => true
     | r_pls e f => epsilon e || epsilon f
     | r_dot e f => epsilon e && epsilon f
-    | e => false
+    | _ => false
   end%bool.
 Notation eps e := (@ofbool regex_ops regex_tt (epsilon e)).
 

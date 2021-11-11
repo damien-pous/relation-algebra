@@ -367,7 +367,7 @@ Proof.
           | reflect_t H => eq_rect _ (syntax.expr _ _ _) x _ H
           | _ => e_zer _ _
         end
-      | x => e_zer _ _
+      | _ => e_zer _ _
     end) xH xH) E). case eqb_spec. 2: congruence. 
   intro. rewrite 2cmp_eq_rect_eq. intros <-. 
   generalize (f_equal ((fun n m e =>
@@ -377,7 +377,7 @@ Proof.
           | reflect_t H => eq_rect _ (fun p => syntax.expr _ _ p _) x _ H
           | _ => e_zer _ _
         end
-      | x => e_zer _ _
+      | _ => e_zer _ _
     end) xH xH) E). case eqb_spec. 2: congruence. 
   intro. rewrite 2cmp_eq_rect_eq. intros <-. 
   eauto 6. 
