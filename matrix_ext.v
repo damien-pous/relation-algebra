@@ -15,9 +15,9 @@ Set Implicit Arguments.
 
 (** * [mx_scal] is an homomorphism  *)
 
-Instance mx_scal_leq `{lattice.laws}: Proper (leq ==> leq) (@mx_scal X).
+#[export] Instance mx_scal_leq `{lattice.laws}: Proper (leq ==> leq) (@mx_scal X).
 Proof. intros ? ? H'. apply H'. Qed.
-Instance mx_scal_weq `{lattice.laws}: Proper (weq ==> weq) (@mx_scal X) := op_leq_weq_1.
+#[export] Instance mx_scal_weq `{lattice.laws}: Proper (weq ==> weq) (@mx_scal X) := op_leq_weq_1.
 
 Lemma mx_scal_zer `{lattice.laws}: mx_scal bot ≡ bot.
 Proof. reflexivity.  Qed.
@@ -42,9 +42,9 @@ Qed.
 
 (** * [scal_mx] preserves inclusions/equalities  *)
 
-Instance scal_mx_leq `{lattice.laws}: Proper (leq ==> leq) (@scal_mx X).
+#[export] Instance scal_mx_leq `{lattice.laws}: Proper (leq ==> leq) (@scal_mx X).
 Proof. now repeat intro. Qed.
-Instance scal_mx_weq `{lattice.laws}: Proper (weq ==> weq) (@scal_mx X) := op_leq_weq_1.
+#[export] Instance scal_mx_weq `{lattice.laws}: Proper (weq ==> weq) (@scal_mx X) := op_leq_weq_1.
 
 (** * extracting components of block matrices *)
 
@@ -91,7 +91,7 @@ Qed.
 Section h.
 Context `{L:laws} `{Hl:BKA ≪ l} (u: ob X).
 
-Local Instance mx_bka_laws: laws BKA (mx_ops X u) := mx_laws (L:=lower_laws) _.
+Instance mx_bka_laws: laws BKA (mx_ops X u) := mx_laws (L:=lower_laws) _.
 
 Lemma mx_str_blk' n m (M: mx (X u u) (n+m) (n+m)): 
   M^* ≡ mx_str_build X u n m (mx_str _ _ _) (mx_str _ _ _) M.
@@ -184,11 +184,11 @@ End h.
 
 Definition mx_map X Y (f: X -> Y) n m (M: mx X n m): mx Y n m := fun i j => f (M i j).
 
-Instance mx_map_leq {X Y: lattice.ops} {f: X -> Y}
+#[export] Instance mx_map_leq {X Y: lattice.ops} {f: X -> Y}
   {Hf: Proper (leq ==> leq) f} n m: Proper (leq ==> leq) (@mx_map _ _ f n m).
 Proof. intros M N H i j. apply Hf, H. Qed.
 
-Instance mx_map_weq {X Y: lattice.ops} {f: X -> Y}
+#[export] Instance mx_map_weq {X Y: lattice.ops} {f: X -> Y}
   {Hf: Proper (weq ==> weq) f} n m: Proper (weq ==> weq) (@mx_map _ _ f n m).
 Proof. intros M N H i j. apply Hf, H. Qed.
 

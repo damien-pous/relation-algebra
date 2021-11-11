@@ -77,7 +77,7 @@ Canonical Structure hrel_monoid_ops :=
   monoid.mk_ops Type@{U} hrel_lattice_ops hrel_dot (fun n => @eq n) hrel_itr hrel_str hrel_cnv hrel_ldv hrel_rdv.
 
 (** binary relations form a residuated Kleene allegory *)
-Instance hrel_monoid_laws: monoid.laws (BDL+STR+CNV+DIV) hrel_monoid_ops.
+#[export] Instance hrel_monoid_laws: monoid.laws (BDL+STR+CNV+DIV) hrel_monoid_ops.
 Proof.
   assert (dot_leq: forall n m p : Type@{U},
    Proper (leq ==> leq ==> leq) (hrel_dot n m p)).
@@ -129,7 +129,7 @@ universe inconsistency when trying load ugregex_dec, kat_completeness
 (as exported by kat_tac) and rel at the same time. *)
 
 Constraint U < pw.
-Instance hrel_kat_laws: kat.laws hrel_kat_ops.
+#[export] Instance hrel_kat_laws: kat.laws hrel_kat_ops.
 Proof.
   constructor. apply lower_laws. intro. apply (pw_laws (H:=lower_lattice_laws)).
   assert (inj_leq: forall n, Proper (leq ==> leq) (@hrel_inj n)).
@@ -159,7 +159,7 @@ Proof.
   simpl. intros x z ->. eexists; reflexivity. 
 Qed.
 
-Instance frel_weq {A B}: Proper (pwr eq ==> weq) (@frel A B).
+#[export] Instance frel_weq {A B}: Proper (pwr eq ==> weq) (@frel A B).
 Proof. unfold frel; split; intros ->; simpl. apply H. apply eq_sym, H. Qed.
 
 Ltac fold_hrel := ra_fold hrel_monoid_ops.

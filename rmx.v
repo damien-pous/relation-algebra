@@ -17,9 +17,9 @@ Unset Printing Implicit Defensive.
 Notation rmx n m := (mx regex' n m).
 
 (** they form a Kleene algebra (with bottom element) *)
-Instance rmx_lattice_laws n m: 
+#[export] Instance rmx_lattice_laws n m: 
   lattice.laws BKA (mx_lattice_ops regex_lattice_ops n m) := mx_lattice_laws n m.
-Instance rmx_laws: laws BKA (mx_ops regex_ops regex_tt) := mx_laws regex_tt.
+#[export] Instance rmx_laws: laws BKA (mx_ops regex_ops regex_tt) := mx_laws regex_tt.
 
 
 (** * Set of variables occurring in a matrix *)
@@ -46,7 +46,7 @@ Proof.
   rewrite epsilon_sup. now setoid_rewrite andb_dot. 
 Qed.
 
-Instance epsilon_mx_weq n m: Proper (weq ==> weq) (@epsilon_mx n m).
+#[export] Instance epsilon_mx_weq n m: Proper (weq ==> weq) (@epsilon_mx n m).
 Proof. intros M N H i j. unfold epsilon_mx, mx_map. now rewrite (H i j). Qed.
 
 (** [epsilon_mx] commutes with Kleene star on matrices *)
@@ -81,7 +81,7 @@ Lemma deriv_mx_dot a n m p (M: rmx n m) (N: rmx m p):
   deriv_mx a (M⋅N) ≡ deriv_mx a M ⋅ N + epsilon_mx M ⋅ deriv_mx a N. 
 Proof. intros i j. setoid_rewrite deriv_sup. simpl deriv; fold_regex. apply supcup. Qed.
 
-Instance deriv_mx_weq a n m: Proper (weq ==> weq) (@mx_map _ _ (deriv a) n m).
+#[export] Instance deriv_mx_weq a n m: Proper (weq ==> weq) (@mx_map _ _ (deriv a) n m).
 Proof. apply mx_map_weq. Qed.
 
 (** [deriv_mx] commutes with Kleene star on "strict" matrices, 
@@ -140,7 +140,7 @@ Lemma mx_forall_blk f n1 n2 m1 m2 M11 M12 M21 M22:
   mx_forall f (@blk_mx _ n1 n2 m1 m2 M11 M12 M21 M22).
 Proof. intros. now apply mx_forall_col; apply mx_forall_row. Qed.
 
-Hint Resolve mx_forall_blk mx_forall_row mx_forall_col: mx_predicates.
+#[export] Hint Resolve mx_forall_blk mx_forall_row mx_forall_col: mx_predicates.
 
 (** 01, simple, and pure matrices *)
 Notation is_01_mx := (mx_forall is_01).
@@ -197,7 +197,7 @@ Proof. intros H i j. apply H. Qed.
 Lemma is_01_mx_sub11 n1 n2 m1 m2 M: is_01_mx M -> is_01_mx (@sub11_mx _ n1 n2 m1 m2 M).
 Proof. intros H i j. apply H. Qed. 
 
-Hint Resolve is_01_mx_zer is_01_mx_one is_01_mx_cup is_01_mx_dot is_01_mx_scal is_01_scal_mx
+#[export] Hint Resolve is_01_mx_zer is_01_mx_one is_01_mx_cup is_01_mx_dot is_01_mx_scal is_01_scal_mx
   is_01_mx_sub00 is_01_mx_sub01 is_01_mx_sub10 is_01_mx_sub11: mx_predicates.
 
 Lemma is_01_mx_str n (M: rmx n n): is_01_mx M -> is_01_mx (M^*).
@@ -211,7 +211,7 @@ Qed.
 Lemma is_01_mx_epsilon n m (M: rmx n m): is_01_mx (epsilon_mx M).
 Proof. repeat intro. apply is_01_ofbool. Qed.
 
-Hint Resolve is_01_mx_str is_01_mx_epsilon: mx_predicates.
+#[export] Hint Resolve is_01_mx_str is_01_mx_epsilon: mx_predicates.
 
 
 (** ** simple matrices *)
@@ -220,7 +220,7 @@ Hint Resolve is_01_mx_str is_01_mx_epsilon: mx_predicates.
 Lemma is_01_simple_mx n m (M: rmx n m): is_01_mx M -> is_simple_mx M.
 Proof. repeat intro. now apply is_01_simple. Qed.
 
-Hint Resolve is_01_simple_mx: mx_predicates.
+#[export] Hint Resolve is_01_simple_mx: mx_predicates.
 
 Lemma is_simple_mx_var v: is_simple_mx (scal_mx (var v)). 
 Proof. constructor. Qed.
@@ -233,7 +233,7 @@ Lemma is_simple_mx_dot n m p (M: rmx n m) (N: rmx m p):
   is_01_mx M -> is_simple_mx N -> is_simple_mx (M⋅N).
 Proof. repeat intro. apply is_simple_sup. now constructor. Qed.
 
-Hint Resolve is_simple_mx_var is_simple_mx_pls is_simple_mx_dot: mx_predicates.
+#[export] Hint Resolve is_simple_mx_var is_simple_mx_pls is_simple_mx_dot: mx_predicates.
 
 
 (** ** pure matrices *)
@@ -253,7 +253,7 @@ Proof. repeat intro. apply is_pure_sup. now constructor. Qed.
 Lemma is_pure_pure_part_mx n m (M: rmx n m): is_pure_mx (pure_part_mx M).
 Proof. repeat intro. apply is_pure_pure_part. Qed.
 
-Hint Resolve is_pure_mx_zer is_pure_mx_var is_pure_mx_pls is_pure_mx_dot is_pure_pure_part_mx: mx_predicates.
+#[export] Hint Resolve is_pure_mx_zer is_pure_mx_var is_pure_mx_pls is_pure_mx_dot is_pure_pure_part_mx: mx_predicates.
 
 (** ** deriving and expanding various classes of matrices *)
 
@@ -289,4 +289,4 @@ Qed.
 Lemma is_01_mx_to_row n x: is_01_mx (@to_row n x).
 Proof. intros ? ?. apply is_01_ofbool. Qed.
 
-Hint Resolve is_01_mx_to_row: mx_predicates.
+#[export] Hint Resolve is_01_mx_to_row: mx_predicates.

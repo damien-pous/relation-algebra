@@ -21,6 +21,7 @@
 
 Require Export comparisons.
 Require Import kleene sums normalisation.
+Import lset Fix ordinal.
 
 (** A matrix of size [(n,m)] over a set [X] is just a curried function
    from indices ([ord n ⋅ ord m]) to [X] *)
@@ -34,7 +35,7 @@ Definition mx X n m := ord n -> ord m -> X.
 Canonical Structure mx_lattice_ops (X: lattice.ops) n m := 
   lattice.mk_ops (mx X n m) leq weq cup cap neg bot top.
 
-Instance mx_lattice_laws `{L: lattice.laws} n m: lattice.laws l (mx_lattice_ops X n m).
+#[export] Instance mx_lattice_laws `{L: lattice.laws} n m: lattice.laws l (mx_lattice_ops X n m).
 Proof. apply pw_laws. Qed.
 
 (** supremums (or sums) are computed pointwise *)
@@ -92,12 +93,12 @@ End d.
 
 (** all block matrix operations are monotone *)
 
-Instance col_mx_leq `{L: lattice.laws} n1 n2 m: Proper (leq ==> leq ==> leq) (@col_mx X n1 n2 m).
+#[export] Instance col_mx_leq `{L: lattice.laws} n1 n2 m: Proper (leq ==> leq ==> leq) (@col_mx X n1 n2 m).
 Proof. 
   intros ? ? H ? ? H' i j. unfold col_mx. 
   case split_spec; intros ? ->. apply H. apply H'. 
 Qed.
-Instance col_mx_weq `{L: lattice.laws} n1 n2 m: Proper (weq ==> weq ==> weq) (@col_mx X n1 n2 m)
+#[export] Instance col_mx_weq `{L: lattice.laws} n1 n2 m: Proper (weq ==> weq ==> weq) (@col_mx X n1 n2 m)
   := op_leq_weq_2.
 
 Lemma col_mx_leq_iff `{L: lattice.laws} n1 n2 m M1 M2 N1 N2: 
@@ -109,12 +110,12 @@ Proof.
   intros [? ?]. now apply col_mx_leq.
 Qed.
 
-Instance row_mx_leq `{L: lattice.laws} n m1 m2: Proper (leq ==> leq ==> leq) (@row_mx X n m1 m2).
+#[export] Instance row_mx_leq `{L: lattice.laws} n m1 m2: Proper (leq ==> leq ==> leq) (@row_mx X n m1 m2).
 Proof. 
   intros ? ? H ? ? H' i j. unfold row_mx. 
   case split_spec; intros i' ->. apply H. apply H'.
 Qed.
-Instance row_mx_weq `{L: lattice.laws} n m1 m2: Proper (weq ==> weq ==> weq) (@row_mx X n m1 m2)
+#[export] Instance row_mx_weq `{L: lattice.laws} n m1 m2: Proper (weq ==> weq ==> weq) (@row_mx X n m1 m2)
   := op_leq_weq_2.
 
 Lemma row_mx_leq_iff `{L: lattice.laws} n m1 m2 M1 M2 N1 N2: 
@@ -126,11 +127,11 @@ Proof.
   intros [? ?]. now apply row_mx_leq.
 Qed.
 
-Instance blk_mx_leq `{L: lattice.laws} n1 n2 m1 m2: 
+#[export] Instance blk_mx_leq `{L: lattice.laws} n1 n2 m1 m2: 
   Proper (leq ==> leq ==> leq ==> leq ==> leq) (@blk_mx X n1 n2 m1 m2).
 Proof. do 12 intro. now apply col_mx_leq; apply row_mx_leq. Qed.
 
-Instance blk_mx_weq `{L: lattice.laws} n1 n2 m1 m2:
+#[export] Instance blk_mx_weq `{L: lattice.laws} n1 n2 m1 m2:
   Proper (weq ==> weq ==> weq ==> weq ==> weq) (@blk_mx X n1 n2 m1 m2).
 Proof. do 12 intro. now apply col_mx_weq; apply row_mx_weq. Qed.
 
@@ -261,8 +262,6 @@ Context `{L: laws} `{Hl: BSL ≪ l} {u: ob X}.
 Notation U := (car (@mor X u u)).
 Notation mx := (mx U).
 
-Import lset.Fix.
-
 (** matrix product is associative *)
 Lemma mx_dotA n m p q (M: mx n m) N (P: mx p q): M⋅(N⋅P) ≡ (M⋅N)⋅P.
 Proof.
@@ -302,8 +301,6 @@ Qed.
 
 (** matrix product distributes over the sup-semilattice structure *)
 
-Import lset.Fix.
-
 Lemma mx_dotplsx_ n m p (M N: mx n m) (P: mx m p): (M+N)⋅P ≦ M⋅P+N⋅P.
 Proof. intros i j. simpl. unfold mx_dot. setoid_rewrite dotplsx. now rewrite supcup. Qed.
 
@@ -323,7 +320,7 @@ Proof.
 Qed.
 
 (** packing everything, we get a [BSL]-monoid structure *)
-Local Instance mx_bsl_laws: laws BSL (mx_ops X u).
+Instance mx_bsl_laws: laws BSL (mx_ops X u).
 Proof. 
   constructor; try discriminate; repeat right. 
   intros. apply lower_lattice_laws.
@@ -567,7 +564,7 @@ Local Hint Extern 0 (_ ≪ _) => solve_lower': typeclass_instances.
    closed (evar free) and "maximal", the inferred instance has the
    maximal possible level. *)
 
-Instance mx_laws `{L: laws} `{Hl: mx_level l ≪ l} u: laws l (mx_ops X u) |1.
+#[export] Instance mx_laws `{L: laws} `{Hl: mx_level l ≪ l} u: laws l (mx_ops X u) |1.
 Proof.
   assert (Hl': BSL ≪ l). revert Hl. unfold mx_level. case has_div; intro; solve_lower.  
   constructor; repeat right. 

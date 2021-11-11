@@ -15,6 +15,7 @@ diff
 html
 _build
 .merlin
+.coq-native
 *.install
 
 Makefile.coq

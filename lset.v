@@ -42,7 +42,7 @@ Canonical Structure lset_ops (A:Type@{lset}) := lattice.mk_ops (list A)
   (@app A) (@app A) (assert_false id) (@nil A) (@nil A).
 
 (** the fact that this makes a semi-lattice is almost trivial *)
-Instance lset_laws (A:Type@{lset}) : lattice.laws BSL (lset_ops A).
+#[export] Instance lset_laws (A:Type@{lset}) : lattice.laws BSL (lset_ops A).
 Proof. 
   constructor; simpl; try discriminate.
    firstorder. 
@@ -53,16 +53,16 @@ Qed.
 
 (** the [map] function on lists is actually a monotone function over the
    represented sets *)
-Instance map_leq A B (f: A -> B): Proper (leq ==> leq) (map f).
+#[export] Instance map_leq A B (f: A -> B): Proper (leq ==> leq) (map f).
 Proof.
   intro h. induction h as [|a h IH]; intros k H. apply leq_bx. 
   intros i [<-|I]. apply in_map. apply H. now left. 
   apply IH. 2: assumption. intros ? ?. apply H. now right. 
 Qed.
-Instance map_weq A B (f: A -> B): Proper (weq ==> weq) (map f) := op_leq_weq_1.
+#[export] Instance map_weq A B (f: A -> B): Proper (weq ==> weq) (map f) := op_leq_weq_1.
 
 (** [map] is extensional *)
-Instance map_compat A B: Proper (pwr eq ==> eq ==> eq) (@map A B).
+#[export] Instance map_compat A B: Proper (pwr eq ==> eq ==> eq) (@map A B).
 Proof. intros f g H h k <-. apply map_ext, H. Qed.
 
 (** belonging to a singleton *)

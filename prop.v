@@ -25,7 +25,7 @@ Canonical Structure Prop_lattice_ops: lattice.ops := {|
 (** bounded distributive lattice laws 
    (we could get a Boolean lattice by assuming excluded middle) *)
 
-Instance Prop_lattice_laws: lattice.laws (BDL+STR+CNV+DIV) Prop_lattice_ops.
+#[export] Instance Prop_lattice_laws: lattice.laws (BDL+STR+CNV+DIV) Prop_lattice_ops.
 Proof.
   constructor; (try apply Build_PreOrder); simpl;
     repeat intro; try discriminate; tauto. 

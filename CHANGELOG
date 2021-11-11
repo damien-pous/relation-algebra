@@ -1,3 +1,8 @@
+== RelationAlgebra 1.7.6  (2021, November 11th) ==
+
+- compatibility with Coq 8.14
+- support for idempotency of \cup and \cap when using coq-aac-tactics
+
 == RelationAlgebra 1.7.5  (2020, December 29th) ==
 
 - compatibility with Coq 8.13

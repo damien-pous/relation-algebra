@@ -136,7 +136,7 @@ Class laws (l: level) (X: ops) := {
 
 (** * Basic properties *)
 
-Instance dot_leq `{laws}: forall n m p, Proper (leq ==> leq ==> leq) (dot n m p). 
+#[export] Instance dot_leq `{laws}: forall n m p, Proper (leq ==> leq ==> leq) (dot n m p). 
 Proof.
   destruct dot_leq_. 2: assumption. 
   intros n m p x x' Hx y y' Hy. 
@@ -145,12 +145,12 @@ Proof.
   reflexivity.
 Qed.
 
-Instance dot_weq `{laws} n m p: Proper (weq ==> weq ==> weq) (dot n m p) := op_leq_weq_2.
+#[export] Instance dot_weq `{laws} n m p: Proper (weq ==> weq ==> weq) (dot n m p) := op_leq_weq_2.
 
 
 (** ** Basic properties of the converse operation *)
 
-Instance cnv_weq `{laws} `{CNV ≪ l} n m: Proper (weq ==> weq) (cnv n m) := op_leq_weq_1.
+#[export] Instance cnv_weq `{laws} `{CNV ≪ l} n m: Proper (weq ==> weq) (cnv n m) := op_leq_weq_1.
 
 Lemma cnv_leq_iff `{laws} `{CNV ≪ l} n m (x y: X n m): x° ≦ y° <-> x ≦ y. 
 Proof. split. intro E. apply cnv_leq in E. now rewrite 2cnv_invol in E. apply cnv_leq. Qed.
@@ -278,10 +278,10 @@ Proof. now rewrite ldv_spec, dotx1. Qed.
 Lemma ldv_xx `{laws} `{DIV ≪ l} n m (x: X n m): 1 ≦ x -o x.
 Proof. now rewrite <-leq_ldv. Qed.
 
-Instance ldv_leq `{laws} `{DIV ≪ l} n m p: Proper (leq --> leq ++> leq) (ldv n m p).
+#[export] Instance ldv_leq `{laws} `{DIV ≪ l} n m p: Proper (leq --> leq ++> leq) (ldv n m p).
 Proof. intros x x' Hx y y' Hy. now rewrite ldv_spec, <-Hx, <-Hy, <-ldv_spec. Qed.
 
-Instance ldv_weq `{laws} `{DIV ≪ l} n m p: Proper (weq ==> weq ==> weq) (ldv n m p).
+#[export] Instance ldv_weq `{laws} `{DIV ≪ l} n m p: Proper (weq ==> weq ==> weq) (ldv n m p).
 Proof. simpl. setoid_rewrite weq_spec. split; apply ldv_leq; tauto. Qed.
 
 Lemma cnvldv `{laws} `{CNV+DIV ≪ l} n m p (x: X n m) (y: X n p): (x -o y)° ≡ y° o- x°.
@@ -321,13 +321,13 @@ Proof. intro E. rewrite E. apply str_ind_l. Qed.
 Lemma str_ind_l1 `{laws} `{STR ≪ l} n (x z: X n n): 1 ≦ z -> x⋅z ≦ z -> x^* ≦ z.
 Proof. rewrite <-(dotx1 (x^*)). apply str_ind_l'. Qed.
 
-Instance str_leq `{laws} `{STR ≪ l} n: Proper (leq ==> leq) (str n).
+#[export] Instance str_leq `{laws} `{STR ≪ l} n: Proper (leq ==> leq) (str n).
 Proof.
   intros x y E. apply str_ind_l1. apply str_refl. 
   rewrite E. apply str_cons.
 Qed.
 
-Instance str_weq `{laws} `{STR ≪ l} n: Proper (weq ==> weq) (str n) := op_leq_weq_1.
+#[export] Instance str_weq `{laws} `{STR ≪ l} n: Proper (weq ==> weq) (str n) := op_leq_weq_1.
 
 Lemma str_snoc `{laws} `{STR ≪ l} n (x: X n n): x^*⋅x ≦ x^*.
 Proof. apply str_ind_l'. apply str_ext. apply str_cons. Qed.
@@ -444,10 +444,10 @@ Proof. eapply L. apply dual_laws, H. assumption. Qed.
 Ltac dual x := apply (dualize x).
 
 (** the following are examples of the benefits of such dualities *)
-Instance rdv_leq `{laws} `{DIV ≪ l} n m p: Proper (leq --> leq ++> leq) (rdv n m p).
+#[export] Instance rdv_leq `{laws} `{DIV ≪ l} n m p: Proper (leq --> leq ++> leq) (rdv n m p).
 Proof. dual @ldv_leq. Qed.
 
-Instance rdv_weq `{laws} `{DIV ≪ l} n m p: Proper (weq ==> weq ==> weq) (rdv n m p).
+#[export] Instance rdv_weq `{laws} `{DIV ≪ l} n m p: Proper (weq ==> weq ==> weq) (rdv n m p).
 Proof. dual @ldv_weq. Qed.
 
 Lemma cnvrdv `{laws} `{CNV+DIV ≪ l} n m p (x: X m n) (y: X p n): (y o- x)° ≡ x° -o y°.

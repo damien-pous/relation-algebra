@@ -72,10 +72,10 @@ Proof.
 Qed.  
 
 (** [≪] is a preorder *)
-Instance lower_refl: Reflexive lower.
+#[export] Instance lower_refl: Reflexive lower.
 Proof. intro. setoid_rewrite lower_spec. tauto. Qed.  
 
-Instance lower_trans: Transitive lower.
+#[export] Instance lower_trans: Transitive lower.
 Proof. intros h k l. setoid_rewrite lower_spec. tauto. Qed.
 
 (** * Merging levels *)
@@ -106,7 +106,7 @@ Qed.
 Lemma lower_mergex h k l: h ≪ l -> k ≪ l -> h+k ≪ l.
 Proof. rewrite merge_spec. tauto. Qed.
 
-Instance merge_lower: Proper (lower ==> lower ==> lower) merge.
+#[export] Instance merge_lower: Proper (lower ==> lower ==> lower) merge.
 Proof. intros h k H h' k' H'. apply lower_mergex; apply lower_xmerge; auto. Qed.
 
 (** * Tactics for level constraints resolution *)
@@ -126,7 +126,7 @@ Ltac solve_lower := solve
         (* use assumptions by transitivity *)
         apply (lower_trans h k l eq_refl H)
     end ] || fail "could not prove this entailment".
-Hint Extern 0 (_ ≪ _) => solve_lower: typeclass_instances.
+#[export] Hint Extern 0 (_ ≪ _) => solve_lower: typeclass_instances.
 
 (** heavier and more complete tactic, which we use in a selfdom way *)
 Ltac solve_lower' := solve [
