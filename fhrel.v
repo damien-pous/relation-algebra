@@ -22,11 +22,11 @@ Set Bullet Behavior "Strict Subproofs".
 followed by [firstoder]. This needs explicit calls to setoid_rewrite
 do work under binders *)
 
-Instance: Proper (iff ==> iff ==> iff ==> iff) and3. firstorder. Qed.
-Instance: Proper (iff ==> iff ==> iff ==> iff ==> iff) and4. firstorder. Qed.
-Instance: Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff) and5. firstorder. Qed.
-Instance: Proper (iff ==> iff ==> iff ==> iff) or3. firstorder. Qed.
-Instance: Proper (iff ==> iff ==> iff ==> iff ==> iff) or4. firstorder. Qed.
+#[export] Instance: Proper (iff ==> iff ==> iff ==> iff) and3. firstorder. Qed.
+#[export] Instance: Proper (iff ==> iff ==> iff ==> iff ==> iff) and4. firstorder. Qed.
+#[export] Instance: Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff) and5. firstorder. Qed.
+#[export] Instance: Proper (iff ==> iff ==> iff ==> iff) or3. firstorder. Qed.
+#[export] Instance: Proper (iff ==> iff ==> iff ==> iff ==> iff) or4. firstorder. Qed.
 
 Ltac to_prop := 
   repeat first 
@@ -85,7 +85,7 @@ Arguments lattice.leq : simpl never.
 Arguments lattice.weq : simpl never.
 
 (** Obtain the lattice laws using the standard powerset construction *)
-Global Instance fhrel_lattice_laws A B: 
+#[export] Instance fhrel_lattice_laws A B: 
   lattice.laws (BL+STR+CNV+DIV) (fhrel_lattice_ops A B) := pw_laws _.
 
 Lemma fhrel_leq_dec A B (e1 e2 : {fhrel A & B}) : decidable (e1 ≦ e2).
@@ -101,9 +101,9 @@ Proof.
 Qed.
 
 (** Enable rewriting of [lattice.leq] and [weq] using Ssreflect's rewrite tactic *)
-Global Instance leq_rewrite_relation ops : RewriteRelation (@lattice.leq ops).
+#[export] Instance leq_rewrite_relation ops : RewriteRelation (@lattice.leq ops).
 Qed.
-Global Instance weq_rewrite_relation ops : RewriteRelation (@weq ops).
+#[export] Instance weq_rewrite_relation ops : RewriteRelation (@weq ops).
 Qed.
 
 (** ** Monoid Operations
@@ -190,7 +190,7 @@ Proof.
   move => A B e1 e2 H x y. apply/eq_bool_iff. exact: H.
 Qed.
 
-Global Instance hrel_monoid_laws: monoid.laws (BL+STR+CNV+DIV) fhrel_monoid_ops.
+#[export] Instance hrel_monoid_laws: monoid.laws (BL+STR+CNV+DIV) fhrel_monoid_ops.
 Proof.
   case fhrel_monoid_laws_BDL => *.
   split; try assumption. exact: fhrel_lattice_laws.
