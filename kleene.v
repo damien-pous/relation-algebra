@@ -133,10 +133,10 @@ Proof. intros xz xz'. rewrite <-dotx1. apply itr_ind_l. now rewrite dotx1. assum
 Lemma itr_ind_r `{laws} `{STR ≪ l} n m (x: X n n) (y z: X m n): y⋅x ≦ z -> z⋅x ≦ z -> y⋅x^+ ≦ z.
 Proof. dual @itr_ind_l. Qed.
 
-Instance itr_leq `{laws} `{STR ≪ l} n: Proper (leq ==> leq) (itr n).
+#[export] Instance itr_leq `{laws} `{STR ≪ l} n: Proper (leq ==> leq) (itr n).
 Proof. intros x y E. now rewrite 2itr_str_l, E. Qed.
 
-Instance itr_weq `{laws} `{STR ≪ l} n: Proper (weq ==> weq) (itr n) := op_leq_weq_1.
+#[export] Instance itr_weq `{laws} `{STR ≪ l} n: Proper (weq ==> weq) (itr n) := op_leq_weq_1.
 
 Lemma itr1 `{laws} `{STR ≪ l} n: 1^+ ≡ one n.
 Proof. now rewrite itr_str_l, str1, dot1x. Qed.

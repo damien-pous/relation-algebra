@@ -128,11 +128,11 @@ Proof. intros x y E. apply antisym; apply E; reflexivity. Qed.
 
 
 (** Trivial hints *)
-Hint Extern 0 (_ ≦ _) => reflexivity : core. 
-Hint Extern 0 (_ ≡ _) => reflexivity : core. 
+#[export] Hint Extern 0 (_ ≦ _) => reflexivity : core. 
+#[export] Hint Extern 0 (_ ≡ _) => reflexivity : core. 
 
 (** Instances to be used by the setoid_rewrite machinery *)
-Instance weq_Equivalence `{laws}: Equivalence weq.
+#[export] Instance weq_Equivalence `{laws}: Equivalence weq.
 Proof.
   constructor. 
    intro. now rewrite weq_spec. 
@@ -140,13 +140,13 @@ Proof.
    intros x y z. rewrite 3weq_spec. intuition; etransitivity; eassumption.
 Qed.
 
-Instance weq_leq `{laws}: subrelation weq leq.
+#[export] Instance weq_leq `{laws}: subrelation weq leq.
 Proof. intros x y E. apply weq_spec in E as [? ?]. assumption. Qed.
 
-Instance weq_geq `{laws}: subrelation weq (flip leq).
+#[export] Instance weq_geq `{laws}: subrelation weq (flip leq).
 Proof. intros x y E. apply weq_spec in E as [? ?]. assumption. Qed.
 
-Instance leq_weq_iff `{laws}: Proper (weq ==> weq ==> iff) leq.
+#[export] Instance leq_weq_iff `{laws}: Proper (weq ==> weq ==> iff) leq.
 Proof.
   intros x y E x' y' E'. split; intro L. 
   now rewrite <-E, <-E'.
@@ -170,16 +170,16 @@ Qed.
 
 (** Additional hints, to speedup typeclass resolution  *)
 
-Instance leq_Reflexive `{laws}: Reflexive leq |1.
+#[export] Instance leq_Reflexive `{laws}: Reflexive leq |1.
 Proof. eauto with typeclass_instances. Qed.
-Instance leq_Transitive `{laws}: Transitive leq |1.
+#[export] Instance leq_Transitive `{laws}: Transitive leq |1.
 Proof. eauto with typeclass_instances. Qed.
 
-Instance weq_Reflexive `{laws}: Reflexive weq |1.
+#[export] Instance weq_Reflexive `{laws}: Reflexive weq |1.
 Proof. eauto with typeclass_instances. Qed.
-Instance weq_Transitive `{laws}: Transitive weq |1.
+#[export] Instance weq_Transitive `{laws}: Transitive weq |1.
 Proof. eauto with typeclass_instances. Qed.
-Instance weq_Symmetric `{laws}: Symmetric weq |1.
+#[export] Instance weq_Symmetric `{laws}: Symmetric weq |1.
 Proof. eauto with typeclass_instances. Qed.
 
 (** We declare most projections as Opaque for typeclass resolution:
@@ -351,10 +351,10 @@ Proof. lattice. Qed.
 Lemma leq_cup_r `{laws} `{CUP ≪ l} x y: y ≦ x ⊔ y.
 Proof. lattice. Qed.
 
-Instance cup_leq `{laws} `{CUP ≪ l}: Proper (leq ==> leq ==> leq) cup.
+#[export] Instance cup_leq `{laws} `{CUP ≪ l}: Proper (leq ==> leq ==> leq) cup.
 Proof. intros x x' Hx y y' Hy. lattice. Qed.
 
-Instance cup_weq `{laws} `{CUP ≪ l}: Proper (weq ==> weq ==> weq) cup.
+#[export] Instance cup_weq `{laws} `{CUP ≪ l}: Proper (weq ==> weq ==> weq) cup.
 Proof. apply op_leq_weq_2. Qed.
 
 (** distribution of [⊔] over [⊓] *)
@@ -393,10 +393,10 @@ Proof. lattice. Qed.
 Lemma leq_cap_r `{laws} `{CAP ≪ l} x y: x ⊓ y ≦ y.
 Proof. lattice. Qed.
 
-Instance cap_leq `{laws} `{CAP ≪ l}: Proper (leq ==> leq ==> leq) cap.
+#[export] Instance cap_leq `{laws} `{CAP ≪ l}: Proper (leq ==> leq ==> leq) cap.
 Proof. intros x x' Hx y y' Hy. lattice. Qed.
 
-Instance cap_weq `{laws} `{CAP ≪ l}: Proper (weq ==> weq ==> weq) cap.
+#[export] Instance cap_weq `{laws} `{CAP ≪ l}: Proper (weq ==> weq ==> weq) cap.
 Proof. apply op_leq_weq_2. Qed.
 
 Lemma leq_iff_cap `{laws} `{CAP ≪ l} (x y: X): x ≦ y <-> x ⊓ y ≡ x. 
@@ -428,13 +428,13 @@ Proof.
   revert Ht. dual @neg_unique'. 
 Qed.
 
-Instance neg_leq `{laws} `{BL ≪ l}: Proper (leq --> leq) neg.
+#[export] Instance neg_leq `{laws} `{BL ≪ l}: Proper (leq --> leq) neg.
 Proof.
   intros x y E. apply neg_unique'. 
   rewrite <-E, capC. now rewrite capneg.
 Qed.
 
-Instance neg_weq `{laws} `{BL ≪ l}: Proper (weq ==> weq) neg.
+#[export] Instance neg_weq `{laws} `{BL ≪ l}: Proper (weq ==> weq) neg.
 Proof. intros x y. rewrite 2weq_spec. intro E; split; apply neg_leq, E. Qed.
 
 Lemma negneg `{laws} `{BL ≪ l} (x: X): !!x ≡ x.
@@ -572,7 +572,7 @@ Canonical Structure pw_ops (X: ops) (Y : Type@{pw}) : ops := {|
 (** In contrast, we use typeclass resolution for laws inference.
  Note the level polymorphism in the instance below: laws of level [l]
  on [X] yield laws of the same level [l] on [Y -> X]. *)
-Instance pw_laws `{laws} (Y : Type@{pw}) : laws l (pw_ops X Y).
+#[export] Instance pw_laws `{laws} (Y : Type@{pw}) : laws l (pw_ops X Y).
 Proof.
   constructor; simpl; intros. constructor.
    intros f x. reflexivity.

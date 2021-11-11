@@ -24,7 +24,7 @@ Canonical Structure bool_lattice_ops: lattice.ops := {|
 
 (** [is_true] is a bounded distributive lattice homomorphism from [bool] to [Prop].
    (Actually a Boolean lattice homomorphism, but we don't need it here.) *)
-Instance mm_bool_Prop: morphism BDL is_true.
+#[export] Instance mm_bool_Prop: morphism BDL is_true.
 Proof.
   constructor; simpl.
   now auto.
@@ -36,10 +36,10 @@ Proof.
   intros _ [|]. firstorder auto with bool. easy.
 Qed.
 
-(* Instance mm_negb l: morphism l bool_lops (dual_ops bool_ops) negb. *)
+(* #[export] Instance mm_negb l: morphism l bool_lops (dual_ops bool_ops) negb. *)
 
 (** we get most lattice laws by the faithful embedding into [Prop]  *)
-Instance bool_lattice_laws: lattice.laws (BL+STR+CNV+DIV) bool_lattice_ops.
+#[export] Instance bool_lattice_laws: lattice.laws (BL+STR+CNV+DIV) bool_lattice_ops.
 Proof. 
   assert(H: lattice.laws BDL bool_lattice_ops).
    apply (laws_of_injective_morphism is_true mm_bool_Prop).
@@ -92,7 +92,7 @@ Canonical Structure bool_ops: monoid.ops := {|
 Notation bool' := (bool_ops bool_tt bool_tt).
 
 (** we actually have all laws on [bool] *)
-Instance bool_laws: laws (BL+STR+CNV+DIV) bool_ops.
+#[export] Instance bool_laws: laws (BL+STR+CNV+DIV) bool_ops.
 Proof.
   constructor; (try now left);repeat right; intros.
    apply bool_lattice_laws.
@@ -126,7 +126,7 @@ Qed.
 Lemma orb_pls `{CUP+BOT ≪ l} a b: ofbool (a||b) ≡ ofbool a + ofbool b.
 Proof. symmetry. case a; simpl. case b; simpl; lattice. lattice. Qed.
 
-Global Instance ofbool_leq `{BOT ≪ l}: Proper (leq ==> leq) ofbool.
+#[export] Instance ofbool_leq `{BOT ≪ l}: Proper (leq ==> leq) ofbool.
 Proof. intros [|] b E; simpl. now rewrite E. apply leq_bx. Qed.
 
 Lemma dot_ofboolx `{BOT ≪ l} b (x: X n n): ofbool b⋅x ≡ x⋅ofbool b.
@@ -135,5 +135,5 @@ Proof. case b; simpl. now rewrite dot1x, dotx1. now rewrite dot0x, dotx0. Qed.
 End ofbool.
 
 (** [is_true] is also monotone *)
-Instance is_true_leq: Proper (leq ==> leq) is_true. 
+#[export] Instance is_true_leq: Proper (leq ==> leq) is_true. 
 Proof. intros [|] b E; simpl. now rewrite E. discriminate. Qed.

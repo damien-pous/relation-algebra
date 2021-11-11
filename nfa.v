@@ -85,16 +85,17 @@ Qed.
 
 
 (** additional bureaucratic lemmas *)
-Instance lang_leq n (M: rmx n n) v: Proper (leq ==> leq) (lang M v).
+#[export] Instance lang_leq n (M: rmx n n) v: Proper (leq ==> leq) (lang M v).
 Proof. 
   intros u u' H w. revert u u' H; induction w; intros u u' H; unfold lang; fold lang.
+  apply epsilon_leq.            (* TODO: this line should not be needed *)
   now rewrite H. 
   apply IHw. now rewrite H. 
 Qed.
 
-Instance lang_weq n (M: rmx n n) v: Proper (weq ==> weq) (lang M v) := op_leq_weq_1.
+#[export] Instance lang_weq n (M: rmx n n) v: Proper (weq ==> weq) (lang M v) := op_leq_weq_1.
 
-Instance lang_weq' n (M: rmx n n) v: Proper (weq ==> eq ==> iff) (lang M v).
+#[export] Instance lang_weq' n (M: rmx n n) v: Proper (weq ==> eq ==> iff) (lang M v).
 Proof. intros ? ? H ? ? <-. now apply lang_weq. Qed.
 
 Lemma lang_empty n (u: rmx 1 n) M v: u ≡0 -> lang M v u ≡ bot.

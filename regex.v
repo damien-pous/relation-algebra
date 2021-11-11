@@ -95,7 +95,7 @@ Ltac fold_regex := ra_fold regex_ops regex_tt.
 (** ** Laws *)
 (** laws are inherited for free, by faithful embedding into general expressions *)
 
-Instance regex_laws: laws BKA regex_ops.
+#[export] Instance regex_laws: laws BKA regex_ops.
 Proof.
   apply (laws_of_faithful_functor (f:=fun _ _: regex_unit => to_expr)).
   constructor; try discriminate; trivial. 
@@ -104,7 +104,7 @@ Proof.
   tauto. tauto.
 Qed.
 
-Instance regex_lattice_laws: lattice.laws BKA regex_lattice_ops. 
+#[export] Instance regex_lattice_laws: lattice.laws BKA regex_lattice_ops. 
 Proof. exact (@lattice_laws _ _ regex_laws regex_tt regex_tt). Qed.
 
 
@@ -235,9 +235,9 @@ Lemma epsilon_eval e: epsilon e =
   eval (X:=bool_ops) (f':=fun _ => bool_tt) (fun _ => false) (to_expr e).
 Proof. induction e; simpl; trivial; now rewrite IHe1, IHe2. Qed.
 
-Instance epsilon_leq: Proper (leq ==> leq) epsilon.
+#[export] Instance epsilon_leq: Proper (leq ==> leq) epsilon.
 Proof. intros e f H. rewrite 2epsilon_eval. apply H. apply lower_laws. Qed.
-Instance epsilon_weq: Proper (weq ==> eq) epsilon := op_leq_weq_1.
+#[export] Instance epsilon_weq: Proper (weq ==> eq) epsilon := op_leq_weq_1.
 
 
 
@@ -265,7 +265,7 @@ Proof.
 Qed.
 
 (** monotonicity of [deriv] *)
-Instance deriv_leq a: Proper (leq ==> leq) (deriv a).
+#[export] Instance deriv_leq a: Proper (leq ==> leq) (deriv a).
 Proof.
   intros e f. apply (@leq_ind 
   (fun e f => e ≦ f /\ deriv a e ≦ deriv a f) 
@@ -297,12 +297,12 @@ Proof.
    - split. apply itr_str_l. reflexivity.
 Qed.
 
-Instance deriv_weq a: Proper (weq ==> weq) (deriv a) := op_leq_weq_1.
+#[export] Instance deriv_weq a: Proper (weq ==> weq) (deriv a) := op_leq_weq_1.
 
-Instance derivs_leq w: Proper (leq ==> leq) (derivs w).
+#[export] Instance derivs_leq w: Proper (leq ==> leq) (derivs w).
 Proof. induction w; intros e f H. apply H. apply IHw, deriv_leq, H. Qed.
 
-Instance derivs_weq w: Proper (weq ==> weq) (derivs w) := op_leq_weq_1.
+#[export] Instance derivs_weq w: Proper (weq ==> weq) (derivs w) := op_leq_weq_1.
 
 
 (** ** deriving and expanding 01 regular expressions *)
@@ -402,10 +402,10 @@ Proof. intro H. rewrite (expand e), H. lattice. Qed.
 
 Definition lang e: lang' sigma := fun w => epsilon (derivs w e).
 
-Instance lang_leq: Proper (leq ==> leq) lang.
+#[export] Instance lang_leq: Proper (leq ==> leq) lang.
 Proof. intros e f H w. unfold lang. now rewrite H. Qed.
 
-Instance lang_weq: Proper (weq ==> weq) lang := op_leq_weq_1.
+#[export] Instance lang_weq: Proper (weq ==> weq) lang := op_leq_weq_1.
 
 (** (internal) characterisation of [epsilon] *)
 Lemma epsilon_iff_reflexive_eps (e: regex'): epsilon e <-> 1 ≦ eps e.
