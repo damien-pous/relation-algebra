@@ -1,0 +1,21 @@
+(*******************************************************************)
+(*  This is part of RelationAlgebra, it is distributed under the   *)
+(*    terms of the GNU Lesser General Public License version 3     *)
+(*              (see file LICENSE for more details)                *)
+(*                                                                 *)
+(*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
+(*******************************************************************)
+
+DECLARE PLUGIN "ra_reification"
+
+{
+
+open Stdarg
+open Ltac_plugin
+open Ra_reification
+
+}
+
+(* tactic grammar entries *)
+TACTIC EXTEND ra_reify 
+  | [ "ra_reify" constr(level) ] -> { Proofview.V82.tactic (reify_goal level) } END

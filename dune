@@ -20,7 +20,7 @@
 (library
  (name ra_reification)
  (public_name relation-algebra.ra_reification)
- (modules ra_reification)
+ (modules ra_reification g_ra_reification)
  (libraries ra_common))
 
 (library
