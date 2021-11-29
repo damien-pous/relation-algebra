@@ -14,7 +14,7 @@
 (library
  (name ra_fold)
  (public_name relation-algebra.ra_fold)
- (modules ra_fold)
+ (modules ra_fold g_ra_fold)
  (libraries ra_common))
 
 (library

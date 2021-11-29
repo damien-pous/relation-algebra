@@ -12,15 +12,10 @@
 (*i camlp4deps: "parsing/grammar.cma" i*)
 (*i camlp4use: "pa_extend.cmo" i*)
 
-DECLARE PLUGIN "ra_fold"
-
-{
-open Ltac_plugin
 open Ra_common
 open Constr
 open EConstr
 open Context.Named.Declaration
-open Stdarg
 open Proofview
 
 let ra_fold_term ops ob t goal =
@@ -174,17 +169,3 @@ let ra_fold_all ops ob = Goal.enter (fun goal ->
   let hyps = Goal.hyps goal in
   List.fold_left (fun acc hyp -> tclTHEN (ra_fold_hyp ops ob (get_id hyp)) acc) 
     (ra_fold_concl ops ob) hyps)
-}      
-
-(* tactic grammar entries *)
-TACTIC EXTEND ra_fold
-  | [ "ra_fold" constr(ops) ] -> { ra_fold_concl ops None }
-  | [ "ra_fold" constr(ops) constr(ob)] -> { ra_fold_concl ops (Some ob) }
-  | [ "ra_fold" constr(ops) "in" var_list(l)] -> { ra_fold_hyps ops None l }
-  | [ "ra_fold" constr(ops) constr(ob) "in" var_list(l)] -> { ra_fold_hyps ops (Some ob) l }
-END
-
-TACTIC EXTEND ra_fold_in_star
-  | [ "ra_fold" constr(ops) "in" "*"] -> { ra_fold_all ops None }
-  | [ "ra_fold" constr(ops) constr(ob) "in" "*"] -> { ra_fold_all ops (Some ob) }
-END

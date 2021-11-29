@@ -20,8 +20,10 @@ monoid.v
 kleene.v
 factors.v
 kat.v
-ra_fold.mlg
+ra_fold.ml
 ra_fold.mli
+g_ra_fold.mlg
+g_ra_fold.mli
 ra_fold.mllib
 
 mrewrite.ml
