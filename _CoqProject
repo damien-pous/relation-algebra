@@ -71,8 +71,10 @@ kat_untyping.v
 kat_reification.v
 kat_dec.ml
 kat_dec.mli
-kat_reification.mlg
+kat_reification.ml
 kat_reification.mli
+g_kat_reification.mlg
+g_kat_reification.mli
 kat_reification.mllib
 kat_tac.v
 

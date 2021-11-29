@@ -1,0 +1,25 @@
+(*******************************************************************)
+(*  This is part of RelationAlgebra, it is distributed under the   *)
+(*    terms of the GNU Lesser General Public License version 3     *)
+(*              (see file LICENSE for more details)                *)
+(*                                                                 *)
+(*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
+(*******************************************************************)
+
+DECLARE PLUGIN "kat_reification"
+
+{
+
+open Stdarg
+open Ltac_plugin
+open Kat_reification
+
+}
+
+(* tactic grammar entries *)
+TACTIC EXTEND ra_kat_reify_nocheck 
+  | [ "ra_kat_reify_nocheck" constr(kat) ] -> { reify_kat_goal ~kat false } END
+TACTIC EXTEND ra_kat_reify_check 
+  | [ "ra_kat_reify" constr(kat) ] -> { reify_kat_goal ~kat true } END
+TACTIC EXTEND ra_get_kat_alphabet 
+  | [ "ra_get_kat_alphabet" ] -> { get_kat_alphabet } END

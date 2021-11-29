@@ -18,11 +18,6 @@
       to a given goal, to ease elimination of Hoare hypotheses in the
       [hkat] tactic. *)
 
-DECLARE PLUGIN "kat_reification"
-
-{
-open Stdarg
-open Ltac_plugin
 open Ra_common
 open Constr
 open EConstr
@@ -471,12 +466,3 @@ let get_kat_alphabet =
     (try Proofview.V82.of_tactic (Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast) goal
      with e -> (* Feedback.msg_warning (Printer.pr_lconstr reified); *) raise e)
   end
-}
-
-(* tactic grammar entries *)
-TACTIC EXTEND ra_kat_reify_nocheck 
-  | [ "ra_kat_reify_nocheck" constr(kat) ] -> { reify_kat_goal ~kat false } END
-TACTIC EXTEND ra_kat_reify_check 
-  | [ "ra_kat_reify" constr(kat) ] -> { reify_kat_goal ~kat true } END
-TACTIC EXTEND ra_get_kat_alphabet 
-  | [ "ra_get_kat_alphabet" ] -> { get_kat_alphabet } END
