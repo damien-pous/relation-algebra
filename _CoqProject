@@ -24,8 +24,10 @@ ra_fold.mlg
 ra_fold.mli
 ra_fold.mllib
 
-mrewrite.mlg
+mrewrite.ml
 mrewrite.mli
+g_mrewrite.mlg
+g_mrewrite.mli
 mrewrite.mllib
 rewriting.v
 move.v

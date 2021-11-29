@@ -12,16 +12,9 @@
 (** Simple helper to define basic rewriting modulo A (associativity) tactics:
     (see the comments in [rewriting.v]) *)
 
-DECLARE PLUGIN "mrewrite"
-
-{
-open Ltac_plugin
 open Ra_common
 open Constr
 open EConstr
-open Stdarg
-open Tacarg
-
 
 module Ext = struct
   let path = ra_path@["rewriting"]
@@ -111,9 +104,3 @@ let extend ist k dir h =
   (* Tacticals.tclTHEN (Proofview.Unsafe.tclEVARS !sigma) *)
   (ltac_apply ist k h)
     )
-}
-
-TACTIC EXTEND ra_extend_lr
-  | [ "ra_extend" tactic(k) "->" constr(h) ] -> { extend ist k `LR h } END
-TACTIC EXTEND ra_extend_rl 
-  | [ "ra_extend" tactic(k) "<-" constr(h) ] -> { extend ist k `RL h } END
