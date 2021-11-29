@@ -21,9 +21,11 @@ kleene.v
 factors.v
 kat.v
 ra_fold.mlg
+ra_fold.mli
 ra_fold.mllib
 
 mrewrite.mlg
+mrewrite.mli
 mrewrite.mllib
 rewriting.v
 move.v
@@ -31,8 +33,10 @@ move.v
 lsyntax.v
 syntax.v
 ra_common.ml
+ra_common.mli
 ra_common.mllib
 ra_reification.mlg
+ra_reification.mli
 ra_reification.mllib
 normalisation.v
 
@@ -68,6 +72,7 @@ kat_reification.v
 kat_dec.ml
 kat_dec.mli
 kat_reification.mlg
+kat_reification.mli
 kat_reification.mllib
 kat_tac.v
 
