@@ -35,8 +35,10 @@ syntax.v
 ra_common.ml
 ra_common.mli
 ra_common.mllib
-ra_reification.mlg
+ra_reification.ml
 ra_reification.mli
+g_ra_reification.mlg
+g_ra_reification.mli
 ra_reification.mllib
 normalisation.v
 

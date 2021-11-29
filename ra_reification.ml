@@ -13,11 +13,6 @@
     [ra] tactics: we reify [monoid] and [lattice]
     operations into [syntax.expr] expressions *)
 
-DECLARE PLUGIN "ra_reification"
-
-{
-open Stdarg
-open Ltac_plugin
 open Ra_common
 open Constr
 open EConstr
@@ -208,8 +203,3 @@ let reify_goal l goal =
   in
     (try Tacticals.Old.tclTHEN (retype reified) (Proofview.V82.of_tactic (Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast)) goal
      with e -> Feedback.msg_warning (Printer.pr_leconstr_env (fst es) (snd es) reified); raise e)
-
-}	
-(* tactic grammar entries *)
-TACTIC EXTEND ra_reify 
-  | [ "ra_reify" constr(level) ] -> { Proofview.V82.tactic (reify_goal level) } END
