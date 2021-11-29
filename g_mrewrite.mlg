@@ -1,0 +1,21 @@
+(*******************************************************************)
+(*  This is part of RelationAlgebra, it is distributed under the   *)
+(*    terms of the GNU Lesser General Public License version 3     *)
+(*              (see file LICENSE for more details)                *)
+(*                                                                 *)
+(*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
+(*******************************************************************)
+
+DECLARE PLUGIN "mrewrite"
+
+{
+  open Ltac_plugin
+  open Stdarg
+  open Tacarg
+  open Mrewrite
+}
+
+TACTIC EXTEND ra_extend_lr
+  | [ "ra_extend" tactic(k) "->" constr(h) ] -> { extend ist k `LR h } END
+TACTIC EXTEND ra_extend_rl 
+  | [ "ra_extend" tactic(k) "<-" constr(h) ] -> { extend ist k `RL h } END

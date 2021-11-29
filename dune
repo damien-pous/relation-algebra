@@ -26,7 +26,7 @@
 (library
  (name mrewrite)
  (public_name relation-algebra.mrewrite)
- (modules mrewrite)
+ (modules mrewrite g_mrewrite)
  (libraries ra_common))
 
 (library
