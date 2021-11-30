@@ -18,4 +18,4 @@ open Ra_reification
 
 (* tactic grammar entries *)
 TACTIC EXTEND ra_reify 
-  | [ "ra_reify" constr(level) ] -> { Proofview.V82.tactic (reify_goal level) } END
+  | [ "ra_reify" constr(level) ] -> { reify_goal level } END

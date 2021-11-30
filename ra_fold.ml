@@ -18,9 +18,8 @@ open EConstr
 open Context.Named.Declaration
 open Proofview
 
-let ra_fold_term ops ob t goal =
-  let env = Tacmach.Old.pf_env goal in
-  let _,tops = Tacmach.Old.pf_type_of goal ops in
+let ra_fold_term env sigma ops ob t =
+  let _,tops = Typing.type_of env sigma ops in (* FIXME: leak? *)
   let rec fill sigma ops tops =
     if EConstr.eq_constr sigma tops (Lazy.force Monoid.ops) then (sigma,ops)
     else
@@ -30,7 +29,7 @@ let ra_fold_term ops ob t goal =
 	fill sigma (mkApp(ops,[|x|])) t
       | _ -> error "provided argument is not a monoid operation"
   in
-  let sigma,ops = fill (Tacmach.Old.project goal) ops tops in  
+  let sigma,ops = fill sigma ops tops in  
   let sigma = ref sigma in
   let obt = Monoid.ob ops in
   (* TOTKINK: Use  Evarconv.conv ? *)
@@ -53,11 +52,11 @@ let ra_fold_term ops ob t goal =
   let rec ra_fold env s' t' e = 
     let k' _ = 
       let x = Monoid.one ops s' in 
-      if convertible' (env,!sigma) e x then x else
+      if convertible env !sigma e x then x else
       let x = Lattice.bot (Monoid.mor ops s' t') in 
-      if convertible' (env,!sigma) e x then x else
+      if convertible env !sigma e x then x else
       let x = Lattice.top (Monoid.mor ops s' t') in 
-      if convertible' (env,!sigma) e x then x else
+      if convertible env !sigma e x then x else
       gen_fold env e
     in
     match kind !sigma (Termops.strip_outer_cast !sigma e) with App(c,ca) -> 
@@ -92,7 +91,7 @@ let ra_fold_term ops ob t goal =
   and fold env e =
     let _,t = Typing.type_of env !sigma e in
     match ob with
-      | Some o when convertible' (env,!sigma) t (Lattice.car (Monoid.mor ops o o)) -> ra_fold env o o e
+      | Some o when convertible env !sigma t (Lattice.car (Monoid.mor ops o o)) -> ra_fold env o o e
       | Some o when EConstr.eq_constr !sigma t mkProp ->
 	(match kind !sigma (Termops.strip_outer_cast !sigma e) with
 	  | App(c,ca) when 2 <= Array.length ca ->
@@ -137,7 +136,7 @@ let ra_fold_concl ops ob = Goal.enter (fun goal ->
   (* get legacy goal *)
   let goal = Goal.print goal in
   let env = Tacmach.Old.pf_env goal in
-  let f,sigma = ra_fold_term ops ob (Tacmach.Old.pf_concl goal) goal in
+  let f,sigma = ra_fold_term env (Tacmach.Old.project goal) ops ob (Tacmach.Old.pf_concl goal) in
   (try tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_concl ~cast:false ~check:true f DEFAULTcast)
    with e -> Feedback.msg_warning (Printer.pr_leconstr_env env sigma f); raise e))
 
@@ -147,12 +146,12 @@ let ra_fold_hyp' ops ob decl goal =
     match ddef with
     | Some def ->
        (* try to fold both the body and the type of local definitions *)
-       let def,sg = ra_fold_term ops ob def goal in
-       let typ,sigma = ra_fold_term ops ob dtyp { goal with Evd.sigma = sg } in
+       let def,sg = ra_fold_term (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) ops ob def in
+       let typ,sigma = ra_fold_term (Tacmach.Old.pf_env goal) sg ops ob dtyp in
        LocalDef(id,def,typ),sigma
     | None ->
        (* only fold the type of local assumptions *)
-       let typ,sigma = ra_fold_term ops ob dtyp goal in
+       let typ,sigma = ra_fold_term (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) ops ob dtyp in
        LocalAssum(id,typ),sigma
   in
   tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_hyp ~check:true ~reorder:true decl)
