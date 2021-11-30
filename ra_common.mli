@@ -11,7 +11,7 @@ val time : ('a -> 'b) -> 'a -> 'b
 val error : ('a, unit, string, string, string, 'b) format6 -> 'a
 val ra_path : string list
 val tc_find :
-  Goal.goal Evd.sigma -> EConstr.types -> Evd.evar_map * EConstr.constr
+  Environ.env -> Evd.evar_map -> EConstr.types -> Evd.evar_map * EConstr.constr
 val new_evar :
   ?filter:Evd.Filter.t ->
   ?abstract_arguments:Evd.Abstraction.t ->
@@ -24,13 +24,10 @@ val new_evar :
 val push :
   Names.Name.t Context.binder_annot ->
   EConstr.types -> Environ.env -> Environ.env
-val convertible' :
-  Environ.env * Evd.evar_map -> EConstr.constr -> EConstr.constr -> bool
 val convertible :
-  Goal.goal Evd.sigma -> EConstr.constr -> EConstr.constr -> bool
+  Environ.env -> Evd.evar_map -> EConstr.constr -> EConstr.constr -> bool
 val fresh_name :
-  string ->
-  Goal.goal Evd.sigma -> Names.Id.t Context.binder_annot * EConstr.t
+  Environ.env -> string -> Names.Id.t Context.binder_annot * EConstr.t
 val get_const : string list -> string -> EConstr.t lazy_t
 val force_app : EConstr.t Lazy.t -> EConstr.t array -> EConstr.t
 val partial_app : int -> EConstr.t -> EConstr.t array -> EConstr.t
@@ -167,7 +164,7 @@ type level = {
   has_cnv : bool;
   has_div : bool;
 }
-val read_level : Goal.goal Evd.sigma -> EConstr.t -> level
+val read_level : Environ.env -> Evd.evar_map -> EConstr.t -> level
 val max_level : level
 module Lattice :
   sig

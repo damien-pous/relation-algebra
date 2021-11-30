@@ -6,4 +6,4 @@
 (*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
 (*******************************************************************)
 
-val reify_goal : EConstr.t -> Goal.goal Evd.sigma -> Goal.goal list Evd.sigma
+val reify_goal : EConstr.t -> unit Proofview.tactic

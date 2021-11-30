@@ -72,7 +72,7 @@ end = struct
 
   let rec find gl x = function
     | [] -> raise Not_found
-    | (x',_,_)::q -> if convertible gl x x' then 1+List.length q else find gl x q
+    | (x',_,_)::q -> if convertible (Tacmach.Old.pf_env gl) (Tacmach.Old.project gl) x x' then 1+List.length q else find gl x q
 
   let get t i = 
     let l = !t in 
@@ -221,9 +221,9 @@ let reify_kat_goal ?kat check =
   in
 
   (* variables for referring to the environments *)
-  let tenv_n,tenv_ref = fresh_name "tenv" goal in
-  let env_n,env_ref = fresh_name "env" goal in 
-  let penv_n,penv_ref = fresh_name "penv" goal in 
+  let tenv_n,tenv_ref = fresh_name (Tacmach.Old.pf_env goal) "tenv" in
+  let env_n,env_ref = fresh_name (Tacmach.Old.pf_env goal) "env" in 
+  let penv_n,penv_ref = fresh_name (Tacmach.Old.pf_env goal) "penv" in 
 
   (* table associating indices to encountered types *)
   let tenv = Tbl.create() in 			
@@ -274,8 +274,8 @@ let reify_kat_goal ?kat check =
   	let tgt = insert_type tgt' in
   	let pck = Syntax.pack_type mops tenv_ref in (* type of packed elements *)
   	let typ = Monoid.ob mops in		  (* type of types *)
-  let src_v,(src_n,src_) = Pack.s' kops tenv_ref env_ref, fresh_name "src" goal in
-  let tgt_v,(tgt_n,tgt_) = Pack.t' kops tenv_ref env_ref, fresh_name "tgt" goal in
+  let src_v,(src_n,src_) = Pack.s' kops tenv_ref env_ref, fresh_name (Tacmach.Old.pf_env goal) "src" in
+  let tgt_v,(tgt_n,tgt_) = Pack.t' kops tenv_ref env_ref, fresh_name (Tacmach.Old.pf_env goal) "tgt" in
 
   let es = Tacmach.Old.pf_env goal, Tacmach.Old.project goal in
   let is_pls s' t' = is_cup es max_level (Monoid.mor mops s' t') in
@@ -286,7 +286,7 @@ let reify_kat_goal ?kat check =
   let is_cap s' = is_cap es max_level (lops s') in
   let is_neg s' = is_neg es max_level (lops s') in
   let is_inj s' k k' (c,ca,n as x) =
-    if n >= 1 && convertible goal (partial_app (n-1) c ca) (KAT.inj2 kops s') 
+    if n >= 1 && convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) (partial_app (n-1) c ca) (KAT.inj2 kops s') 
     then k ca.(n-1) else k' x
   in
 
@@ -294,8 +294,8 @@ let reify_kat_goal ?kat check =
      (s: index of the domain, s': actual domain) *)
   let rec lreify (s,s' as ss) e = 
     let k' _ = 
-      if convertible goal e (Lattice.top (lops s')) then AST.Top
-      else if convertible goal e (Lattice.bot (lops s')) then AST.Bot
+      if convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) e (Lattice.top (lops s')) then AST.Top
+      else if convertible (Tacmach.Old.pf_env goal)  (Tacmach.Old.project goal)  e (Lattice.bot (lops s')) then AST.Bot
       else AST.Tst (insert_pred e s s')
     in
     match kind sigma (Termops.strip_outer_cast sigma e) with App(c,ca) -> 
@@ -310,8 +310,8 @@ let reify_kat_goal ?kat check =
      (s: index of the domain, s': actual domain -- same for t) *)
   let rec reify (s,s' as ss) (t,t' as tt) e = 
     let k' _ = 
-      if convertible goal e (Monoid.one mops s') then AST.One(s)
-      else if convertible goal e (Lattice.bot (Monoid.mor mops s' t')) then AST.Zer(s,t)
+      if convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) e (Monoid.one mops s') then AST.One(s)
+      else if convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) e (Lattice.bot (Monoid.mor mops s' t')) then AST.Zer(s,t)
       else AST.Var (insert_atom mops e ss tt)
     in
     match kind sigma (Termops.strip_outer_cast sigma e) with App(c,ca) -> 
@@ -326,8 +326,8 @@ let reify_kat_goal ?kat check =
   in
 
   (* reification of left and right members *)
-  let lhs_v,(lhs_n,lhs) = reify (src,src') (tgt,tgt') ca.(1), fresh_name "lhs" goal in
-  let rhs_v,(rhs_n,rhs) = reify (src,src') (tgt,tgt') ca.(2), fresh_name "rhs" goal in
+  let lhs_v,(lhs_n,lhs) = reify (src,src') (tgt,tgt') ca.(1), fresh_name (Tacmach.Old.pf_env goal) "lhs" in
+  let rhs_v,(rhs_n,rhs) = reify (src,src') (tgt,tgt') ca.(2), fresh_name (Tacmach.Old.pf_env goal) "rhs" in
 
   (* checking the equivalence in OCaml, and displaying potential counter-examples *)
   (match if check then AST.equiv lhs_v rhs_v else None with Some t -> 
@@ -394,7 +394,7 @@ let get_kat_alphabet =
 
   let rec insert x = function
     | [] -> [x]
-    | x'::q as l -> if convertible goal x x' then l else x'::insert x q
+    | x'::q as l -> if convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) x x' then l else x'::insert x q
   in
 
   let sigma = Tacmach.Old.project goal in
@@ -428,7 +428,7 @@ let get_kat_alphabet =
   let is_itr = is_itr es max_level mops in
   let is_str = is_str es max_level mops in
   let is_inj s' k k' (c,ca,n as x) =
-    if n >= 1 && convertible goal (partial_app (n-1) c ca) (KAT.inj2 kops s') 
+    if n >= 1 && convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) (partial_app (n-1) c ca) (KAT.inj2 kops s') 
     then k ca.(n-1) else k' x
   in
 
@@ -436,8 +436,8 @@ let get_kat_alphabet =
      (s: index of the domain, s': actual domain -- same for t) *)
   let rec alphabet acc s' t' e = 
     let k' _ = 
-      if convertible goal e (Monoid.one mops s') then acc
-      else if convertible goal e (Lattice.bot (Monoid.mor mops s' t')) then acc
+      if convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) e (Monoid.one mops s') then acc
+      else if convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) e (Lattice.bot (Monoid.mor mops s' t')) then acc
       else insert e acc
     in
     match kind sigma (Termops.strip_outer_cast sigma e) with App(c,ca) -> 
@@ -452,7 +452,7 @@ let get_kat_alphabet =
 
   (* getting the letters from the left and right members *)
   let alph = alphabet (alphabet [] src' tgt' ca.(2)) src' tgt' ca.(1) in
-  let (alph_n,_) = fresh_name "u" goal in
+  let (alph_n,_) = fresh_name (Tacmach.Old.pf_env goal) "u" in
   let alph_v = 
     List.fold_left (Lattice.cup (Monoid.mor mops src' tgt'))
       (Lattice.bot (Monoid.mor mops src' tgt')) alph 

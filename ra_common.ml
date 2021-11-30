@@ -38,7 +38,7 @@ let ra_path = ["RelationAlgebra"]
 let error s = Printf.kprintf (fun s -> CErrors.user_err (Pp.str s)) ("[RelationAlgebra] "^^s)
 
 (* resolving a typeclass [cls] in a goal [gl] *)
-let tc_find gl cls = Typeclasses.resolve_one_typeclass (Tacmach.Old.pf_env gl) (Tacmach.Old.project gl) cls
+let tc_find env sigma cls = Typeclasses.resolve_one_typeclass env sigma cls
 
 (* creating new evars *)
 let new_evar = Evarutil.new_evar ~src:(None,Evar_kinds.GoalEvar)
@@ -47,13 +47,12 @@ let new_evar = Evarutil.new_evar ~src:(None,Evar_kinds.GoalEvar)
 let push x t env = Termops.push_rel_assum (x,t) env
 
 (* are two terms convertible *)
+let convertible env sigma  c1 c2 = Reductionops.is_conv env sigma c1 c2
 let convertible' (env,sigma) = Reductionops.is_conv env sigma
-(* in a given goal *)
-let convertible = Tacmach.Old.pf_conv_x
 
 (* creating a name and a reference to that name *)
-let fresh_name n goal =
-  let vname = Tactics.fresh_id_in_env Id.Set.empty (Id.of_string n) (Tacmach.Old.pf_env goal) in
+let fresh_name env n =
+  let vname = Tactics.fresh_id_in_env Id.Set.empty (Id.of_string n) env in
     Context.annotR vname, mkVar vname
 
 (* access to Coq constants *)
@@ -145,16 +144,16 @@ type level = {
   has_cnv: bool;
   has_div: bool }
 
-let read_level goal l = 
+let read_level env sigma l = 
   let true_ = Lazy.force Coq.true_ in { 
-    has_cup = convertible goal true_ (Level.has_cup l);
-    has_bot = convertible goal true_ (Level.has_bot l);
-    has_cap = convertible goal true_ (Level.has_cap l);
-    has_top = convertible goal true_ (Level.has_top l);
-    has_neg = convertible goal true_ (Level.has_neg l);
-    has_str = convertible goal true_ (Level.has_str l);
-    has_cnv = convertible goal true_ (Level.has_cnv l);
-    has_div = convertible goal true_ (Level.has_div l) }
+    has_cup = convertible env sigma true_ (Level.has_cup l);
+    has_bot = convertible env sigma true_ (Level.has_bot l);
+    has_cap = convertible env sigma true_ (Level.has_cap l);
+    has_top = convertible env sigma true_ (Level.has_top l);
+    has_neg = convertible env sigma true_ (Level.has_neg l);
+    has_str = convertible env sigma true_ (Level.has_str l);
+    has_cnv = convertible env sigma true_ (Level.has_cnv l);
+    has_div = convertible env sigma true_ (Level.has_div l) }
 let max_level = {
   has_cup = true;
   has_bot = true;

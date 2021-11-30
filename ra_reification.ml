@@ -36,7 +36,7 @@ module Tbl : sig
   (* [insert gl t x y] adds the association [x->y] to [t] and returns 
      the corresponding (coq) index ; [gl] is the current goal, used 
      to compare terms *)
-  val insert: Goal.goal Evd.sigma -> t -> constr -> constr -> constr
+  val insert: Environ.env -> Evd.evar_map -> t -> constr -> constr -> constr
   (* [to_env t typ def] returns (coq) environment corresponding to [t], 
      yielding elements of type [typ], with [def] as default value *)
   val to_env: t -> constr -> constr -> constr
@@ -45,13 +45,13 @@ end = struct
 
   let create () = ref([],1)
 
-  let rec find gl x = function
+  let rec find env sigma x = function
     | [] -> raise Not_found
-    | (x',i,_)::q -> if convertible gl x x' then i else find gl x q
+    | (x',i,_)::q -> if convertible env sigma x x' then i else find env sigma x q
 
-  let insert gl t x y =
+  let insert env sigma t x y =
     let l,i = !t in
-      try find gl x l
+      try find env sigma x l
       with Not_found -> 
 	let j = Pos.of_int i in
 	  t := ((x,j,y)::l,i+1); j
@@ -75,22 +75,25 @@ end
     so that we can later get all reification ingredients from Ltac, 
     just by doing "intros ..." *)
 
-let reify_goal l goal =
+let reify_goal l =
+  Proofview.V82.tactic begin fun goal ->
+  let env0 = Tacmach.Old.pf_env goal in
+  let sigma = Tacmach.Old.project goal in
   (* getting the level *)
-  let l = read_level goal l in
+  let l = read_level env0 sigma l in
 
   (* variables for referring to the environments *)
-  let tenv_n,tenv_ref = fresh_name "tenv" goal in
-  let env_n,env_ref = fresh_name "env" goal in 
+  let tenv_n,tenv_ref = fresh_name env0 "tenv" in
+  let env_n,env_ref = fresh_name env0 "env" in 
 
   (* table associating indices to encountered types *)
   let tenv = Tbl.create() in 			
-  let insert_type t = Tbl.insert goal tenv t t in
+  let insert_type t = Tbl.insert env0 sigma tenv t t in
 
   (* table associating indices to encountered atoms *)
   let env = Tbl.create() in
   let insert_atom ops x s s' t = 
-    Tbl.insert goal env x ((* lazy *) (
+    Tbl.insert env0 sigma env x ((* lazy *) (
       (* let m =  *)
       (* 	try if s<>t then raise Not_found else *)
       (* 	  let h = resolve_one_typeclass goal (Mono.mono ops s' x) in *)
@@ -100,8 +103,6 @@ let reify_goal l goal =
       Syntax.pack ops tenv_ref s t x (* m *)
     ))
   in
-
-  let sigma = Tacmach.Old.project goal in
 
   (* get the (in)equation *)
   let rel,lops,lhs,rhs = 
@@ -123,8 +124,8 @@ let reify_goal l goal =
   let tgt = insert_type tgt' in
   let pck = Syntax.pack_type ops tenv_ref in (* type of packed elements *)
   let typ = Monoid.ob ops in	           (* type of types *)
-  let src_v,(src_n,src_) = Syntax.src_ ops tenv_ref env_ref, fresh_name "src" goal in
-  let tgt_v,(tgt_n,tgt_) = Syntax.tgt_ ops tenv_ref env_ref, fresh_name "tgt" goal in
+  let src_v,(src_n,src_) = Syntax.src_ ops tenv_ref env_ref, fresh_name env0 "src" in
+  let tgt_v,(tgt_n,tgt_) = Syntax.tgt_ ops tenv_ref env_ref, fresh_name env0 "tgt" in
 
   let es = Tacmach.Old.pf_env goal, Tacmach.Old.project goal in
   let is_pls s' t' = is_cup es l (Monoid.mor ops s' t') in
@@ -141,11 +142,11 @@ let reify_goal l goal =
   let rec reify (s,s' as ss) (t,t' as tt) e = 
     let k' _ =
       (* conversion here is untyped, so we need to ensure s' = t' when recognizing one *)
-      if convertible goal e (Monoid.one ops s') && convertible goal s' t' then 
+      if convertible env0 sigma e (Monoid.one ops s') && convertible env0 sigma s' t' then 
         Syntax.one src_ tgt_ s
-      else if l.has_bot && convertible goal e (Lattice.bot (Monoid.mor ops s' t')) then
+      else if l.has_bot && convertible env0 sigma e (Lattice.bot (Monoid.mor ops s' t')) then
         Syntax.zer src_ tgt_ s t
-      else if l.has_top && convertible goal e (Lattice.top (Monoid.mor ops s' t')) then
+      else if l.has_top && convertible env0 sigma e (Lattice.top (Monoid.mor ops s' t')) then
         Syntax.top src_ tgt_ s t
       else
         Syntax.var src_ tgt_ (insert_atom ops e s s' t)
@@ -170,8 +171,8 @@ let reify_goal l goal =
   in
 
   (* reification of left and right members *)
-  let lhs_v,(lhs_n,lhs) = reify (src,src') (tgt,tgt') lhs, fresh_name "lhs" goal in
-  let rhs_v,(rhs_n,rhs) = reify (src,src') (tgt,tgt') rhs, fresh_name "rhs" goal in
+  let lhs_v,(lhs_n,lhs) = reify (src,src') (tgt,tgt') lhs, fresh_name env0 "lhs" in
+  let rhs_v,(rhs_n,rhs) = reify (src,src') (tgt,tgt') rhs, fresh_name env0 "rhs" in
     
   (* apply "eval" around the reified terms *)
   let lhs = Syntax.eval ops tenv_ref env_ref src tgt lhs in
@@ -203,3 +204,4 @@ let reify_goal l goal =
   in
     (try Tacticals.Old.tclTHEN (retype reified) (Proofview.V82.of_tactic (Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast)) goal
      with e -> Feedback.msg_warning (Printer.pr_leconstr_env (fst es) (snd es) reified); raise e)
+  end
