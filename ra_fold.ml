@@ -133,33 +133,32 @@ let ra_fold_term env sigma ops ob t =
   t,!sigma
     
 let ra_fold_concl ops ob = Goal.enter (fun goal ->
-  (* get legacy goal *)
-  let goal = Goal.print goal in
-  let env = Tacmach.Old.pf_env goal in
-  let f,sigma = ra_fold_term env (Tacmach.Old.project goal) ops ob (Tacmach.Old.pf_concl goal) in
-  (try tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_concl ~cast:false ~check:true f DEFAULTcast)
-   with e -> Feedback.msg_warning (Printer.pr_leconstr_env env sigma f); raise e))
+  let env = Tacmach.pf_env goal in
+  let f,sigma = ra_fold_term env (Tacmach.project goal) ops ob (Tacmach.pf_concl goal) in
+  Proofview.tclORELSE
+    (tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_concl ~cast:false ~check:true f DEFAULTcast))
+    (fun (e, info) -> Feedback.msg_warning (Printer.pr_leconstr_env env sigma f); tclZERO ~info e))
 
-let ra_fold_hyp' ops ob decl goal =
+let ra_fold_hyp ops ob hyp =
+  Proofview.Goal.enter begin fun gl ->
+  let env = Tacmach.pf_env gl in
+  let sigma = Tacmach.project gl in
+  let decl = Tacmach.pf_get_hyp hyp gl in
   let id,ddef,dtyp = to_tuple decl in
   let decl,sigma = 
     match ddef with
     | Some def ->
        (* try to fold both the body and the type of local definitions *)
-       let def,sg = ra_fold_term (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) ops ob def in
-       let typ,sigma = ra_fold_term (Tacmach.Old.pf_env goal) sg ops ob dtyp in
+       let def,sg = ra_fold_term env sigma ops ob def in
+       let typ,sigma = ra_fold_term env sg ops ob dtyp in
        LocalDef(id,def,typ),sigma
     | None ->
        (* only fold the type of local assumptions *)
-       let typ,sigma = ra_fold_term (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) ops ob dtyp in
+       let typ,sigma = ra_fold_term env sigma ops ob dtyp in
        LocalAssum(id,typ),sigma
   in
   tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_hyp ~check:true ~reorder:true decl)
-
-let ra_fold_hyp ops ob hyp = Goal.enter (fun goal ->
-  (* get legacy goal *)
-  let goal = Goal.print goal in
-  ra_fold_hyp' ops ob (Tacmach.Old.pf_get_hyp goal hyp) goal)
+  end
 
 let ra_fold_hyps ops ob = 
   List.fold_left (fun acc hyp -> tclTHEN (ra_fold_hyp ops ob hyp) acc) (tclUNIT()) 

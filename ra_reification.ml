@@ -23,9 +23,11 @@ open EConstr
 (*   let mono = get_fun_3 path "mono" *)
 (* end *)
 
-let retype c gl =
-  let sigma, _ = Tacmach.Old.pf_apply Typing.type_of gl c in
-  { Evd.it = [gl.Evd.it]; Evd.sigma = sigma }
+let retype c =
+  Proofview.Goal.enter begin fun gl ->
+    let (sigma, _) = Typing.type_of (Tacmach.pf_env gl) (Tacmach.project gl) c in
+    Proofview.Unsafe.tclEVARS sigma
+  end
 
 module Syntax = Make_Syntax(struct let typ = Pos.t end)
 
@@ -76,9 +78,10 @@ end
     just by doing "intros ..." *)
 
 let reify_goal l =
-  Proofview.V82.tactic begin fun goal ->
-  let env0 = Tacmach.Old.pf_env goal in
-  let sigma = Tacmach.Old.project goal in
+  Proofview.Goal.enter begin fun goal ->
+  let env0 = Tacmach.pf_env goal in
+  let sigma = Tacmach.project goal in
+  let concl = Tacmach.pf_concl goal in
   (* getting the level *)
   let l = read_level env0 sigma l in
 
@@ -106,7 +109,7 @@ let reify_goal l =
 
   (* get the (in)equation *)
   let rel,lops,lhs,rhs = 
-    match kind sigma (Termops.strip_outer_cast sigma (Tacmach.Old.pf_concl goal)) with
+    match kind sigma (Termops.strip_outer_cast sigma concl) with
       | App(c,ca) when EConstr.eq_constr sigma c (Lazy.force Lattice.leq_or_weq)
 		  -> mkApp (c,[|ca.(0);ca.(1)|]), ca.(1), ca.(2), ca.(3)
       | App(c,ca) when EConstr.eq_constr sigma c (Lazy.force Lattice.leq) || EConstr.eq_constr sigma c (Lazy.force Lattice.weq)
@@ -127,7 +130,7 @@ let reify_goal l =
   let src_v,(src_n,src_) = Syntax.src_ ops tenv_ref env_ref, fresh_name env0 "src" in
   let tgt_v,(tgt_n,tgt_) = Syntax.tgt_ ops tenv_ref env_ref, fresh_name env0 "tgt" in
 
-  let es = Tacmach.Old.pf_env goal, Tacmach.Old.project goal in
+  let es = env0, sigma in
   let is_pls s' t' = is_cup es l (Monoid.mor ops s' t') in
   let is_cap s' t' = is_cap es l (Monoid.mor ops s' t') in
   let is_neg s' t' = is_neg es l (Monoid.mor ops s' t') in
@@ -202,6 +205,7 @@ let reify_goal l =
     mkNamedLetIn rhs_n rhs_v x (
     (mkApp (rel, [|lhs;rhs|]))))))))
   in
-    (try Tacticals.Old.tclTHEN (retype reified) (Proofview.V82.of_tactic (Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast)) goal
-     with e -> Feedback.msg_warning (Printer.pr_leconstr_env (fst es) (snd es) reified); raise e)
+  Proofview.tclORELSE
+    (Tacticals.tclTHEN (retype reified) (Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast))
+    (fun (e, info) -> Feedback.msg_warning (Printer.pr_leconstr_env (fst es) (snd es) reified); Proofview.tclZERO ~info e)
   end

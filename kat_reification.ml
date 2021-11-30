@@ -58,7 +58,7 @@ module Tbl : sig
      to [t] and returns the corresponding (Ocaml) index ; 
      [z] is an arbitrary information, to store with [x]
      [gl] is the current goal, used to compare terms *)
-  val insert: Goal.goal Evd.sigma -> 'a t -> constr -> constr -> 'a -> int
+  val insert: Environ.env -> Evd.evar_map -> 'a t -> constr -> constr -> 'a -> int
   (* [to_env t typ def] returns (coq) environment corresponding to [t], 
      yielding elements of type [typ], with [def] as default value *)
   val to_env: 'a t -> constr -> constr -> constr
@@ -70,18 +70,18 @@ end = struct
 
   let create () = ref []
 
-  let rec find gl x = function
+  let rec find env sigma x = function
     | [] -> raise Not_found
-    | (x',_,_)::q -> if convertible (Tacmach.Old.pf_env gl) (Tacmach.Old.project gl) x x' then 1+List.length q else find gl x q
+    | (x',_,_)::q -> if convertible env sigma  x x' then 1+List.length q else find env sigma x q
 
   let get t i = 
     let l = !t in 
     let (x,_,z) = List.nth l (List.length l-i) in
     (x,z)
 
-  let insert gl t x y z =
+  let insert env sigma t x y z =
     let l = !t in
-      try find gl x l
+      try find env sigma x l
       with Not_found -> 
 	t := (x,y,z)::l; 1+List.length l
     
@@ -213,26 +213,29 @@ end
     reification ingredients from Ltac, just by doing "intros ..." *)
 
 let reify_kat_goal ?kat check =
-  Proofview.V82.tactic begin fun goal ->
+  Proofview.Goal.enter begin fun goal ->
+  let env0 = Tacmach.pf_env goal in
+  let sigma = Tacmach.project goal in
+  let concl = Tacmach.pf_concl goal in
   let msg = 
     match kat with 
-      | Some b when EConstr.eq_constr (Tacmach.Old.project goal) b (Lazy.force Coq.true_) -> "KAT"
+      | Some b when EConstr.eq_constr sigma b (Lazy.force Coq.true_) -> "KAT"
       | _ -> "KA"
   in
 
   (* variables for referring to the environments *)
-  let tenv_n,tenv_ref = fresh_name (Tacmach.Old.pf_env goal) "tenv" in
-  let env_n,env_ref = fresh_name (Tacmach.Old.pf_env goal) "env" in 
-  let penv_n,penv_ref = fresh_name (Tacmach.Old.pf_env goal) "penv" in 
+  let tenv_n,tenv_ref = fresh_name env0 "tenv" in
+  let env_n,env_ref = fresh_name env0 "env" in 
+  let penv_n,penv_ref = fresh_name env0 "penv" in 
 
   (* table associating indices to encountered types *)
   let tenv = Tbl.create() in 			
-  let insert_type t = Tbl.insert goal tenv t t () in
+  let insert_type t = Tbl.insert env0 sigma tenv t t () in
 
   (* table associating indices to encountered atoms *)
   let env = Tbl.create() in
   let insert_atom mops x (s,_ as ss) (t,_ as tt) = 
-    Tbl.insert goal env x
+    Tbl.insert env0 sigma env x
       (Syntax.pack mops tenv_ref (Pos.of_int s) (Pos.of_int t) x) (ss,tt)
   in
 
@@ -242,14 +245,12 @@ let reify_kat_goal ?kat check =
     let t = 
       try fst (Hashtbl.find penv s)
       with Not_found -> let t = Tbl.create() in Hashtbl.add penv s (t,s'); t
-    in Tbl.insert goal t x x ()
+    in Tbl.insert env0 sigma t x x ()
   in
-
-  let sigma = Tacmach.Old.project goal in
 
   (* get the (in)equation *)
   let rel,ca = 
-    match kind sigma (Termops.strip_outer_cast sigma (Tacmach.Old.pf_concl goal)) with
+    match kind sigma (Termops.strip_outer_cast sigma concl) with
       | App(c,ca) ->
 	if EConstr.eq_constr sigma c (Lazy.force Lattice.weq) then mkApp (c,[|ca.(0)|]), ca
 	else if EConstr.eq_constr sigma c (Lazy.force Lattice.leq) then mkApp (c,[|ca.(0)|]), ca
@@ -274,10 +275,10 @@ let reify_kat_goal ?kat check =
   	let tgt = insert_type tgt' in
   	let pck = Syntax.pack_type mops tenv_ref in (* type of packed elements *)
   	let typ = Monoid.ob mops in		  (* type of types *)
-  let src_v,(src_n,src_) = Pack.s' kops tenv_ref env_ref, fresh_name (Tacmach.Old.pf_env goal) "src" in
-  let tgt_v,(tgt_n,tgt_) = Pack.t' kops tenv_ref env_ref, fresh_name (Tacmach.Old.pf_env goal) "tgt" in
+  let src_v,(src_n,src_) = Pack.s' kops tenv_ref env_ref, fresh_name env0 "src" in
+  let tgt_v,(tgt_n,tgt_) = Pack.t' kops tenv_ref env_ref, fresh_name env0 "tgt" in
 
-  let es = Tacmach.Old.pf_env goal, Tacmach.Old.project goal in
+  let es = env0, sigma in
   let is_pls s' t' = is_cup es max_level (Monoid.mor mops s' t') in
   let is_dot = is_dot es mops insert_type in
   let is_itr = is_itr es max_level mops in
@@ -286,7 +287,7 @@ let reify_kat_goal ?kat check =
   let is_cap s' = is_cap es max_level (lops s') in
   let is_neg s' = is_neg es max_level (lops s') in
   let is_inj s' k k' (c,ca,n as x) =
-    if n >= 1 && convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) (partial_app (n-1) c ca) (KAT.inj2 kops s') 
+    if n >= 1 && convertible env0 sigma (partial_app (n-1) c ca) (KAT.inj2 kops s') 
     then k ca.(n-1) else k' x
   in
 
@@ -294,8 +295,8 @@ let reify_kat_goal ?kat check =
      (s: index of the domain, s': actual domain) *)
   let rec lreify (s,s' as ss) e = 
     let k' _ = 
-      if convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) e (Lattice.top (lops s')) then AST.Top
-      else if convertible (Tacmach.Old.pf_env goal)  (Tacmach.Old.project goal)  e (Lattice.bot (lops s')) then AST.Bot
+      if convertible env0 sigma e (Lattice.top (lops s')) then AST.Top
+      else if convertible env0 sigma e (Lattice.bot (lops s')) then AST.Bot
       else AST.Tst (insert_pred e s s')
     in
     match kind sigma (Termops.strip_outer_cast sigma e) with App(c,ca) -> 
@@ -310,8 +311,8 @@ let reify_kat_goal ?kat check =
      (s: index of the domain, s': actual domain -- same for t) *)
   let rec reify (s,s' as ss) (t,t' as tt) e = 
     let k' _ = 
-      if convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) e (Monoid.one mops s') then AST.One(s)
-      else if convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) e (Lattice.bot (Monoid.mor mops s' t')) then AST.Zer(s,t)
+      if convertible env0 sigma e (Monoid.one mops s') then AST.One(s)
+      else if convertible env0 sigma e (Lattice.bot (Monoid.mor mops s' t')) then AST.Zer(s,t)
       else AST.Var (insert_atom mops e ss tt)
     in
     match kind sigma (Termops.strip_outer_cast sigma e) with App(c,ca) -> 
@@ -326,14 +327,14 @@ let reify_kat_goal ?kat check =
   in
 
   (* reification of left and right members *)
-  let lhs_v,(lhs_n,lhs) = reify (src,src') (tgt,tgt') ca.(1), fresh_name (Tacmach.Old.pf_env goal) "lhs" in
-  let rhs_v,(rhs_n,rhs) = reify (src,src') (tgt,tgt') ca.(2), fresh_name (Tacmach.Old.pf_env goal) "rhs" in
+  let lhs_v,(lhs_n,lhs) = reify (src,src') (tgt,tgt') ca.(1), fresh_name env0 "lhs" in
+  let rhs_v,(rhs_n,rhs) = reify (src,src') (tgt,tgt') ca.(2), fresh_name env0 "rhs" in
 
   (* checking the equivalence in OCaml, and displaying potential counter-examples *)
   (match if check then AST.equiv lhs_v rhs_v else None with Some t -> 
     let t = AST.parse_trace kops mops lops env penv (src,src') (tgt,tgt') t in
-    Tacticals.Old.tclFAIL 0 (Pp.(++) (Pp.str (" not a "^msg^" theorem:\n"))
-			   (Printer.pr_leconstr_env (fst es) (snd es) t)) goal
+    Tacticals.tclFAIL 0 (Pp.(++) (Pp.str (" not a "^msg^" theorem:\n"))
+			   (Printer.pr_leconstr_env (fst es) (snd es) t))
     | None -> 
   	 
   (* turning the ast in to coq constr *)
@@ -382,26 +383,27 @@ let reify_kat_goal ?kat check =
     mkNamedLetIn rhs_n rhs_v x (
       (mkApp (rel, [|lhs;rhs|])))))))))
   in	  
-  (try Proofview.V82.of_tactic (Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast) goal
-   with e -> Feedback.msg_warning (Printer.pr_leconstr_env (fst es) (snd es) reified); raise e))
+  Proofview.tclORELSE (Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast)
+  (fun (e, info) -> Feedback.msg_warning (Printer.pr_leconstr_env (fst es) (snd es) reified); Proofview.tclZERO ~info e))
   end
 
 
 (** tactic to precompute the alphabet and the universal expression,
     for Hoare hypotheses elimination ([hkat]) *)
 let get_kat_alphabet =
-  Proofview.V82.tactic begin fun goal ->
+  Proofview.Goal.enter begin fun goal ->
+  let env0 = Tacmach.pf_env goal in
+  let sigma = Tacmach.project goal in
+  let concl = Tacmach.pf_concl goal in
 
   let rec insert x = function
     | [] -> [x]
-    | x'::q as l -> if convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) x x' then l else x'::insert x q
+    | x'::q as l -> if convertible env0 sigma x x' then l else x'::insert x q
   in
-
-  let sigma = Tacmach.Old.project goal in
 
   (* get the (in)equation *)
   let ca = 
-    match kind sigma (Termops.strip_outer_cast sigma (Tacmach.Old.pf_concl goal)) with
+    match kind sigma (Termops.strip_outer_cast sigma concl) with
       | App(c,ca) ->
 	if EConstr.eq_constr sigma c (Lazy.force Lattice.weq) then ca
 	else if EConstr.eq_constr sigma c (Lazy.force Lattice.leq) then ca
@@ -422,13 +424,13 @@ let get_kat_alphabet =
       | _ -> error "could not find KAT operations"
   in
 
-  let es = Tacmach.Old.pf_env goal, Tacmach.Old.project goal in
+  let es = (env0, sigma) in
   let is_pls s' t' = is_cup es max_level (Monoid.mor mops s' t') in
   let is_dot = is_dot es mops ignore () in
   let is_itr = is_itr es max_level mops in
   let is_str = is_str es max_level mops in
   let is_inj s' k k' (c,ca,n as x) =
-    if n >= 1 && convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) (partial_app (n-1) c ca) (KAT.inj2 kops s') 
+    if n >= 1 && convertible env0 sigma (partial_app (n-1) c ca) (KAT.inj2 kops s') 
     then k ca.(n-1) else k' x
   in
 
@@ -436,8 +438,8 @@ let get_kat_alphabet =
      (s: index of the domain, s': actual domain -- same for t) *)
   let rec alphabet acc s' t' e = 
     let k' _ = 
-      if convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) e (Monoid.one mops s') then acc
-      else if convertible (Tacmach.Old.pf_env goal) (Tacmach.Old.project goal) e (Lattice.bot (Monoid.mor mops s' t')) then acc
+      if convertible env0 sigma e (Monoid.one mops s') then acc
+      else if convertible env0 sigma e (Lattice.bot (Monoid.mor mops s' t')) then acc
       else insert e acc
     in
     match kind sigma (Termops.strip_outer_cast sigma e) with App(c,ca) -> 
@@ -452,7 +454,7 @@ let get_kat_alphabet =
 
   (* getting the letters from the left and right members *)
   let alph = alphabet (alphabet [] src' tgt' ca.(2)) src' tgt' ca.(1) in
-  let (alph_n,_) = fresh_name (Tacmach.Old.pf_env goal) "u" in
+  let (alph_n,_) = fresh_name env0 "u" in
   let alph_v = 
     List.fold_left (Lattice.cup (Monoid.mor mops src' tgt'))
       (Lattice.bot (Monoid.mor mops src' tgt')) alph 
@@ -460,9 +462,7 @@ let get_kat_alphabet =
 
   (* add the alphabet with a let-in *)
   let reified = 
-    mkNamedLetIn alph_n alph_v (Lattice.car (Monoid.mor mops src' tgt'))
-      (Tacmach.Old.pf_concl goal)
+    mkNamedLetIn alph_n alph_v (Lattice.car (Monoid.mor mops src' tgt')) concl
   in	  
-    (try Proofview.V82.of_tactic (Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast) goal
-     with e -> (* Feedback.msg_warning (Printer.pr_lconstr reified); *) raise e)
+  Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast
   end
