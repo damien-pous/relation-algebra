@@ -240,5 +240,4 @@ Arguments p_var _%positive.
 
 (** Load ML reification modules *)
 
-Declare ML Module "ra_common". 
-Declare ML Module "kat_reification". 
+Declare ML Module "coq-relation-algebra.kat_reification". 

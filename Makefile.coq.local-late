@@ -1,0 +1,2 @@
+monoid.vo: ./ra_common$(DYNLIB)
+syntax.vo: ./ra_common$(DYNLIB)
