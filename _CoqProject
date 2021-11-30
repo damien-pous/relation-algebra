@@ -5,6 +5,7 @@
 
 -R . RelationAlgebra
 -I .
+META.coq-relation-algebra
 
 common.v
 comparisons.v

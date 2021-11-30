@@ -6,7 +6,7 @@
 (*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
 (*******************************************************************)
 
-DECLARE PLUGIN "ra_fold"
+DECLARE PLUGIN "coq-relation-algebra.ra_fold"
 
 {
   open Ltac_plugin
