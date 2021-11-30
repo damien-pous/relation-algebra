@@ -25,6 +25,7 @@ Require Export normalisation.
 Require Export prop.
 Require Export boolean.
 Require Export rel.
+Require Export srel.
 Require Export lang.
 Require Export lset.
 

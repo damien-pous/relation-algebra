@@ -18,9 +18,6 @@ Require Bool.
 Require Export boolean prop.
 Require Import kat rel.
 
-(* Set Universe Polymorphism. *)
-(* Set Printing Universes.  *)
-
 (** base type for setoids ; 
     if there is standard one in the standard library, we might want to switch to it 
     it could also be nice to have [lattice.weq] set up using such a structure, to share notation and lemmas
@@ -36,10 +33,14 @@ Record EqType := {
    for equality preserving funtions from A to X (using the following record type as carrier)
  *)
 Record spw (A: EqType) (X: lattice.ops) := {
-    spw_bod:> lattice.pw_ops X A; (* A->X *)
+    spw_bod:> A->X;
     spw_Eq: Proper (Eq A ==> weq) spw_bod
   }.
-(* #[export] Existing Instance spw_Eq. *)
+(*
+Definition spw_bod' A X := (spw_bod A X: spw A X -> lattice.pw_ops X A).
+Coercion spw_bod': spw >-> car.
+#[export] Existing Instance spw_Eq.
+ *)
 (*
   but:
   - this requires laws on X (preservation of weq) to lift the operations, e.g., 
@@ -47,17 +48,18 @@ Record spw (A: EqType) (X: lattice.ops) := {
   - this would force us to use [Proper (Eq A ==> weq)] rather than [pwr A weq] as equality 
     in order to obtain [Proper (Eq A ==> Eq A ==> weq)] for relations, 
     which is possibly not so convenient
-*)
+ *)
 
 (** * setoid-preserving relations as a lattice *)
 
 (** setoid-preserving relations *)
 Record srel (n m: EqType) := {
-    (* we use [hrel_lattice_ops n m] below rather than [hrel n m], so that the coercion has codomain [car] rather than [hrel] *)
-    rel_of:> hrel_lattice_ops n m (* hrel n m *);
-    srel_Eq: Proper (Eq n ==> Eq m ==> iff) rel_of
+    hrel_of:> hrel n m;
+    srel_Eq: Proper (Eq n ==> Eq m ==> iff) hrel_of
   }.
-Arguments rel_of {_ _}.
+Arguments hrel_of {_ _}.
+(* TOTHINK: only useful locally? *)
+Coercion car_of n m: srel n m -> hrel_lattice_ops n m := hrel_of.
 #[export] Existing Instance srel_Eq.
 
 (** setoid-preserving relations as a lattice; actually a sublattice of that of plain relations *)
@@ -65,15 +67,15 @@ Section s.
  Variables n m: EqType.
  Definition srel_leq (R S: srel n m): Prop := R ≦ S.  
  Definition srel_weq (R S: srel n m): Prop := R ≡ S.  
- Program Definition srel_cup (R S: srel n m): srel n m := {| rel_of := R ⊔ S |}.
+ Program Definition srel_cup (R S: srel n m): srel n m := {| hrel_of := R ⊔ S |}.
  Next Obligation. now rewrite H, H0. Qed.
- Program Definition srel_cap (R S: srel n m): srel n m := {| rel_of := R ⊓ S |}.
+ Program Definition srel_cap (R S: srel n m): srel n m := {| hrel_of := R ⊓ S |}.
  Next Obligation. now rewrite H, H0. Qed.
- Program Definition srel_neg (R: srel n m): srel n m := {| rel_of := !R |}.
+ Program Definition srel_neg (R: srel n m): srel n m := {| hrel_of := !R |}.
  Next Obligation. now rewrite H, H0. Qed.
- Program Definition srel_bot: srel n m := {| rel_of := bot |}.
+ Program Definition srel_bot: srel n m := {| hrel_of := bot |}.
  Next Obligation. tauto. Qed.
- Program Definition srel_top: srel n m := {| rel_of := top |}.
+ Program Definition srel_top: srel n m := {| hrel_of := top |}.
  Next Obligation. tauto. Qed.
  Canonical Structure srel_lattice_ops: lattice.ops := {|
   car := srel n m;
@@ -95,9 +97,10 @@ Section s.
 
  (** lattices laws follow from the fact that we have a sublattice of plain relations *)
  #[export] Instance srel_lattice_laws: lattice.laws (BDL+STR+CNV+DIV) srel_lattice_ops.
- Proof. apply (laws_of_injective_morphism rel_of); trivial. now split. Qed.
+ Proof. apply (laws_of_injective_morphism hrel_of); trivial. now split. Qed.
 
 End s.
+
 
 (** * setoid-preserving relations as a Kleene category *)
 
@@ -106,10 +109,10 @@ Section RepOps.
  Implicit Types n m p : EqType.
 
  Program Definition srel_one n: srel n n := 
-  {| rel_of := Eq n |}.
+  {| hrel_of := Eq n |}.
 
  Program Definition srel_dot n m p (x: srel n m) (y: srel m p): srel n p := 
-  {| rel_of := x⋅y |}.
+  {| hrel_of := x⋅y |}.
  Next Obligation.
    split; intros [z H1 H2].
     rewrite H in H1. rewrite H0 in H2. now exists z. 
@@ -117,15 +120,15 @@ Section RepOps.
  Qed. 
 
  Program Definition srel_cnv n m (x: srel n m): srel m n := 
-   {| rel_of := x° |}.
+   {| hrel_of := x° |}.
  Next Obligation. unfold hrel_cnv. now rewrite H, H0. Qed.
  
  Program Definition srel_ldv n m p (x: srel n m) (y: srel n p): srel m p := 
-  {| rel_of := x -o y |}.
+  {| hrel_of := x -o y |}.
  Next Obligation. unfold hrel_ldv. setoid_rewrite H. setoid_rewrite H0. reflexivity. Qed. 
 
  Program Definition srel_rdv n m p (x: srel m n) (y: srel p n): srel p m := 
-  {| rel_of := y o- x |}.
+  {| hrel_of := y o- x |}.
  Next Obligation. unfold hrel_rdv. setoid_rewrite H. setoid_rewrite H0. reflexivity. Qed. 
 
  Section i.
@@ -133,7 +136,7 @@ Section RepOps.
   Variable x: srel n n.
   (** finite iterations of a relation *)
   Fixpoint iter u: srel n n := match u with O => srel_one n | S u => srel_dot _ _ _ x (iter u) end.
-  Program Definition srel_str: srel n n := {| rel_of i j := exists u, rel_of (iter u) i j |}.
+  Program Definition srel_str: srel n n := {| hrel_of i j := exists u, iter u i j |}.
   Next Obligation. setoid_rewrite H. setoid_rewrite H0. reflexivity. Qed.
   Definition srel_itr: srel n n := srel_dot n n n x srel_str.
  End i.
@@ -185,10 +188,11 @@ Qed.
 Section tests.
  Variable A: ob srel_monoid_ops.
  Record dset := {
-     (* like above, we use a type which gives a better codomain for the coercion *)
-     dset_bod:> lattice.pw_ops bool_lattice_ops A; (* A -> bool *)
+     dset_bod:> A -> bool;
      dset_Eq: Proper (Eq A ==> eq) dset_bod;
    }.
+ (* TOTHINK: only useful locally? *)
+ Coercion car_of_dset f: lattice.pw_ops bool_lattice_ops A := dset_bod f.
  #[export] Existing Instance dset_Eq.
  (** all operations ar imported from [lattice.pw_ops]  *)
  Definition dset_leq (R S: dset): Prop := R ≦ S.  
@@ -223,7 +227,7 @@ Section tests.
  #[export] Instance dset_lattice_laws: lattice.laws (BL+STR+CNV+DIV) dset_lattice_ops.
  Proof. apply (laws_of_injective_morphism dset_bod); trivial. now split. Qed.
  
- Program Definition srel_inj (x: dset): srel A A := {|rel_of i j := Eq A i j /\ dset_bod x i|}.
+ Program Definition srel_inj (x: dset): srel A A := {|hrel_of i j := Eq A i j /\ x i|}.
  Next Obligation. now rewrite H,H0. Qed.
 
 End tests.
