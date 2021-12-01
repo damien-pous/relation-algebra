@@ -180,6 +180,9 @@ Proof.
    apply (rdv_spec (laws:=hrel_monoid_laws)).
 Qed.
 
+#[export] Instance Equivalence_srel_one A: Equivalence (@one srel_monoid_ops A).
+Proof. cbn. typeclasses eauto. Qed.
+
 (** * setoid-preserving relations as a Kleene category with tests *)
 
 (** setoid-preserving tests as a Boolean lattice;
