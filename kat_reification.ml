@@ -333,7 +333,7 @@ let reify_kat_goal ?kat check =
   (* checking the equivalence in OCaml, and displaying potential counter-examples *)
   (match if check then AST.equiv lhs_v rhs_v else None with Some t -> 
     let t = AST.parse_trace kops mops lops env penv (src,src') (tgt,tgt') t in
-    Tacticals.tclFAIL 0 (Pp.(++) (Pp.str (" not a "^msg^" theorem:\n"))
+    Tacticals.tclFAIL (Pp.(++) (Pp.str (" not a "^msg^" theorem:\n"))
 			   (Printer.pr_leconstr_env (fst es) (snd es) t))
     | None -> 
   	 
