@@ -140,6 +140,8 @@ Proof.
    intros x y z. rewrite 3weq_spec. intuition; etransitivity; eassumption.
 Qed.
 
+#[export] Instance weq_rel {ops} : RewriteRelation (@weq ops) := {}.
+
 #[export] Instance weq_leq `{laws}: subrelation weq leq.
 Proof. intros x y E. apply weq_spec in E as [? ?]. assumption. Qed.
 
