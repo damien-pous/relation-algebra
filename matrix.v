@@ -352,7 +352,7 @@ Lemma mx_dot_rowcol n m1 m2 p (M1: mx n m1) (M2: mx n m2) (N1: mx m1 p) (N2: mx 
   row_mx M1 M2 ⋅ col_mx N1 N2 ≡ M1⋅N1 + M2⋅N2.
 Proof.
   intros i j. setoid_rewrite sup_cut. unfold row_mx, col_mx. 
-  setoid_rewrite split_lshift. setoid_rewrite split_rshift. reflexivity. (* LONG *)
+  setoid_rewrite split_lshift. setoid_rewrite split_rshift. reflexivity.
 Qed.
 
 Lemma mx_dot_blk n1 n2 m1 m2 p1 p2 
