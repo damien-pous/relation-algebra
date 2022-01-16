@@ -520,7 +520,8 @@ Global Arguments ofbool {_ _} !_ /.
 
 
 (** ML modules *)
-Declare ML Module "coq-relation-algebra.ra_fold".
+Declare ML Module "ra_common:coq-relation-algebra.ra_common". 
+Declare ML Module "ra_fold:coq-relation-algebra.ra_fold".
 
 
 (** tricks for reification  *)
