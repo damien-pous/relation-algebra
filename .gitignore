@@ -22,7 +22,12 @@ Makefile.coq
 Makefile.coq.conf
 depgraph.dot
 depgraph.svg
+
 kat_reification.ml
+g_kat_reification.ml
 mrewrite.ml
+g_mrewrite.ml
 ra_fold.ml
+g_ra_fold.ml
 ra_reification.ml
+g_ra_reification.ml
