@@ -1,5 +1,6 @@
-== upcoming ==
+== RelationAlgebra 1.7.7  (2022, March 22nd) ==
 
+- compatibility with Coq 8.15
 - model of setoid-preserving heterogeneous relations
 
 == RelationAlgebra 1.7.6  (2021, November 11th) ==
