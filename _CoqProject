@@ -49,6 +49,7 @@ normalisation.v
 prop.v
 boolean.v
 rel.v
+srel.v
 lang.v
 lset.v
 

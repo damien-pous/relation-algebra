@@ -19,6 +19,7 @@ between types in this universe form a kleene algebra.  *)
 
 Universe U.
 Definition hrel (n m: Type@{U}) := n -> m -> Prop.
+Identity Coercion fun_of_hrel : hrel >-> Funclass.
 
 (** * Relations as a (bounded, distributive) lattice *)
 

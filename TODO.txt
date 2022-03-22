@@ -1,0 +1,12 @@
+- exploit universe polymorphism (see file rel.v)
+
+- rebase lattice.ops on top of a setoid structure ?
+
+- complete lattice operations / theory ?
+
+- more efficient decision procedure for KAT
+
+- KAPT
+- tactics for Kleene algebra with top/converse
+- tactics for residuals
+
