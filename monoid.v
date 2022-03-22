@@ -75,7 +75,7 @@ Notation "y o- x" := (rdv _ _ _ x y) (left associativity, at level 61): ra_terms
 
 (** Like for [lattice.ops], we declare most projections as Opaque for
    typeclass resolution, to save on compilation time. *)
-Typeclasses Opaque (* ob mor *) dot one str cnv ldv rdv.
+#[export] Typeclasses Opaque (* ob mor *) dot one str cnv ldv rdv.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

@@ -187,7 +187,7 @@ Proof. eauto with typeclass_instances. Qed.
 (* NOTE: declaring [weq] as opaque for typeclasses also saves some time,
    but this is problematic with the [Prop] instances, for which we often
    need [weq=iff] to be used by typeclass resolution *)
-Typeclasses Opaque (* weq *) leq cup cap neg bot top.
+#[export] Typeclasses Opaque (* weq *) leq cup cap neg bot top.
 
 
 (** * Basic properties of [⊔], [⊓], [bot], and [top] *)
