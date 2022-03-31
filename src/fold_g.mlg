@@ -6,12 +6,12 @@
 (*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
 (*******************************************************************)
 
-DECLARE PLUGIN "ra_fold"
+DECLARE PLUGIN "ra_plugin_fold"
 
 {
   open Ltac_plugin
   open Stdarg
-  open Ra_fold
+  open Fold
 }
 
 (* tactic grammar entries *)

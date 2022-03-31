@@ -240,5 +240,5 @@ Arguments p_var _%positive.
 
 (** Load ML reification modules *)
 
-Declare ML Module "ra_common". 
-Declare ML Module "kat_reification". 
+Declare ML Module "ra_plugin_common". 
+Declare ML Module "ra_plugin_kat". 

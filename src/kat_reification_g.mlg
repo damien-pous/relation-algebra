@@ -6,16 +6,20 @@
 (*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
 (*******************************************************************)
 
-DECLARE PLUGIN "ra_reification"
+DECLARE PLUGIN "ra_plugin_kat"
 
 {
 
 open Stdarg
 open Ltac_plugin
-open Ra_reification
+open Kat_reification
 
 }
 
 (* tactic grammar entries *)
-TACTIC EXTEND ra_reify 
-  | [ "ra_reify" constr(level) ] -> { reify_goal level } END
+TACTIC EXTEND ra_kat_reify_nocheck 
+  | [ "ra_kat_reify_nocheck" constr(kat) ] -> { reify_kat_goal ~kat false } END
+TACTIC EXTEND ra_kat_reify_check 
+  | [ "ra_kat_reify" constr(kat) ] -> { reify_kat_goal ~kat true } END
+TACTIC EXTEND ra_get_kat_alphabet 
+  | [ "ra_get_kat_alphabet" ] -> { get_kat_alphabet } END

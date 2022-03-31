@@ -12,7 +12,7 @@
    cf. "Kleene algebra with tests and program schematology", A. Angus and D. Kozen, 2001
 *)
 
-Require Import kat normalisation rewriting move kat_tac comparisons rel.
+From RelationAlgebra Require Import kat normalisation rewriting move kat_tac comparisons rel.
 Set Implicit Arguments.
 
 (** * Memory model  *)

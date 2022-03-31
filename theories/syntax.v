@@ -429,4 +429,5 @@ Definition tgt_ (X: ops) (f': positive -> ob X) (f: positive -> Pack X f') a := 
 
 
 (** loading ML reification module *)
-Declare ML Module "ra_reification". 
+Declare ML Module "ra_plugin_common". 
+Declare ML Module "ra_plugin_reification". 

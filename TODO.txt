@@ -1,3 +1,7 @@
+- some tutorial file
+- dune support ?
+
+
 - exploit universe polymorphism (see file rel.v)
 
 - rebase lattice.ops on top of a setoid structure ?

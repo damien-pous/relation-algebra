@@ -3,16 +3,16 @@
 while [ "$1" != "" ]; do
     case "$1" in
 	--enable-ssr)
-	    echo "fhrel.v" >>_CoqProject
+	    echo "theories/fhrel.v" >>_CoqProject
 	    ;;
 	--disable-ssr)
-	    sed --in-place '/fhrel\.v/d' _CoqProject || echo "warning: sed failed to remove fhrel.v"
+	    sed --in-place '/theories\/fhrel\.v/d' _CoqProject || echo "warning: sed failed to remove fhrel.v"
 	    ;;
 	--enable-aac)
-	    echo "rewriting_aac.v" >>_CoqProject
+	    echo "theories/rewriting_aac.v" >>_CoqProject
 	    ;;
 	--disable-aac)
-	    sed --in-place '/rewriting_aac\.v/d' _CoqProject || echo "warning: sed failed to remove rewriting_aac.v"
+	    sed --in-place '/theories\/rewriting_aac\.v/d' _CoqProject || echo "warning: sed failed to remove rewriting_aac.v"
 	    ;;
 	*)
 	    echo "unknown option"

@@ -520,8 +520,8 @@ Global Arguments ofbool {_ _} !_ /.
 
 
 (** ML modules *)
-Declare ML Module "ra_common". 
-Declare ML Module "ra_fold".
+Declare ML Module "ra_plugin_common". 
+Declare ML Module "ra_plugin_fold".
 
 
 (** tricks for reification  *)

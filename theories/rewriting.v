@@ -101,7 +101,8 @@ Lemma ext_weq_4' `{laws} {n m p q r} (x: X n m) (y: X m p) (z: X p q) (t: X q r)
 Proof. intros E ? ?. now rewrite E, !dotA. Qed. 
 
 
-Declare ML Module "mrewrite".
+Declare ML Module "ra_plugin_common".
+Declare ML Module "ra_plugin_mrewrite".
 
 (** User-end rewriting tactics *)
 

@@ -6,7 +6,7 @@
 (*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
 (*******************************************************************)
 
-(** Small library used by all ML plugins we define for [ar] *)
+(** Small library used by all ML plugins we define *)
 
 open Ltac_plugin
 open Tacexpr

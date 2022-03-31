@@ -6,16 +6,16 @@
 (*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
 (*******************************************************************)
 
-DECLARE PLUGIN "mrewrite"
+DECLARE PLUGIN "ra_plugin_reification"
 
 {
-  open Ltac_plugin
-  open Stdarg
-  open Tacarg
-  open Mrewrite
+
+open Stdarg
+open Ltac_plugin
+open Reification
+
 }
 
-TACTIC EXTEND ra_extend_lr
-  | [ "ra_extend" tactic(k) "->" constr(h) ] -> { extend ist k `LR h } END
-TACTIC EXTEND ra_extend_rl 
-  | [ "ra_extend" tactic(k) "<-" constr(h) ] -> { extend ist k `RL h } END
+(* tactic grammar entries *)
+TACTIC EXTEND ra_reify 
+  | [ "ra_reify" constr(level) ] -> { reify_goal level } END

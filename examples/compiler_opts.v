@@ -22,7 +22,7 @@
    exploit permutations of some Kleene variables (the Horn theory of
    KA with such commutation hypotheses is undecidable). *)
 
-Require Import kat normalisation rewriting kat_tac.
+From RelationAlgebra Require Import kat normalisation rewriting kat_tac.
 Set Implicit Arguments.
 
 (** in this module, we prefer the ";" notation for composition *)
