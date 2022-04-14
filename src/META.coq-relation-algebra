@@ -1,0 +1,51 @@
+package "common" (
+  requires = "coq-core.plugins.ltac"
+  description = "shared utilities for relation algebra plugins"
+  archive(byte) = "ra_plugin_common.cma"
+  archive(native) = "ra_plugin_common.cmxa"
+  plugin(byte) = "ra_plugin_common.cma"
+  plugin(native) = "ra_plugin_common.cmxs"
+  directory = "."
+)
+
+package "reification" (
+  requires = "coq-core.plugins.ltac coq-relation-algebra.common"
+  description = "reification plugin for relation algebra tactics"
+  archive(byte) = "ra_plugin_reification.cma"
+  archive(native) = "ra_plugin_reification.cmxa"
+  plugin(byte) = "ra_plugin_reification.cma"
+  plugin(native) = "ra_plugin_reification.cmxs"
+  directory = "."
+)
+
+package "fold" (
+  requires = "coq-core.plugins.ltac coq-relation-algebra.common"
+  description = "folding plugin for relation algebra"
+  archive(byte) = "ra_plugin_fold.cma"
+  archive(native) = "ra_plugin_fold.cmxa"
+  plugin(byte) = "ra_plugin_fold.cma"
+  plugin(native) = "ra_plugin_fold.cmxs"
+  directory = "."
+)
+
+package "mrewrite" (
+  requires = "coq-core.plugins.ltac coq-relation-algebra.common"
+  description = "rewriting modulo A plugin for relation algebra"
+  archive(byte) = "ra_plugin_mrewrite.cma"
+  archive(native) = "ra_plugin_mrewrite.cmxa"
+  plugin(byte) = "ra_plugin_mrewrite.cma"
+  plugin(native) = "ra_plugin_mrewrite.cmxs"
+  directory = "."
+)
+
+package "kat" (
+  requires = "coq-core.plugins.ltac coq-relation-algebra.common"
+  description = "KAT reification plugin for relation algebra"
+  archive(byte) = "ra_plugin_kat.cma"
+  archive(native) = "ra_plugin_kat.cmxa"
+  plugin(byte) = "ra_plugin_kat.cma"
+  plugin(native) = "ra_plugin_kat.cmxs"
+  directory = "."
+)
+
+directory = "."

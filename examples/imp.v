@@ -17,7 +17,7 @@
    equivalences, and to derive all rules of corresponding Hoare logic
    for partial correctness. *)
 
-Require Import kat prop rel comparisons kat_tac.
+From RelationAlgebra Require Import kat prop rel comparisons kat_tac.
 
 Section s.
 (** identifiers for memory locations  *)

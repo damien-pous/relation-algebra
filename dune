@@ -3,37 +3,37 @@
  (release (flags :standard -rectypes)
           (ocamlopt_flags -O3 -unbox-closures)))
 
-(coq.pp (modules ra_fold ra_reification mrewrite kat_reification))
+(coq.pp (modules fold reification mrewrite kat_reification))
 
 (library
- (name ra_common)
- (public_name relation-algebra.ra_common)
- (modules Ra_common)
+ (name common)
+ (public_name relation-algebra.common)
+ (modules common)
  (libraries coq.plugins.ltac))
 
 (library
- (name ra_fold)
- (public_name relation-algebra.ra_fold)
- (modules ra_fold g_ra_fold)
- (libraries ra_common))
+ (name fold)
+ (public_name relation-algebra.fold)
+ (modules fold fold_g)
+ (libraries common))
 
 (library
- (name ra_reification)
- (public_name relation-algebra.ra_reification)
- (modules ra_reification g_ra_reification)
- (libraries ra_common))
+ (name reification)
+ (public_name relation-algebra.reification)
+ (modules reification reification_g)
+ (libraries common))
 
 (library
  (name mrewrite)
  (public_name relation-algebra.mrewrite)
- (modules mrewrite g_mrewrite)
- (libraries ra_common))
+ (modules mrewrite mrewrite_g)
+ (libraries common))
 
 (library
  (name kat_reification)
  (public_name relation-algebra.kat_reification)
- (modules kat_dec kat_reification g_kat_reification)
- (libraries ra_common))
+ (modules kat_dec kat_reification kat_reification_g)
+ (libraries common))
 
 (coq.theory
  (name RelationAlgebra)
@@ -44,4 +44,4 @@
    -w -notation-overridden
    -w -redundant-canonical-projection
    )
- (libraries ra_fold ra_reification mrewrite kat_reification))
+ (libraries fold reification mrewrite kat_reification))

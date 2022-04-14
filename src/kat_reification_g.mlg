@@ -6,7 +6,7 @@
 (*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
 (*******************************************************************)
 
-DECLARE PLUGIN "coq-relation-algebra.kat_reification"
+DECLARE PLUGIN "coq-relation-algebra.kat"
 
 {
 

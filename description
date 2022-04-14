@@ -1,5 +1,5 @@
 Name: RelationAlgebra
-Title: Relation Algebra, Kleene algegra, and KAT (v1.4)
+Title: Relation Algebra, Kleene algegra, and KAT
 Url: http://perso.ens-lyon.fr/damien.pous/ra/
 Description: A modular library about relation algebra, from idempotent semirings to residuated Kleene allegories, including a decision tactic for Kleene algebra with Tests (KAT).
 Keywords: relation algebra, Kleene algebra with tests, KAT, allegories, residuated structures, automata, regular expressions, matrices

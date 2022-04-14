@@ -1,3 +1,9 @@
+- remove useless ra_ prefixes in src/ files
+
+- some tutorial file
+- dune support ?
+
+
 - exploit universe polymorphism (see file rel.v)
 
 - rebase lattice.ops on top of a setoid structure ?

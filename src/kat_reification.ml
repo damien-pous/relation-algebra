@@ -18,7 +18,7 @@
       to a given goal, to ease elimination of Hoare hypotheses in the
       [hkat] tactic. *)
 
-open Ra_common
+open Ra_plugin_common
 open Constr
 open EConstr
 

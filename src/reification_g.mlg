@@ -6,13 +6,13 @@
 (*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
 (*******************************************************************)
 
-DECLARE PLUGIN "coq-relation-algebra.ra_reification"
+DECLARE PLUGIN "coq-relation-algebra.reification"
 
 {
 
 open Stdarg
 open Ltac_plugin
-open Ra_reification
+open Reification
 
 }
 
