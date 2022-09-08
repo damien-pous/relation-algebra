@@ -1,11 +1,3 @@
-(*******************************************************************)
-(*  This is part of RelationAlgebra, it is distributed under the   *)
-(*    terms of the GNU Lesser General Public License version 3     *)
-(*              (see file LICENSE for more details)                *)
-(*                                                                 *)
-(*  Copyright 2013: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
-(*******************************************************************)
-
 (** * move: simple tactics allowing to move subterms inside products
   (by exploiting commutation hypotheses from the context) *)
 

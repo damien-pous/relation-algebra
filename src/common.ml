@@ -1,12 +1,4 @@
-(*******************************************************************)
-(*  This is part of RelationAlgebra, it is distributed under the   *)
-(*    terms of the GNU Lesser General Public License version 3     *)
-(*              (see file LICENSE for more details)                *)
-(*                                                                 *)
-(*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
-(*******************************************************************)
-
-(** Small library used by all ML plugins we define *)
+(** Small library used by all ML plugins we define in the library *)
 
 open Ltac_plugin
 open Tacexpr

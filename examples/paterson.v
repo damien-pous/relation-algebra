@@ -1,11 +1,3 @@
-(*******************************************************************)
-(*  This is part of RelationAlgebra, it is distributed under the   *)
-(*    terms of the GNU Lesser General Public License version 3     *)
-(*              (see file LICENSE for more details)                *)
-(*                                                                 *)
-(*  Copyright 2013: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
-(*******************************************************************)
-
 
 (** * paterson: Equivalence of two flowchart schemes, due to Paterson
    cf. "Mathematical theory of computation", Manna, 1974 

@@ -1,11 +1,3 @@
-(************************************************************************)
-(*  This is part of RelationAlgebra, it is distributed under the        *)
-(*    terms of the GNU Lesser General Public License version 3          *)
-(*              (see file LICENSE for more details)                     *)
-(*                                                                      *)
-(*  Copyright 2018: Christian Doczkal. (CNRS, LIP - ENS Lyon, UMR 5668) *)
-(************************************************************************)
-
 Require Import Setoid Morphisms.
 Require Import kat normalisation rewriting kat_tac comparisons rel relalg boolean.
 

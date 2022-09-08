@@ -1,11 +1,3 @@
-(*******************************************************************)
-(*  This is part of RelationAlgebra, it is distributed under the   *)
-(*    terms of the GNU Lesser General Public License version 3     *)
-(*              (see file LICENSE for more details)                *)
-(*                                                                 *)
-(*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
-(*******************************************************************)
-
 (** * kat_tac: decision tactics for KA, KAT, and KAT with Hoare hypotheses *)
 
 Require Import boolean ugregex_dec kat_reification kat_untyping kat_completeness. 

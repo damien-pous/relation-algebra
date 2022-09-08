@@ -1,11 +1,3 @@
-(*******************************************************************)
-(*  This is part of RelationAlgebra, it is distributed under the   *)
-(*    terms of the GNU Lesser General Public License version 3     *)
-(*              (see file LICENSE for more details)                *)
-(*                                                                 *)
-(*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
-(*******************************************************************)
-
 (** * atoms: atoms of the free Boolean lattice over a finite set  *)
 
 (** An atom is an expression that cannot be decomposed into a

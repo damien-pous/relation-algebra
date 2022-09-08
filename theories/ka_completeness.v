@@ -1,11 +1,3 @@
-(*******************************************************************)
-(*  This is part of RelationAlgebra, it is distributed under the   *)
-(*    terms of the GNU Lesser General Public License version 3     *)
-(*              (see file LICENSE for more details)                *)
-(*                                                                 *)
-(*  Copyright 2012: Damien Pous. (CNRS, LIP - ENS Lyon, UMR 5668)  *)
-(*******************************************************************)
-
 (** * ka_completeness: completeness of Kleene algebra *)
 (** We mostly follow Dexter Kozen's proof:
    A completeness theorem for Kleene algebras and the algebra of regular events. 
