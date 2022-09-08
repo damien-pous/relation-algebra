@@ -13,7 +13,7 @@
     [ra] tactics: we reify [monoid] and [lattice]
     operations into [syntax.expr] expressions *)
 
-open Ra_plugin_common
+open Plugins.Common
 open Constr
 open EConstr
 

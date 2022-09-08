@@ -61,31 +61,30 @@ examples/imp.v
 examples/paterson.v
 
 # plugin files
-src/META.coq-relation-algebra
 
 ## shared utilities
-src/ra_plugin_common.ml
-src/ra_plugin_common.mli
-src/ra_plugin_common.mllib
+src/common.ml
+src/common.mli
+src/plugins.mlpack
 
 ## the various plugins are packed separately: they don't load the same Coq refs
 src/fold.ml
 src/fold.mli
 src/fold_g.mlg
 src/fold_g.mli
-src/ra_plugin_fold.mlpack
+src/packed_fold.mlpack
 
 src/mrewrite.ml
 src/mrewrite.mli
 src/mrewrite_g.mlg
 src/mrewrite_g.mli
-src/ra_plugin_mrewrite.mlpack
+src/packed_mrewrite.mlpack
 
 src/reification.ml
 src/reification.mli
 src/reification_g.mlg
 src/reification_g.mli
-src/ra_plugin_reification.mlpack
+src/packed_reification.mlpack
 
 src/kat_dec.ml
 src/kat_dec.mli
@@ -93,4 +92,6 @@ src/kat_reification.ml
 src/kat_reification.mli
 src/kat_reification_g.mlg
 src/kat_reification_g.mli
-src/ra_plugin_kat.mlpack
+src/packed_kat.mlpack
+
+src/META.coq-relation-algebra

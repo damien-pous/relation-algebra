@@ -12,7 +12,7 @@
 (** Simple helper to define basic rewriting modulo A (associativity) tactics:
     (see the comments in [rewriting.v]) *)
 
-open Ra_plugin_common
+open Plugins.Common
 open Constr
 open EConstr
 

@@ -12,7 +12,7 @@
 (*i camlp4deps: "parsing/grammar.cma" i*)
 (*i camlp4use: "pa_extend.cmo" i*)
 
-open Ra_plugin_common
+open Plugins.Common
 open Constr
 open EConstr
 open Context.Named.Declaration
