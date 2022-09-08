@@ -17,17 +17,18 @@ _build
 .merlin
 .coq-native
 *.install
+.*.cache
 
 Makefile.coq
 Makefile.coq.conf
 depgraph.dot
 depgraph.svg
 
-kat_reification.ml
-g_kat_reification.ml
-mrewrite.ml
-g_mrewrite.ml
-ra_fold.ml
-g_ra_fold.ml
-ra_reification.ml
-g_ra_reification.ml
+src/fold.ml
+src/fold_g.ml
+src/kat_reification.ml
+src/kat_reification_g.ml
+src/mrewrite.ml
+src/mrewrite_g.ml
+src/reification.ml
+src/reification_g.ml

@@ -95,3 +95,8 @@ src/kat_reification_g.mli
 src/packed_kat.mlpack
 
 src/META.coq-relation-algebra
+
+# optional theory files are set below, via [configure] script
+
+theories/fhrel.v
+theories/rewriting_aac.v
