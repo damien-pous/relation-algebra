@@ -1,3 +1,8 @@
+== RelationAlgebra 1.7.8  (2022, September 8th) ==
+
+- compatibility with Coq 8.16
+- minor fixes, including w.r.t. licensing issues
+
 == RelationAlgebra 1.7.7  (2022, March 22nd) ==
 
 - compatibility with Coq 8.15
