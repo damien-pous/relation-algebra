@@ -40,7 +40,7 @@ Class lower (k k': level) := mk_lower:
   let 'mk_level a' b' c' d' e' f' g' h' := k' in
   is_true (a<<<a'&&& b<<<b' &&& c<<<c' &&& d<<<d' 
            &&& e<<<e' &&& f<<<f' &&& g<<<g' &&& h <<< h').
-(** Notation ≪ : \ll (company coq) or MUCH LESS-THAN (was '<<') *)
+(** Notation ≪ : \ll (company coq) or MUCH LESS-THAN *)
 
 Declare Scope ra_scope.
 Infix " ≪ " := lower (at level 79): ra_scope.
