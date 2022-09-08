@@ -1,7 +1,7 @@
 (** * pair: encoding pairs of ordinals as ordinals *)
 (** more precisely, [ord n * ord m] into [ord (n*m)] *)
 
-Require Import Lt Peano_dec Compare_dec Mult Euclid NPeano. (* TODO: se passer de NPeano? *)
+Require Import Psatz PeanoNat Compare_dec Euclid.
 Require Import ordinal.
 
 Set Asymmetric Patterns.
@@ -14,18 +14,14 @@ Lemma ltb_lt x y: ltb x y = true <-> lt x y.
 Proof.
   revert y. induction x; destruct y; simpl.
    split. discriminate. inversion 1. 
-   split. intro. apply lt_0_Sn. reflexivity. 
+   split. lia. trivial. 
    split. discriminate. inversion 1. 
-   rewrite IHx. split. apply lt_n_S. apply lt_S_n. 
+   rewrite IHx. lia. 
 Qed.
 
 (** auxiliary lemma *)
 Lemma mk_lt n m x y: x<n -> y<m -> y*n+x < n*m. 
-Proof. 
-  setoid_rewrite ltb_lt. 
-  intros. apply lt_le_trans with (y*n+n). apply plus_le_lt_compat. apply le_n. assumption. 
-  rewrite <-mult_succ_l, (mult_comm n). apply mult_le_compat. assumption. apply le_n. 
-Qed.
+Proof. setoid_rewrite ltb_lt. nia. Qed.
 
 (** since [x] is bounded by [n], we encode the pair [(x,y)] as [y*n+x] *)
 Definition mk n m (x: ord n) (y: ord m): ord (n*m).
@@ -35,7 +31,7 @@ now apply mk_lt.
 Defined. 
 
 Lemma ord_nm_lt_O_n {n m} (x: ord (n*m)): lt 0 n. 
-Proof. destruct n. elim (ord_0_empty x). apply lt_0_Sn. Qed.
+Proof. destruct n. elim (ord_0_empty x). lia. Qed.
 
 (** first projection, by modulo *)
 Definition pi1 {n m} (p: ord (n*m)): ord n := 
@@ -48,36 +44,32 @@ apply Ord with y.
 unfold gt in *.
 destruct p as [p Hp]. simpl in Hy. rewrite Hy in Hp. clear p Hy.  
 destruct (le_lt_dec m y) as [Hy|Hy]. 2: now apply ltb_lt. exfalso.
-apply ltb_lt in Hp. apply (mult_le_compat_l _ _ n) in  Hy. 
-apply (lt_le_trans _ _ _ Hp) in Hy. rewrite mult_comm in Hy. 
-apply ltb_lt in Hy. rewrite leb_plus_r in Hy. discriminate. 
+apply ltb_lt in Hp. abstract nia.
 Defined.
 
 Lemma euclid_unique n: lt 0 n -> 
   forall x y x' y', lt x n -> lt x' n -> y*n+x = y'*n+x' -> y=y' /\ x=x'. 
 Proof.
-  intros Hn x y x' y' Hx Hx' H. rewrite mult_comm, (mult_comm y') in H. split. 
+  intros Hn x y x' y' Hx Hx' H. rewrite Nat.mul_comm, (Nat.mul_comm y') in H. split. 
    erewrite Nat.div_unique. 3: eassumption. 2: assumption. 
    rewrite H. eapply Nat.div_unique. 2: symmetry; eassumption. assumption. 
    erewrite Nat.mod_unique. 3: eassumption. 2: assumption. 
    rewrite H. eapply Nat.mod_unique. 2: symmetry; eassumption. assumption. 
 Qed.
 
-(** projections bhave as expected *)
+(** projections behave as expected *)
 Lemma pi1mk n m: forall x y, pi1 (@mk n m x y) = x.
 Proof.
   intros [x Hx] [y Hy]. unfold pi1, mk. case eucl_dev. 
-  intros y' x' Hx' H. apply eq_ord. apply euclid_unique in H as [_ ?]; auto.  
-  eapply le_lt_trans. apply le_0_n. eassumption. 
-  now apply ltb_lt.
+  intros y' x' Hx' H. apply eq_ord. apply euclid_unique in H as [_ ?]; auto.
+  nia. now apply ltb_lt.
 Qed.
 
 Lemma pi2mk n m: forall x y, pi2 (@mk n m x y) = y.
 Proof.
   intros [x Hx] [y Hy]. unfold pi2, mk. case eucl_dev. 
   intros y' x' Hx' H. apply eq_ord. simpl. apply euclid_unique in H as [? _]; auto.  
-  eapply le_lt_trans. apply le_0_n. eassumption. 
-  now apply ltb_lt.
+  nia. now apply ltb_lt.
 Qed.
 
 (** surjective pairing *)

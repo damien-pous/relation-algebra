@@ -1,7 +1,7 @@
 (** * ordinal: finite ordinals, sets of finite ordinals *)
 
 Require Import List.
-Require Plus.
+Require Import PeanoNat.
 Require Import common comparisons.
 
 
@@ -186,7 +186,7 @@ Proof.
   case split_spec; intros j E. 
   exfalso. injection E. clear E. destruct j as [j Hj]. simpl. intros <-. 
    rewrite leb_plus_r in Hj. discriminate. 
-  f_equal. apply eq_ord. symmetry. injection E. apply Plus.plus_reg_l.
+  f_equal. apply eq_ord. symmetry. injection E. apply Nat.add_cancel_l.
 Qed.
 
 Lemma eqb_ord_lrshift n m i j: eqb_ord (@lshift n m i) (@rshift n m j) = false.
@@ -201,7 +201,7 @@ Proof. rewrite eqb_sym. apply eqb_ord_lrshift. Qed.
 Lemma eqb_ord_rrshift n m i j: eqb_ord (@rshift n m i) (@rshift n m j) = eqb_ord i j.
 Proof. 
   destruct i as [i Hi]; destruct j as [j Hj]. unfold eqb_ord. simpl.
-  do 2 case eqb_spec; trivial. intros E E'. elim E. eapply Plus.plus_reg_l, E'. 
+  do 2 case eqb_spec; trivial. intros E E'. elim E. eapply Nat.add_cancel_l, E'. 
   congruence. 
 Qed.
 
