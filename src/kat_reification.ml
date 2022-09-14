@@ -363,16 +363,16 @@ let reify_kat_goal ?kat check =
 
   (* reified goal conclusion: add the relation over the two evaluated members *)
   let reified = 
-    mkNamedLetIn tenv_n tenv (mkArrowR (Lazy.force Pos.t) typ) (
-    mkNamedLetIn env_n env (mkArrowR (Lazy.force Pos.t) pck) (
-    mkNamedLetIn penv_n penv 
+    mkNamedLetIn sigma tenv_n tenv (mkArrowR (Lazy.force Pos.t) typ) (
+    mkNamedLetIn sigma env_n env (mkArrowR (Lazy.force Pos.t) pck) (
+    mkNamedLetIn sigma penv_n penv 
       (mkProd (Context.anonR,Lazy.force Pos.t,
                mkArrowR (Lazy.force Pos.t)
   		 (Lattice.car (lops (mkApp (tenv_ref,[|mkRel 2|])))))) (
-    mkNamedLetIn src_n src_v (mkArrowR (Lazy.force Pack.var) (Lazy.force Pos.t)) (
-    mkNamedLetIn tgt_n tgt_v (mkArrowR (Lazy.force Pack.var) (Lazy.force Pos.t)) (
-    mkNamedLetIn lhs_n lhs_v x (
-    mkNamedLetIn rhs_n rhs_v x (
+    mkNamedLetIn sigma src_n src_v (mkArrowR (Lazy.force Pack.var) (Lazy.force Pos.t)) (
+    mkNamedLetIn sigma tgt_n tgt_v (mkArrowR (Lazy.force Pack.var) (Lazy.force Pos.t)) (
+    mkNamedLetIn sigma lhs_n lhs_v x (
+    mkNamedLetIn sigma rhs_n rhs_v x (
       (mkApp (rel, [|lhs;rhs|])))))))))
   in	  
   Proofview.tclORELSE (Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast)
@@ -454,7 +454,7 @@ let get_kat_alphabet =
 
   (* add the alphabet with a let-in *)
   let reified = 
-    mkNamedLetIn alph_n alph_v (Lattice.car (Monoid.mor mops src' tgt')) concl
+    mkNamedLetIn sigma alph_n alph_v (Lattice.car (Monoid.mor mops src' tgt')) concl
   in	  
   Tactics.convert_concl ~cast:false ~check:true reified DEFAULTcast
   end
