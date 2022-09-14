@@ -189,12 +189,12 @@ let reify_goal l =
 
   (* reified goal conclusion: add the relation over the two evaluated members *)
   let reified = 
-    mkNamedLetIn tenv_n tenv (mkArrowR (Lazy.force Pos.t) typ) (
-    mkNamedLetIn env_n env (mkArrowR (Lazy.force Pos.t) pck) (
-    mkNamedLetIn src_n src_v (mkArrowR (Lazy.force Pos.t) (Lazy.force Pos.t)) (
-    mkNamedLetIn tgt_n tgt_v (mkArrowR (Lazy.force Pos.t) (Lazy.force Pos.t)) (
-    mkNamedLetIn lhs_n lhs_v x (
-    mkNamedLetIn rhs_n rhs_v x (
+    mkNamedLetIn sigma tenv_n tenv (mkArrowR (Lazy.force Pos.t) typ) (
+    mkNamedLetIn sigma env_n env (mkArrowR (Lazy.force Pos.t) pck) (
+    mkNamedLetIn sigma src_n src_v (mkArrowR (Lazy.force Pos.t) (Lazy.force Pos.t)) (
+    mkNamedLetIn sigma tgt_n tgt_v (mkArrowR (Lazy.force Pos.t) (Lazy.force Pos.t)) (
+    mkNamedLetIn sigma lhs_n lhs_v x (
+    mkNamedLetIn sigma rhs_n rhs_v x (
     (mkApp (rel, [|lhs;rhs|]))))))))
   in
   Proofview.tclORELSE
