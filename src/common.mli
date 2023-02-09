@@ -5,13 +5,6 @@ val ra_path : string list
 val tc_find :
   Environ.env -> Evd.evar_map -> EConstr.types -> Evd.evar_map * EConstr.constr
 val new_evar :
-  ?filter:Evd.Filter.t ->
-  ?abstract_arguments:Evd.Abstraction.t ->
-  ?candidates:EConstr.constr list ->
-  ?naming:Namegen.intro_pattern_naming_expr ->
-  ?typeclass_candidate:bool ->
-  ?principal:bool ->
-  ?hypnaming:Evarutil.naming_mode ->
   Environ.env -> Evd.evar_map -> EConstr.types -> Evd.evar_map * EConstr.t
 val push :
   Names.Name.t Context.binder_annot ->
