@@ -11,12 +11,14 @@ license: "LGPL-3.0-or-later"
 depends: [
   "ocaml"
 #TO SET BEFORE RELEASE
-  "coq" {>= "8.15"}
+  "coq" {>= "8.17"}
+#  "coq" {>= "8.16" & < "8.17~"}
 #TO REMOVE BEFORE RELEASE (TO MAKE THEM OPTIONAL)
   "coq-mathcomp-ssreflect"
   "coq-aac-tactics"
 ]
-depopts: [ "coq-mathcomp-ssreflect" "coq-aac-tactics" ]
+#TO SET BEFORE RELEASE
+# depopts: [ "coq-mathcomp-ssreflect" "coq-aac-tactics" ]
 build: [
   ["sh" "-exc" "./configure --%{coq-mathcomp-ssreflect:enable}%-ssr --%{coq-aac-tactics:enable}%-aac"]
   [make "-j%{jobs}%"]
