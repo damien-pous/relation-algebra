@@ -98,5 +98,5 @@ src/META.coq-relation-algebra
 
 # optional theory files are set below, via [configure] script
 
-theories/fhrel.v
-theories/rewriting_aac.v
+# theories/fhrel.v
+# theories/rewriting_aac.v
