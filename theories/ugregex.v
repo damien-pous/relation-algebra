@@ -74,7 +74,7 @@ Proof.
    now intros ? ? ?.
    now intros _ ? ?.
    discriminate. 
-   intros _ [a|]; simpl; intuition; discriminate. 
+   intros _ [a|]; simpl; intuition discriminate. 
    discriminate. 
    discriminate.
    reflexivity. 
@@ -163,7 +163,7 @@ Proof.
 Qed.
 
 Lemma lang_0: lang u_zer ≡ 0.
-Proof. intros [?|???]; simpl; intuition; discriminate. Qed.
+Proof. intros [?|???]; simpl; intuition discriminate. Qed.
 
 Lemma lang_1: lang u_one ≡ 1.
 Proof. intros [a|???]; simpl. intuition. reflexivity. Qed.

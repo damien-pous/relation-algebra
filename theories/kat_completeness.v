@@ -440,8 +440,8 @@ Import syntax.
 Lemma o_pred_level x: e_level (o_pred x) ≪ BKA
   with o_npred_level x: e_level (o_npred x) ≪ BKA. 
 Proof.
-  destruct x; simpl o_pred; simpl e_level; rewrite ?merge_spec; intuition. 
-  destruct x; simpl o_npred; simpl e_level; rewrite ?merge_spec; intuition. 
+  destruct x; simpl o_pred; simpl e_level; rewrite ?merge_spec; intuition easy. 
+  destruct x; simpl o_npred; simpl e_level; rewrite ?merge_spec; intuition easy. 
 Qed.
 End n.
 
@@ -461,7 +461,7 @@ Proof. apply f_sup_eq; now f_equal. Qed.
 Lemma o_level n m (e: gregex n m): e_level (o e) ≪ BKA. 
 Proof.
   pose proof o_pred_level. 
-  induction e; simpl o; simpl e_level; rewrite ?merge_spec; intuition. 
+  induction e; simpl o; simpl e_level; rewrite ?merge_spec; intuition easy. 
 Qed.
 
 (** ** [o': expr3 n m -> gregex n m] *)
@@ -587,15 +587,15 @@ Definition gword_to_word' (w: gword) :=
 
 Lemma gword_to_word_cut n w: 
   gword_to_word n w = atom_to_word n (thead w) ++ gword_to_word' w.
-Proof. destruct w. apply app_nil_end. reflexivity. Qed.
+Proof. destruct w. now rewrite app_nil_r. reflexivity. Qed.
 
 Lemma gword_tapp: forall x y z, tapp x y z -> 
   forall n, gword_to_word n z = gword_to_word n x ++ gword_to_word' y. 
 Proof.
   induction 1; simpl; intros n. 
-   apply app_nil_end.
+   now rewrite app_nil_r.
    reflexivity. 
-   now rewrite IHtapp, app_ass. 
+   now rewrite IHtapp, <-app_assoc. 
 Qed.
 
 
@@ -677,7 +677,7 @@ Proof.
     destruct (Hf (gword_to_word m y)) as [? <- [y' Hy' Hay']].
      repeat eexists; eauto. rewrite Ha. rewrite H1. apply tapp_nil_x.
     repeat eexists; eauto.
-    rewrite app_ass, <-Hay', (gword_to_word_cut m y), (gword_tapp Hg), <-app_ass.
+    rewrite <-app_assoc, <-Hay', (gword_to_word_cut m y), (gword_tapp Hg), app_assoc.
     congruence.
   - apply proj2 in He. apply proj2 in Hf.
     intros [ea [x Hx [? <- ->]] [y Hy ->]].
@@ -687,7 +687,7 @@ Proof.
     apply tapp_nil_x_eq in Hay' as [Ha ->].
     destruct (tapp_cat x' y' Ha) as [z Hz]. 
     repeat eexists; eauto. 2: apply tapp_x_nil.
-    rewrite (gword_tapp Hz), <-Hxa, app_ass, Hay, gword_to_word_cut, ass_app.
+    rewrite (gword_tapp Hz), <-Hxa, <-app_assoc, Hay, gword_to_word_cut, <-app_assoc.
     congruence.
 Qed.
 
@@ -727,7 +727,7 @@ Proof.
     apply Hext. clear Hext.
     eexists. eassumption. eexists. apply IHn. apply Haw. 
     assumption.
-    rewrite (gword_tapp H'), Hxe, gword_to_word_cut, Haw, app_ass. congruence.
+    rewrite (gword_tapp H'), Hxe, gword_to_word_cut, Haw, <-app_assoc. congruence.
   - apply itr_ind_l.
     now rewrite <-H, <-itr_ext, dotA.
     rewrite <-itr_cons at 2.

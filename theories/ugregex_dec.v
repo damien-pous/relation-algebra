@@ -294,7 +294,7 @@ Proof.
   unfold loop. rewrite powerfix_linearfix. generalize (pow2 n). clear n. intro n.
   induction n; intros rel todo Hloop Hrel Hvars. discriminate. 
   simpl in Hloop. destruct todo as [|[e f] todo]. 
-   exists rel. split. now rewrite <- app_nil_end. now rewrite <-app_nil_end in Hrel. 
+   exists rel. split. now rewrite app_nil_r. now rewrite app_nil_r in Hrel. 
    revert Hloop. case rel_mem_spec. 
    intros Hef Hloop. apply IHn in Hloop as (rel'&H1&H2).
     eexists. split. 2: eassumption. 

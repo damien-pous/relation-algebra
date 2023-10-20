@@ -93,7 +93,7 @@ Proof. intros ? ? H ? ? <-. now apply lang_weq. Qed.
 Lemma lang_empty n (u: rmx 1 n) M v: u ≡0 -> lang M v u ≡ bot.
 Proof. 
   intros Hu w. revert Hu. induction w; intro Hu. simpl; fold_regex. 
-  rewrite Hu, dot0x. intuition. 
+  rewrite Hu, dot0x. intuition discriminate. 
   simpl. rewrite <-IHw by assumption. now rewrite Hu, dot0x.
 Qed.
 

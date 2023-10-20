@@ -70,15 +70,15 @@ Lemma lang_dotA n m p q x y z:
   lang_dot n m q x (lang_dot m p q y z) ≡ lang_dot n p q (lang_dot n m p x y) z.
 Proof.
   intro w. split. 
-  intros [u Hu [v [u' Hu' [v' Hv' ->]] ->]]. repeat eexists; eauto. apply ass_app.
-  intros [u [u' Hu' [v' Hv' ->]] [v Hv ->]]. repeat eexists; eauto. apply app_ass.
+  intros [u Hu [v [u' Hu' [v' Hv' ->]] ->]]. repeat eexists; eauto. now rewrite app_assoc.
+  intros [u [u' Hu' [v' Hv' ->]] [v Hv ->]]. repeat eexists; eauto. now rewrite app_assoc.
 Qed.
 
 Lemma lang_dotx1 x: lang_dot tt tt tt x (lang_one tt) ≡ x.
 Proof.
   intro w. split. 
-   intros [u Hu [v <- ->]]. now rewrite <-app_nil_end. 
-   intro Hw. exists w; trivial. exists nil.  reflexivity. apply app_nil_end.
+   intros [u Hu [v <- ->]]. now rewrite app_nil_r. 
+   intro Hw. exists w; trivial. exists nil.  reflexivity. now rewrite app_nil_r.
 Qed.
 
 Lemma lang_dot_leq n m p: Proper (leq ==> leq ==> leq) (lang_dot n m p).
@@ -109,7 +109,7 @@ Proof.
    intros w [u Hu [v [i Hi] ->]]. exists (S i). repeat eexists; eauto.
    intros w [u [i Hu] [v Hv ->]]. revert u Hu. induction i. 
     now intros u <-.
-    intros u [u' Hu' [u'' Hu'' ->]]. apply H0. rewrite app_ass. eexists; eauto. 
+    intros u [u' Hu' [u'' Hu'' ->]]. apply H0. rewrite <-app_assoc. eexists; eauto. 
    intro w. split. 
     intros [i H']. apply lang_iter_S in H' as [? ? [? ? ?]]. repeat eexists; eauto.
     intros [? ? [? [i H'] ?]]. exists i. apply lang_iter_S. repeat eexists; eauto.

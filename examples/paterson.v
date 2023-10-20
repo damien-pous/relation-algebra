@@ -51,7 +51,7 @@ Proof. destruct x; destruct y; simpl; try constructor; congruence. Qed.
 Lemma eqb_false x y: x<>y -> eqb x y = false.
 Proof. case eqb_spec; congruence. Qed.
 Lemma neqb_spec x y: negb (eqb x y) <-> x<>y.
-Proof. case eqb_spec; intuition; congruence. Qed.
+Proof. case eqb_spec; intuition easy. Qed.
 
 
 (** * Arithmetic and Boolean expressions *)
