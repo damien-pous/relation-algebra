@@ -16,3 +16,4 @@
 - tactics for Kleene algebra with top/converse
 - tactics for residuals
 
+- have [ka] work without 0
