@@ -11,7 +11,7 @@ license: "LGPL-3.0-or-later"
 depends: [
   "ocaml"
 #TO SET BEFORE RELEASE
-  "coq" {>= "8.17"}
+  "coq" {>= "8.18"}
 #  "coq" {>= "8.16" & < "8.17~"}
 #TO REMOVE BEFORE RELEASE (TO MAKE THEM OPTIONAL)
   "coq-mathcomp-ssreflect"
