@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - v8.17
+      - v8.18
   pull_request:
     branches:
       - '**'
@@ -16,7 +16,7 @@ jobs:
       matrix:
         image:
           - 'coqorg/coq:dev'
-          - 'coqorg/coq:8.17'
+          - 'coqorg/coq:8.18'
       fail-fast: false
 
     steps:
