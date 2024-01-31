@@ -66,30 +66,30 @@ Class is_total n m (x: X n m) := total: 1 ≦ x ⋅ x°.
 Class is_vector n m (v: X n m) := vector: v⋅top ≡ v.
 
 Class is_point n m (p: X n m) := {
-  point_vector:> is_vector p;
-  point_injective:> is_injective p;
-  point_nonempty:> is_nonempty p}.
+  point_vector:: is_vector p;
+  point_injective:: is_injective p;
+  point_nonempty:: is_nonempty p}.
 
 Class is_atom n m (a: X n m) := {
   a_top_a': a⋅top⋅a° ≦ 1;
   a'_top_a: a°⋅top⋅a ≦ 1;
-  atom_nonempty:> is_nonempty a}.
+  atom_nonempty:: is_nonempty a}.
 
 Class is_mapping n m (f: X n m) := {
-  mapping_univalent:> is_univalent f;
-  mapping_total:> is_total f}.
+  mapping_univalent:: is_univalent f;
+  mapping_total:: is_total f}.
 
 Class is_per n (e: X n n) := {
-  per_symmetric:> is_symmetric e;
-  per_transitive:> is_transitive e}.
+  per_symmetric:: is_symmetric e;
+  per_transitive:: is_transitive e}.
 
 Class is_preorder n (p: X n n) := {
-  pre_reflexive:> is_reflexive p;
-  pre_transitive:> is_transitive p}.
+  pre_reflexive:: is_reflexive p;
+  pre_transitive:: is_transitive p}.
 
 Class is_order n (p: X n n) := {
-  ord_preorder:> is_preorder p;
-  ord_antisymmetric:> is_antisymmetric p}.
+  ord_preorder:: is_preorder p;
+  ord_antisymmetric:: is_antisymmetric p}.
 
 Context {L: laws l X}.
 

@@ -96,7 +96,7 @@ Unset Strict Implicit.
    typeclass resolution. *)
 
 Class laws (l: level) (X: ops) := {
-  lattice_laws:>       forall n m, lattice.laws l (X n m);
+  lattice_laws::       forall n m, lattice.laws l (X n m);
   (** po-monoid laws *)
   dotA:                forall n m p q (x: X n m) y (z: X p q), x⋅(y⋅z) ≡ (x⋅y)⋅z;
   dot1x:               forall n m (x: X n m), 1⋅x ≡ x;
@@ -110,7 +110,7 @@ Class laws (l: level) (X: ops) := {
   (** converse laws *)
   cnvdot_   `{CNV ≪ l}: forall n m p (x: X n m) (y: X m p), (x⋅y)° ≦ y°⋅x°;
   cnv_invol `{CNV ≪ l}: forall n m (x: X n m), x°° ≡ x;
-  cnv_leq   `{CNV ≪ l}:>forall n m, Proper (leq ==> leq) (cnv n m);
+  cnv_leq   `{CNV ≪ l}::forall n m, Proper (leq ==> leq) (cnv n m);
   cnv_ext_  `{CNV ≪ l}: CAP ≪ l \/ forall n m (x: X n m), x ≦ x⋅x°⋅x;
   (** star laws *)
   str_refl  `{STR ≪ l}: forall n (x: X n n), 1 ≦ x^*;
@@ -456,7 +456,7 @@ Proof. dual @Schroeder_l. Qed.
 (** * Functors (i.e., monoid morphisms) *)
 
 Class functor l {X Y: ops} (f': ob X -> ob Y) (f: forall {n m}, X n m -> Y (f' n) (f' m)) := {
-  fn_morphism:>     forall n m, morphism l (@f n m);
+  fn_morphism::     forall n m, morphism l (@f n m);
   fn_dot:           forall n m p (x: X n m) (y: X m p), f (x⋅y) ≡ f x ⋅ f y;
   fn_one:           forall n, f (one n) ≡ 1;
   fn_itr `{STR ≪ l}: forall n (x: X n n), f (x^+) ≡ (f x)^+;
