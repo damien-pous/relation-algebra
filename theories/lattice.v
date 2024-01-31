@@ -94,7 +94,7 @@ Notation "! x" := (neg x) (right associativity, at level 20, format "! x"): ra_t
    typeclass resolution. *)
 
 Class laws (l: level) (X: ops) := {
-  leq_PreOrder:> PreOrder leq;
+  leq_PreOrder:: PreOrder leq;
   weq_spec            : forall x y , x ≡ y <-> x ≦ y /\ y ≦ x;
   cup_spec {Hl:CUP ≪ l}: forall x y z, x ⊔ y ≦ z <-> x ≦ z /\ y ≦ z;
   cap_spec {Hl:CAP ≪ l}: forall x y z, z ≦ x ⊓ y <-> z ≦ x /\ z ≦ y;

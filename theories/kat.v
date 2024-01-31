@@ -41,7 +41,7 @@ Notation " [ p ] " := (inj p): ra_terms.
    injection should be a morphism of idempotent semirings, i.e, map 
    [(leq,weq,cap,cup,top,bot)] into [(leq,weq,dot,pls,one,zer)] *)
 
-(* TOTHINK: voir si on laisse les deux instances :>, 
+(* TOTHINK: voir si on laisse les deux instances ::, 
    qui ne sont utiles que dans l'abstrait si les structures 
    concrètes sont déclarées incrémentalement 
    voir aussi s'il ne vaut pas mieux poser ces deux instances en
@@ -50,8 +50,8 @@ Notation " [ p ] " := (inj p): ra_terms.
    TODO: relacher les contraintes sur les niveaux
 *)
 Class laws (X: ops) := {
-  kar_BKA:> monoid.laws BKA kar;
-  tst_BL:> forall n, lattice.laws BL (tst n);
+  kar_BKA:: monoid.laws BKA kar;
+  tst_BL:: forall n, lattice.laws BL (tst n);
   mor_inj: forall n, morphism BSL (@inj X n);
   inj_top: forall n, [top] ≡ one n;
   inj_cap: forall n (p q: tst n), [p ⊓ q] ≡ [p] ⋅ [q]
