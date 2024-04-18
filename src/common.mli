@@ -7,12 +7,12 @@ val tc_find :
 val new_evar :
   Environ.env -> Evd.evar_map -> EConstr.types -> Evd.evar_map * EConstr.t
 val push :
-  Names.Name.t Context.binder_annot ->
+  Names.Name.t EConstr.binder_annot ->
   EConstr.types -> Environ.env -> Environ.env
 val convertible :
   Environ.env -> Evd.evar_map -> EConstr.constr -> EConstr.constr -> bool
 val fresh_name :
-  Environ.env -> string -> Names.Id.t Context.binder_annot * EConstr.t
+  Environ.env -> string -> Names.Id.t EConstr.binder_annot * EConstr.t
 val get_const : string list -> string -> EConstr.t lazy_t
 val force_app : EConstr.t Lazy.t -> EConstr.t array -> EConstr.t
 val partial_app : int -> EConstr.t -> EConstr.t array -> EConstr.t
