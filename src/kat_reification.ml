@@ -78,8 +78,8 @@ end = struct
 	t := (x,y,z)::l; 1+List.length l
     
   let to_env t typ def = match !t with
-    | [] -> mkLambda (Context.anonR,Lazy.force Pos.t,def)
-    | [_,x,_] -> mkLambda (Context.anonR,Lazy.force Pos.t,x)
+    | [] -> mkLambda (anonR,Lazy.force Pos.t,def)
+    | [_,x,_] -> mkLambda (anonR,Lazy.force Pos.t,x)
     | (_,x,_)::q ->
 	Pos.sigma_get typ x
 	  (snd (List.fold_left
@@ -366,7 +366,7 @@ let reify_kat_goal ?kat check =
     mkNamedLetIn sigma tenv_n tenv (mkArrowR (Lazy.force Pos.t) typ) (
     mkNamedLetIn sigma env_n env (mkArrowR (Lazy.force Pos.t) pck) (
     mkNamedLetIn sigma penv_n penv 
-      (mkProd (Context.anonR,Lazy.force Pos.t,
+      (mkProd (anonR,Lazy.force Pos.t,
                mkArrowR (Lazy.force Pos.t)
   		 (Lattice.car (lops (mkApp (tenv_ref,[|mkRel 2|])))))) (
     mkNamedLetIn sigma src_n src_v (mkArrowR (Lazy.force Pack.var) (Lazy.force Pos.t)) (

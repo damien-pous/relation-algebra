@@ -51,8 +51,8 @@ end = struct
 	  t := ((x,j,y)::l,i+1); j
     
   let to_env t typ def = match fst !t with
-    | [] -> mkLambda (Context.anonR,Lazy.force Pos.t,def)
-    | [_,_,x] -> mkLambda (Context.anonR,Lazy.force Pos.t,x)
+    | [] -> mkLambda (anonR,Lazy.force Pos.t,def)
+    | [_,_,x] -> mkLambda (anonR,Lazy.force Pos.t,x)
     | (_,_,x)::q ->
 	Pos.sigma_get typ x
 	  (List.fold_left

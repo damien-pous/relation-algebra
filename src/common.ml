@@ -46,7 +46,7 @@ let convertible' (env,sigma) = Reductionops.is_conv env sigma
 (* creating a name and a reference to that name *)
 let fresh_name env n =
   let vname = Tactics.fresh_id_in_env Id.Set.empty (Id.of_string n) env in
-    Context.annotR vname, mkVar vname
+    annotR vname, mkVar vname
 
 (* access to Coq constants *)
 let get_const dir s = 
