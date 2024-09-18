@@ -1,4 +1,8 @@
-== RelationAlgebra 1.7.10  (2024, October 20th) ==
+== RelationAlgebra 1.7.11 (2024, September 18th) ==
+
+- compatibility with Coq 8.20
+
+== RelationAlgebra 1.7.10 (2023, October 20th) ==
 
 - compatibility with Coq 8.18
 
