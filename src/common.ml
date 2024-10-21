@@ -49,8 +49,14 @@ let fresh_name env n =
     annotR vname, mkVar vname
 
 (* access to Coq constants *)
+let find_reference path id =
+  (* TODO: use registering rather than constant hardwiring *)
+  let path = DirPath.make (List.rev_map Id.of_string path) in
+  let fp = Libnames.make_path path (Id.of_string id) in
+  Nametab.global_of_path fp
+
 let get_const dir s = 
-  lazy (EConstr.of_constr (UnivGen.constr_of_monomorphic_global (Global.env ()) (Coqlib.find_reference "RelationAlgebra.reification" dir s)))
+  lazy (EConstr.of_constr (UnivGen.constr_of_monomorphic_global (Global.env ()) (find_reference dir s)))
 
 (* make an application using a lazy value *)
 let force_app f = fun x -> mkApp (Lazy.force f,x)
