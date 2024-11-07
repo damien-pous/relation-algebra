@@ -26,7 +26,7 @@ let ra_fold_term env sigma ops ob t =
   let obt = Monoid.ob ops in
   (* TOTKINK: Use  Evarconv.conv ? *)
   let unifiable sg env x y =
-    try sigma := Unification.w_unify env sg Conversion.CONV x y; true
+    try sigma := snd @@ Unification.w_unify env sg Conversion.CONV x y; true
     with _ -> false
   in
 
