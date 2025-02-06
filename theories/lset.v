@@ -17,7 +17,7 @@
    transparent way. *)
 
 Require Import lattice comparisons.
-Require Export List. Export ListNotations.
+From Stdlib Require Export List. Export ListNotations.
 
 Set Implicit Arguments.
 

@@ -1,5 +1,5 @@
 opam-version: "2.0"
-synopsis: "Relation Algebra and KAT in Coq"
+synopsis: "Relation Algebra and KAT in Rocq"
 name: "coq-relation-algebra"
 maintainer: "Damien Pous <Damien.Pous@ens-lyon.fr>"
 #TO SET BEFORE RELEASE
@@ -11,8 +11,8 @@ license: "LGPL-3.0-or-later"
 depends: [
   "ocaml"
 #TO SET BEFORE RELEASE
-  "coq" {>= "8.20"}
-#  "coq" {>= "8.20" & < "8.21~"}
+  "coq" {>= "9.0"}
+#  "coq" {>= "9.0" & < "9.1~"}
 #TO REMOVE BEFORE RELEASE (TO MAKE THEM OPTIONAL)
   "coq-mathcomp-ssreflect"
   "coq-aac-tactics"

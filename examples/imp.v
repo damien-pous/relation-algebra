@@ -36,8 +36,8 @@ Bind Scope imp_scope with prog.
 Delimit Scope imp_scope with imp.
 Notation "x  <- y" := (aff x y) (at level 90): imp_scope.
 Notation "p  ;; q" := (seq p%imp q%imp) (left associativity, at level 101): imp_scope.
-Arguments ite _%ra _%imp _%imp.
-Arguments whl _%ra _%imp.
+Arguments ite _%_ra _%_imp _%_imp.
+Arguments whl _%_ra _%_imp.
 
 
 (** * Big step semantics *)

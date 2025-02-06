@@ -452,7 +452,20 @@ Proof.
   (* TODO: optimize the line below *)
   rewrite one_blk_mx. apply blk_mx_leq; hlattice. 
 
-  rewrite mx_dot_blk. apply blk_mx_leq. 
+  (* apply cup_spec in He as [oe de]. *)
+  (* rewrite dotplsx in Hf.  *)
+  (* apply cup_spec in Hf as [of Hf]. *)
+  (* apply cup_spec in Hf as [af bcef]. *)
+  (* rewrite mx_dot_blk. apply blk_mx_leq. *)
+  (* all: apply cup_spec; split; trivial. *)
+  (* admit.          (* n=1 *) *)
+  (* admit.                        (* ok if n=1 *) *)
+  (* admit. *)
+  (* rewrite <-oe. ra. *)
+  (* rewrite <-dotA. rewrite dotA, de. reflexivity. (* m=1 *) *)
+  (* admit.                        (* ok if n=1 *) *)
+    
+  rewrite mx_dot_blk. apply blk_mx_leq.  
   rewrite <- Hf at 3. ra.
   rewrite <- Hf at 3. ra. 
   rewrite <- He at 2. ra. 
@@ -469,8 +482,8 @@ Proof.
   rewrite 2blk_mx', 2mx_dot_rowcol, 4mx_dot_colx. setoid_rewrite <-col_mx_cup.
   setoid_rewrite col_mx_leq_iff. rewrite 2cup_spec. intros [[Ha Hb] [Hc Hd]].
   specialize (He Hd). revert Hf.
-  rewrite 2dotplsx, 4cup_spec, <-!dotA. intro Hf. apply apply in Hf;
-  repeat split; repeat (trivial; rewrite ?Ha, ?Hb, ?Hc, ?Hd, ?He, ?Hf).
+  rewrite 2dotplsx, 4cup_spec. intro Hf. apply apply in Hf;
+    repeat split; rewrite <-?dotA; repeat (trivial; rewrite ?Ha, ?Hb, ?Hc, ?Hd, ?He, ?Hf).
 Qed.
 
 (** [mx_str_build] preserves the right induction rule for star *)

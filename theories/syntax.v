@@ -1,7 +1,7 @@
 (** * syntax: syntactic model for types structures (monoid operations) *)
 
 Require Export positives comparisons.
-Require Import Eqdep. 
+From Stdlib Require Import Eqdep. 
 Require Import monoid.
 Set Implicit Arguments.
 Set Asymmetric Patterns.

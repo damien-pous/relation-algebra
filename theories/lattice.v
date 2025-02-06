@@ -43,11 +43,11 @@ Coercion car: ops >-> Sortclass.
 Bind Scope ra_terms with car.
 
 (** Hints for simpl *)
-Arguments weq {ops} (x y)%ra / : simpl nomatch.
-Arguments leq {ops} (x y)%ra / : simpl nomatch.
-Arguments cup {ops} (x y)%ra / : simpl nomatch.
-Arguments cap {ops} (x y)%ra / : simpl nomatch.
-Arguments neg {ops} (x)%ra / : simpl nomatch.
+Arguments weq {ops} (x y)%_ra / : simpl nomatch.
+Arguments leq {ops} (x y)%_ra / : simpl nomatch.
+Arguments cup {ops} (x y)%_ra / : simpl nomatch.
+Arguments cap {ops} (x y)%_ra / : simpl nomatch.
+Arguments neg {ops} (x)%_ra / : simpl nomatch.
 Arguments bot {ops} / : simpl nomatch.
 Arguments top {ops} / : simpl nomatch.
 
@@ -586,7 +586,7 @@ Qed.
    between [leq] or [weq] first-class *)
 
 Definition leq_or_weq (b: bool) := if b then @leq else @weq.
-Arguments leq_or_weq _ {_} (_ _)%ra.
+Arguments leq_or_weq _ {_} (_ _)%_ra.
 Notation "x <=[ b ]= y"  := (leq_or_weq b x y) (at level 79): ra_scope.
 
 Lemma leq_or_weq_weq `{laws} b: Proper (weq ==> weq ==> iff) (leq_or_weq b).

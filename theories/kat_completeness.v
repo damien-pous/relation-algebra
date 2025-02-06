@@ -31,7 +31,7 @@
    (the converse is immediate, G being a model) *)
 
 (** enable notations for [positive] *)
-Require Import Coq.PArith.BinPosDef. 
+From Stdlib Require Import PArith.BinPosDef. 
 
 Require Import denum lset sums normalisation.
 Require Import kat ka_completeness untyping.

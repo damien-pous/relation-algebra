@@ -1,7 +1,7 @@
 (** * ordinal: finite ordinals, sets of finite ordinals *)
 
-Require Import List.
-Require Import PeanoNat.
+From Stdlib Require Import List.
+From Stdlib Require Import PeanoNat.
 Require Import common comparisons.
 
 

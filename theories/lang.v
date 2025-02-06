@@ -1,6 +1,6 @@
 (** * lang: the (flat) model of languages of finite words *)
 
-Require Import List.
+From Stdlib Require Import List.
 Require Export prop.
 Require Import monoid.
 

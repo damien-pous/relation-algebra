@@ -1,3 +1,7 @@
+== RelationAlgebra 1.7.12 (2025, February 2nd) ==
+
+- compatibility with Rocq 9.0
+
 == RelationAlgebra 1.7.11 (2024, September 18th) ==
 
 - compatibility with Coq 8.20

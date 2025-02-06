@@ -30,7 +30,7 @@ let ra_path = ["RelationAlgebra"]
 let error s = Printf.kprintf (fun s -> CErrors.user_err (Pp.str s)) ("[RelationAlgebra] "^^s)
 
 (* resolving a typeclass [cls] in a goal [gl] *)
-let tc_find env sigma cls = Typeclasses.resolve_one_typeclass env sigma cls
+let tc_find env sigma cls = Class_tactics.resolve_one_typeclass env sigma cls
 
 (* creating new evars *)
 let new_evar env sigma ty =
@@ -91,14 +91,14 @@ let ltac_apply ist (f: Tacinterp.value) (arg : constr) =
 
 (* Coq constants *)
 module Coq = struct
-  let path = ["Coq"; "Init"; "Datatypes"]
+  let path = ["Corelib"; "Init"; "Datatypes"]
   let true_ = get_const path "true"
 end
 
 (* RelationAlgebra.positives Coq module (plus standard positive numbers) *)
 module Pos = struct
   (* binary positive numbers *)
-  let path = ["Coq" ; "Numbers"; "BinNums"]
+  let path = ["Corelib" ; "Numbers"; "BinNums"]
   let t = get_const path "positive"
   let xH = get_const path "xH"
   let xI = get_fun_1 path "xI"

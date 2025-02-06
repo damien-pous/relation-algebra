@@ -60,7 +60,7 @@ let extend ist k dir h =
   	    let ops = ca.(0) in
 	    let sg,l = new_evar env !sigma (Lazy.force Level.t) in
 	    let sg,laws = 
-	      try Typeclasses.resolve_one_typeclass env sg (Monoid.laws l ops) 
+	      try Class_tactics.resolve_one_typeclass env sg (Monoid.laws l ops) 
 	      with Not_found -> error "could not find monoid laws"
 	    in
 	    let l = Evarutil.nf_evar sg l in

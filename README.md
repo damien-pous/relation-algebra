@@ -1,12 +1,12 @@
 
-# Relation Algebra for Coq
+# Relation Algebra for Rocq
 
 Webpage of the project: http://perso.ens-lyon.fr/damien.pous/ra
 
 
 ## DESCRIPTION
 
-This Coq development is a modular library about relation algebra:
+This Rocq development is a modular library about relation algebra:
 those algebras admitting heterogeneous binary relations as a model,
 ranging from partially ordered monoid to residuated Kleene allegories
 and Kleene algebra with tests (KAT).
@@ -52,14 +52,14 @@ verification:
   are proved by a single call to the hkat tactic.
 - a proof of the equivalence of two flowchart schemes, due to
   Paterson. The informal paper proof takes one page; Allegra Angus and
-  Dexter Kozen gave a six pages long proof using KAT; our Coq proof is
+  Dexter Kozen gave a six pages long proof using KAT; our Rocq proof is
   about 100 lines.
 
 
 ## INSTALLATION
 
 The easiest way to install this library is via OPAM. For the current
-stable release of Coq, the library can be installed directly through
+stable release of Rocq, the library can be installed directly through
 the `released` repository:
 ```
 opam repo add coq-released https://coq.inria.fr/opam/released

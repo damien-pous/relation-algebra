@@ -6,7 +6,7 @@
     accordingly.
  *)
 
-Require Bool.
+From Stdlib Require Bool.
 Require Export boolean prop.
 Require Import kat rel.
 

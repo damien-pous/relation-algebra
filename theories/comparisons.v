@@ -1,7 +1,7 @@
 (** * comparisons: types equiped with a comparison function *)
 
-Require Import List.
-Require Import Eqdep Eqdep_dec. 
+From Stdlib Require Import List.
+From Stdlib Require Import Eqdep Eqdep_dec. 
 Import ListNotations.
 Set Implicit Arguments.
 

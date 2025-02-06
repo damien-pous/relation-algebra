@@ -1,3 +1,8 @@
+- ssrefleft/self
+"_ ^+" defined at level 5 with arguments constr at level 5
+vs "_ ^+ _" defined at level 29 with arguments constr at level 29
+
+
 - remove useless ra_ prefixes in src/ files
 
 - some tutorial file

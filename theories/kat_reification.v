@@ -226,9 +226,9 @@ Qed.
 
 End s.
 
-Arguments e_inj _ _ _ _%positive _%last.
-Arguments e_var _ _ _ _%positive.
-Arguments p_var _%positive.
+Arguments e_inj _ _ _ _%_positive _%_last.
+Arguments e_var _ _ _ _%_positive.
+Arguments p_var _%_positive.
 
 (** Load ML reification modules *)
 

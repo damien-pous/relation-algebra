@@ -34,13 +34,13 @@ Arguments ob : clear implicits.
 
 (** Hints for simpl *)
 Arguments mor {ops} n m / : simpl nomatch.
-Arguments dot {ops} n m p (x y)%ra / : simpl nomatch.
+Arguments dot {ops} n m p (x y)%_ra / : simpl nomatch.
 Arguments one {ops} n / : simpl nomatch.
-Arguments itr {ops} n (x)%ra / : simpl nomatch.
-Arguments str {ops} n (x)%ra / : simpl nomatch.
-Arguments cnv {ops} n m (x)%ra / : simpl nomatch.
-Arguments ldv {ops} n m p (x y)%ra / : simpl nomatch.
-Arguments rdv {ops} n m p (x y)%ra / : simpl nomatch.
+Arguments itr {ops} n (x)%_ra / : simpl nomatch.
+Arguments str {ops} n (x)%_ra / : simpl nomatch.
+Arguments cnv {ops} n m (x)%_ra / : simpl nomatch.
+Arguments ldv {ops} n m p (x y)%_ra / : simpl nomatch.
+Arguments rdv {ops} n m p (x y)%_ra / : simpl nomatch.
 
 (** Notations (note that "+" and "∩" are just specialisations of the
    notations "⊔" and "⊓", when these operations actually come

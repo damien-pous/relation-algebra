@@ -1,7 +1,7 @@
 (** * pair: encoding pairs of ordinals as ordinals *)
 (** more precisely, [ord n * ord m] into [ord (n*m)] *)
 
-Require Import Psatz PeanoNat Compare_dec Euclid.
+From Stdlib Require Import Psatz PeanoNat Compare_dec Euclid.
 Require Import ordinal.
 
 Set Asymmetric Patterns.

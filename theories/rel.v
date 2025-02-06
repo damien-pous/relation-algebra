@@ -1,6 +1,6 @@
 (** * rel: the main model of heterogeneous binary relations *)
 
-Require Bool.
+From Stdlib Require Bool.
 Require Export boolean prop.
 Require Import kat.
 
