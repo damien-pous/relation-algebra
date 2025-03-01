@@ -34,7 +34,7 @@ let tc_find env sigma cls = Class_tactics.resolve_one_typeclass env sigma cls
 
 (* creating new evars *)
 let new_evar env sigma ty =
-  Evarutil.new_evar ~src:(None,Evar_kinds.GoalEvar) env sigma ty
+  Evarutil.new_evar ~typeclass_candidate:true ~src:(None,Evar_kinds.GoalEvar) env sigma ty
 
 (* push a variable on the environment *)
 let push x t env = Termops.push_rel_assum (x,t) env
