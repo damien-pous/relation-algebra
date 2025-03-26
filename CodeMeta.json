@@ -1,0 +1,37 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "type": "SoftwareSourceCode",
+    "applicationCategory": "Relation algebra",
+    "author": [
+        {
+            "id": "https://perso.ens-lyon.fr/damien.pous/",
+            "type": "Person",
+            "affiliation": {
+                "type": "Organization",
+                "name": "Plume team, LIP, CNRS"
+            },
+            "email": "Damien.Pous@ens-lyon.fr",
+            "familyName": "Pous",
+            "givenName": "Damien"
+        }
+    ],
+    "codeRepository": "https://github.com/damien-pous/relation-algebra",
+    "dateCreated": "2012-09-01",
+    "datePublished": "2012-12-16",
+    "description": "A modular library about relation algebra, from idempotent semirings to residuated Kleene allegories, including a decision tactic for Kleene algebra with Tests (KAT)",
+    "keywords": [
+        "relation algebra",
+        "Kleene algebra",
+        "Kleene algebra with tests",
+        "automata",
+        "allegories",
+        "automation tactics",
+        "regular expressions",
+        "Coq",
+        "Rocq"
+    ],
+    "license": "LGPL",
+    "name": "relation-algebra",
+    "programmingLanguage": "Coq",
+    "referencePublication": "https://doi.org/10.1007/978-3-642-39634-2_15"
+}
