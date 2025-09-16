@@ -92,7 +92,7 @@ src/kat_reification_g.mlg
 src/kat_reification_g.mli
 src/packed_kat.mlpack
 
-src/META.coq-relation-algebra
+src/META.rocq-relation-algebra
 
 # optional theory files are set below, via [configure] script
 

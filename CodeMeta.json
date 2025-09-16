@@ -27,11 +27,10 @@
         "allegories",
         "automation tactics",
         "regular expressions",
-        "Coq",
         "Rocq"
     ],
     "license": "LGPL",
     "name": "relation-algebra",
-    "programmingLanguage": "Coq",
+    "programmingLanguage": "Rocq",
     "referencePublication": "https://doi.org/10.1007/978-3-642-39634-2_15"
 }
