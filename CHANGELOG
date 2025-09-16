@@ -1,3 +1,9 @@
+== RelationAlgebra 1.7.13 (2025, September 17th) ==
+
+- move from Coq to Rocq
+- (optional) compatibility with mathcomp-ssreflect & aac-tactics
+- level for notation "^*" lowered to 1 to agree with mathcomp-ssreflect
+
 == RelationAlgebra 1.7.12 (2025, February 2nd) ==
 
 - compatibility with Rocq 9.0

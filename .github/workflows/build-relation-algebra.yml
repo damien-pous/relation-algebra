@@ -16,16 +16,16 @@ jobs:
       matrix:
         image:
           - 'rocq/rocq-prover:dev'
-          - 'rocq/rocq-prover:9.0-rc1'
+          - 'rocq/rocq-prover:9.0.0'
       fail-fast: false
 
     steps:
       - uses: actions/checkout@v2
-      - uses: coq-community/docker-coq-action@v1
+      - uses: rocq-community/docker-coq-action@v1
         with:
-          opam_file: 'coq-relation-algebra.opam'
+          opam_file: 'rocq-relation-algebra.opam'
           custom_image: ${{ matrix.image }}
 
 # See also:
-# https://github.com/coq-community/docker-coq-action#readme
+# https://github.com/rocq-community/docker-coq-action#readme
 # https://github.com/erikmd/docker-coq-github-action-demo
