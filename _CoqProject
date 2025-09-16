@@ -1,8 +1,6 @@
 # Suppress harmless compiler warnings we can't do anything about.
--arg -w -arg -projection-no-head-constant
 -arg -w -arg -notation-overridden
 -arg -w -arg -redundant-canonical-projection
--arg -w -arg -future-coercion-class-field
 
 -R theories/ RelationAlgebra
 -I src/
