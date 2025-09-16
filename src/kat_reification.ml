@@ -14,7 +14,7 @@ open Plugins.Common
 open Constr
 open EConstr
 
-(* RelationAlgebra.kat Coq module *)
+(* RelationAlgebra.kat Rocq module *)
 module KAT = struct
   let path = ra_path@["kat"]
   let kar      = get_const path "kar"
@@ -51,10 +51,10 @@ module Tbl : sig
      [z] is an arbitrary information, to store with [x]
      [gl] is the current goal, used to compare terms *)
   val insert: Environ.env -> Evd.evar_map -> 'a t -> constr -> constr -> 'a -> int
-  (* [to_env t typ def] returns (coq) environment corresponding to [t], 
+  (* [to_env t typ def] returns (rocq) environment corresponding to [t], 
      yielding elements of type [typ], with [def] as default value *)
   val to_env: 'a t -> constr -> constr -> constr
-  (* [get t i] returns the (coq) value of the i-th element, 
+  (* [get t i] returns the (rocq) value of the i-th element, 
      together with the associated information *)
   val get: 'a t -> int -> constr*'a
 end = struct
@@ -109,7 +109,7 @@ module AST = struct
     | Itr of idx*e
     | Str of idx*e
 
-  (* constructing reified Coq terms out of the AST *)
+  (* constructing reified Rocq terms out of the AST *)
   let rec tread = function
     | Bot -> Lazy.force LSyntax.bot
     | Top -> Lazy.force LSyntax.top
@@ -211,7 +211,7 @@ let reify_kat_goal ?kat check =
   let concl = Tacmach.pf_concl goal in
   let msg = 
     match kat with 
-      | Some b when EConstr.eq_constr sigma b (Lazy.force Coq.true_) -> "KAT"
+      | Some b when EConstr.eq_constr sigma b (Lazy.force Rocq.true_) -> "KAT"
       | _ -> "KA"
   in
 
@@ -329,7 +329,7 @@ let reify_kat_goal ?kat check =
 			   (Printer.pr_leconstr_env (fst es) (snd es) t))
     | None -> 
   	 
-  (* turning the ast in to coq constr *)
+  (* turning the ast in to rocq constr *)
   let lhs_v = AST.read kops tenv_ref env_ref src_ tgt_ lhs_v in
   let rhs_v = AST.read kops tenv_ref env_ref src_ tgt_ rhs_v in
   let src = Pos.of_int src in
@@ -340,10 +340,10 @@ let reify_kat_goal ?kat check =
   let rhs = Pack.eval kops tenv_ref env_ref penv_ref src tgt rhs in
   let x = Pack.expr kops tenv_ref env_ref src tgt in
     
-  (* construction of coq' types index *)
+  (* construction of rocq's types index *)
   let tenv = Tbl.to_env tenv typ src' in
     
-  (* construction of coq' reification environment for atoms *)
+  (* construction of rocq's reification environment for atoms *)
   let env = 
     let def = 
       let one = Monoid.one mops src' in
@@ -352,7 +352,7 @@ let reify_kat_goal ?kat check =
     Tbl.to_env env pck def 
   in
   
-  (* construction of coq' reification environment for predicates *)
+  (* construction of rocq's reification environment for predicates *)
   let penv = 
     Pack.v_get kops tenv_ref
       (Hashtbl.fold (fun s (t,s') acc ->

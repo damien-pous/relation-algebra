@@ -3,14 +3,14 @@
 
     Computing counter-examples in OCaml has three advantages:
     - it's faster so that failures are detected earlier;
-    - the Coq algorithm don't need to compute them;
-    - the proof of correctness of the Coq algorithm is not polluted 
+    - the Rocq algorithm don't need to compute them;
+    - the proof of correctness of the Rocq algorithm is not polluted 
       by the corresponding additional computations.
 
     There are two inconvenients:
     - the code is duplicated, and the OCaml one could be wrong;
     - in case of success we do the computations twice (in OCaml, then
-      in Coq).
+      in Rocq).
 
 *)
 
@@ -57,7 +57,7 @@ let g_str e = G_pls (g_one,(G_itr e))
 
 
 (** ** very basic algorithm for deciding KAT (in)equations, through partial derivatives *)
-(** (actually extracted from the formalised one in Coq, and then
+(** (actually extracted from the formalised one in Rocq, and then
     reworked manually to include counter-example generation) *)
 
 

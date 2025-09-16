@@ -9,7 +9,7 @@ open Plugins.Common
 open Constr
 open EConstr
 
-(* RelationAlgebra.mono Coq module *)
+(* RelationAlgebra.mono Rocq module *)
 (* module Mono = struct *)
 (*   let path = ra_path@["mono"] *)
 (*   let mono = get_fun_3 path "mono" *)
@@ -28,10 +28,10 @@ module Tbl : sig
   (* create an empty table *)
   val create: unit -> t
   (* [insert gl t x y] adds the association [x->y] to [t] and returns 
-     the corresponding (coq) index ; [gl] is the current goal, used 
+     the corresponding (rocq) index ; [gl] is the current goal, used 
      to compare terms *)
   val insert: Environ.env -> Evd.evar_map -> t -> constr -> constr -> constr
-  (* [to_env t typ def] returns (coq) environment corresponding to [t], 
+  (* [to_env t typ def] returns (rocq) environment corresponding to [t], 
      yielding elements of type [typ], with [def] as default value *)
   val to_env: t -> constr -> constr -> constr
 end = struct
@@ -174,10 +174,10 @@ let reify_goal l =
   let rhs = Syntax.eval ops tenv_ref env_ref src tgt rhs in
   let x = Syntax.expr src_ tgt_ src tgt in
     
-  (* construction of coq' types index *)
+  (* construction of rocq's types index *)
   let tenv = Tbl.to_env tenv typ src' in
     
-  (* construction of coq' reification environment *)
+  (* construction of rocq's reification environment *)
   let env = 
     let def = 
       let one = Monoid.one ops src' in

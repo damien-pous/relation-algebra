@@ -269,7 +269,7 @@ Variables s t: A -> I.
 Notation expr := (expr s t).
 
 (** we need to generalise the comparison function to expressions of
-   distinct types because of Coq's dependent types *)
+   distinct types because of Rocq's dependent types *)
 Fixpoint expr_compare n m (x: expr n m) p q (y: expr p q) :=
   match x,y with
     | e_zer _ _, e_zer _ _ 
@@ -421,4 +421,4 @@ Definition tgt_ (X: ops) (f': positive -> ob X) (f: positive -> Pack X f') a := 
 
 
 (** loading ML reification module *)
-Declare ML Module "coq-relation-algebra.reification". 
+Declare ML Module "rocq-relation-algebra.reification". 

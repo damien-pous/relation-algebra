@@ -1,5 +1,5 @@
 package "common" (
-  requires = "coq-core.plugins.ltac"
+  requires = "rocq-runtime.plugins.ltac"
   description = "shared utilities for relation algebra plugins"
   archive(byte) = "plugins.cma"
   archive(native) = "plugins.cmxa"
@@ -9,7 +9,7 @@ package "common" (
 )
 
 package "reification" (
-  requires = "coq-core.plugins.ltac coq-relation-algebra.common"
+  requires = "rocq-runtime.plugins.ltac rocq-relation-algebra.common"
   description = "reification plugin for relation algebra tactics"
   archive(byte) = "packed_reification.cma"
   archive(native) = "packed_reification.cmxa"
@@ -19,7 +19,7 @@ package "reification" (
 )
 
 package "fold" (
-  requires = "coq-core.plugins.ltac coq-relation-algebra.common"
+  requires = "rocq-runtime.plugins.ltac rocq-relation-algebra.common"
   description = "folding plugin for relation algebra"
   archive(byte) = "packed_fold.cma"
   archive(native) = "packed_fold.cmxa"
@@ -29,7 +29,7 @@ package "fold" (
 )
 
 package "mrewrite" (
-  requires = "coq-core.plugins.ltac coq-relation-algebra.common"
+  requires = "rocq-runtime.plugins.ltac rocq-relation-algebra.common"
   description = "rewriting modulo A plugin for relation algebra"
   archive(byte) = "packed_mrewrite.cma"
   archive(native) = "packed_mrewrite.cmxa"
@@ -39,7 +39,7 @@ package "mrewrite" (
 )
 
 package "kat" (
-  requires = "coq-core.plugins.ltac coq-relation-algebra.common"
+  requires = "rocq-runtime.plugins.ltac rocq-relation-algebra.common"
   description = "KAT reification plugin for relation algebra"
   archive(byte) = "packed_kat.cma"
   archive(native) = "packed_kat.cmxa"

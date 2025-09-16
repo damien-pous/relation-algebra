@@ -1,4 +1,4 @@
-DECLARE PLUGIN "coq-relation-algebra.reification"
+DECLARE PLUGIN "rocq-relation-algebra.reification"
 
 {
 

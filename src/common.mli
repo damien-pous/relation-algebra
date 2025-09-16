@@ -111,7 +111,7 @@ val get_fun_14 :
 val ltac_apply :
   Geninterp.interp_sign ->
   Ltac_plugin.Tacinterp.value -> EConstr.constr -> unit Proofview.tactic
-module Coq : sig val path : string list val true_ : EConstr.t lazy_t end
+module Rocq : sig val path : string list val true_ : EConstr.t lazy_t end
 module Pos :
   sig
     val t : EConstr.t lazy_t

@@ -513,8 +513,8 @@ Global Arguments ofbool {_ _} !_ /.
 
 (** ML modules *)
 (* loading this one here explicitly enforces the dependency for proper compilation *)
-Declare ML Module "coq-relation-algebra.common". 
-Declare ML Module "coq-relation-algebra.fold".
+Declare ML Module "rocq-relation-algebra.common". 
+Declare ML Module "rocq-relation-algebra.fold".
 
 
 (** tricks for reification  *)

@@ -26,7 +26,7 @@ let time f x =
 (* path to RelationAlgebra modules *)
 let ra_path = ["RelationAlgebra"]
 
-(* raise an error in Coq *)
+(* raise an error in Rocq *)
 let error s = Printf.kprintf (fun s -> CErrors.user_err (Pp.str s)) ("[RelationAlgebra] "^^s)
 
 (* resolving a typeclass [cls] in a goal [gl] *)
@@ -48,7 +48,7 @@ let fresh_name env n =
   let vname = Tactics.fresh_id_in_env Id.Set.empty (Id.of_string n) env in
     annotR vname, mkVar vname
 
-(* access to Coq constants *)
+(* access to Rocq constants *)
 let find_reference path id =
   (* TODO: use registering rather than constant hardwiring *)
   let path = DirPath.make (List.rev_map Id.of_string path) in
@@ -64,7 +64,7 @@ let force_app f = fun x -> mkApp (Lazy.force f,x)
 (* build a partial application *)
 let partial_app n c ca = if n=0 then c else mkApp(c,Array.sub ca 0 n)
 
-(* creating OCaml functions from Coq ones *)
+(* creating OCaml functions from Rocq ones *)
 let get_fun_1 d s = let v = get_const d s in fun x -> force_app v [|x|]
 let get_fun_2 d s = let v = get_const d s in fun x y -> force_app v [|x;y|]
 let get_fun_3 d s = let v = get_const d s in fun x y z -> force_app v [|x;y;z|]
@@ -89,13 +89,13 @@ let ltac_apply ist (f: Tacinterp.value) (arg : constr) =
   let ist = { ist with lfun = Id.Map.add f_ f (Id.Map.add x_ arg ist.lfun) } in
   Tacinterp.eval_tactic_ist ist (CAst.make (TacArg (TacCall (CAst.make (mkvar f_, [Reference (mkvar x_)])))))
 
-(* Coq constants *)
-module Coq = struct
+(* Rocq constants *)
+module Rocq = struct
   let path = ["Corelib"; "Init"; "Datatypes"]
   let true_ = get_const path "true"
 end
 
-(* RelationAlgebra.positives Coq module (plus standard positive numbers) *)
+(* RelationAlgebra.positives Rocq module (plus standard positive numbers) *)
 module Pos = struct
   (* binary positive numbers *)
   let path = ["Corelib" ; "Numbers"; "BinNums"]
@@ -104,7 +104,7 @@ module Pos = struct
   let xI = get_fun_1 path "xI"
   let xO = get_fun_1 path "xO"
   
-  (* a coq positive from an ocaml int *)
+  (* a rocq positive from an ocaml int *)
   let of_int = memoize 
     (fun of_int -> function
       | 0 -> failwith "[RelationAlgebra] Pos.of_int applied to 0"
@@ -119,7 +119,7 @@ module Pos = struct
   let sigma_get   = get_fun_3 path "sigma_get"
 end
 
-(* RelationAlgebra.level Coq module *)
+(* RelationAlgebra.level Rocq module *)
 module Level = struct
   let path = ra_path@["level"]
   let t        = get_const path "level"
@@ -144,7 +144,7 @@ type level = {
   has_div: bool }
 
 let read_level env sigma l = 
-  let true_ = Lazy.force Coq.true_ in { 
+  let true_ = Lazy.force Rocq.true_ in { 
     has_cup = convertible env sigma true_ (Level.has_cup l);
     has_bot = convertible env sigma true_ (Level.has_bot l);
     has_cap = convertible env sigma true_ (Level.has_cap l);
@@ -164,7 +164,7 @@ let max_level = {
   has_div = true }
 
 
-(* RelationAlgebra.lattice Coq module *)
+(* RelationAlgebra.lattice Rocq module *)
 module Lattice = struct
   let path = ra_path@["lattice"]
   let leq_or_weq = get_const path "leq_or_weq"
@@ -183,7 +183,7 @@ module Lattice = struct
   let top      = get_fun_1 path "top"
 end 
 
-(* RelationAlgebra.monoid Coq module *)
+(* RelationAlgebra.monoid Rocq module *)
 module Monoid = struct
   let path = ra_path@["monoid"]
   let laws     = get_fun_2 path "laws"
@@ -210,7 +210,7 @@ module Monoid = struct
   let rdv      = get_fun_6 path "rdv"
 end 
 
-(* RelationAlgebra.lsyntax Coq module *)
+(* RelationAlgebra.lsyntax Rocq module *)
 module LSyntax = struct
   let path = ra_path@["lsyntax"]
   let pp f p s = (* f p s *)
@@ -226,7 +226,7 @@ module LSyntax = struct
   let neg  = pp get_fun_2 path "e_neg"
 end 
 
-(* RelationAlgebra.syntax Coq module *)
+(* RelationAlgebra.syntax Rocq module *)
 module Make_Syntax(M: sig val typ: constr Lazy.t end) = struct
   let path = ra_path@["syntax"]
   let pack_type   = get_fun_2 path "Pack"

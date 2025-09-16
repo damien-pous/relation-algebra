@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="content-language" content="en">
 <meta name="author" content="Damien Pous">
-<meta name="keywords" content="Coq proof assistant; Relation algebra; Kleene algebra; Kleene algebra with tests; KAT; regular expressions; finite automata; decision procedure; matrices; matrix; binary relations">
+<meta name="keywords" content="Rocq proof assistant; Relation algebra; Kleene algebra; Kleene algebra with tests; KAT; regular expressions; finite automata; decision procedure; matrices; matrix; binary relations">
 <style type="text/css">
 <!--
 #toc {
@@ -20,7 +20,7 @@
 -->
 </style>
 
-<title>Relation Algebra and KAT in Coq</title>
+<title>Relation Algebra and KAT in Rocq</title>
 </head>
 
 <body>
@@ -42,13 +42,13 @@
 <div id="contents">
   
 <p align="right"><a href="http://perso.ens-lyon.fr/damien.pous/">Damien Pous' home page</a></p>
-<h1 id="desc">Relation Algebra and KAT in Coq</h1>
+<h1 id="desc">Relation Algebra and KAT in Rocq</h1>
 
 <table>
   <tr>
     <td>
       <p>
-      This Coq development is a modular library about relation algebra:
+      This Rocq development is a modular library about relation algebra:
       those algebras admitting heterogeneous binary relations as a model,
       ranging from partially ordered monoid to residuated Kleene allegories
       and Kleene algebra with tests (KAT). </p>
@@ -100,7 +100,7 @@ verification: </p>
   showing how to certify compiler optimisations using KAT.
   (See <a
   href="http://www.cs.cornell.edu/~kozen/papers/opti.pdf">their paper</a>,
-  and the Coq module
+  and the Rocq module
   <code><a href="html/RelationAlgebra.compiler_opts.html">compiler_opts</a></code>.)
 <li> a formalisation of the IMP programming language, followed by: 1/ some
   simple program equivalences that become straightforward to prove
@@ -109,16 +109,16 @@ verification: </p>
   single call to the <code>hkat</code> tactic. (See module <code><a href="html/RelationAlgebra.imp.html">imp</a></code>)
 <li> a proof of the equivalence of two flowchart schemes, due to
   Paterson. The informal paper proof takes one page; Allegra Angus and
-  Dexter Kozen gave a six pages long proof using KAT; our Coq proof is
+  Dexter Kozen gave a six pages long proof using KAT; our Rocq proof is
   about 100 lines.
   (See <a
   href="http://www.cs.cornell.edu/~kozen/papers/allegra.pdf">Angus and Kozen's paper</a>
-  and the Coq module <code><a href="html/RelationAlgebra.paterson.html#lab13">paterson</a></code>.)
+  and the Rocq module <code><a href="html/RelationAlgebra.paterson.html#lab13">paterson</a></code>.)
 </ul>
 
 <h2 id="download">Download</h2>
 
-This library is available through opam, under the name <em>coq-relation-algebra</em>, 
+This library is available through opam, under the name <em>rocq-relation-algebra</em>, 
 as well as on <a href="https://github.com/damien-pous/relation-algebra">GitHub</a>.
 
 
@@ -225,9 +225,9 @@ as well as on <a href="https://github.com/damien-pous/relation-algebra">GitHub</
 
 <h3 id="doc:list">Succinct description of each module</h3>
 
-<p>Each module is documented; links below point to the coqdoc generated
+<p>Each module is documented; links below point to the rocqdoc generated
 documentation; see <a href="#doc:deps">below for dependencies</a>.
-The coqdoc table of contents is <a href="html/toc.html">here</a>.</p>
+The rocqdoc table of contents is <a href="html/toc.html">here</a>.</p>
 
 <ul>
   <li>Utilities
@@ -379,7 +379,7 @@ reusing this code: </p>
   <li> Damien Pous (2012-), CNRS - LIP, ENS Lyon (UMR 5668), France
   <li> Christian Doczkal (2018-), CNRS - LIP, ENS Lyon (UMR 5668), France
   <li> Insa Stucke (2015-2016), Dpt of CS, University of Kiel, Germany
-  <li> Coq development team (2013-)
+  <li> Rocq development team (2013-)
 </ul>
 
 <h2 id="ack">Acknowledgements</h2>

@@ -62,13 +62,13 @@ The easiest way to install this library is via OPAM. For the current
 stable release of Rocq, the library can be installed directly through
 the `released` repository:
 ```
-opam repo add coq-released https://coq.inria.fr/opam/released
-opam install coq-relation-algebra
+opam repo add rocq-released https://rocq-prover.org/opam/released
+opam install rocq-relation-algebra
 ```
 Otherwise, use the provided opam file using `opam pin add .` (from the project directory)
 
 To compile manually use `./configure --enable-ssr` to enable building
-the finite types model (requires `coq-mathcomp-ssreflect`). Also use `--enable-aac` to enable building the bridge with AAC rewriting tactics (requires `coq-aac-tactics`).
+the finite types model (requires `rocq-mathcomp-ssreflect`). Also use `--enable-aac` to enable building the bridge with AAC rewriting tactics (requires `rocq-aac-tactics`).
 Then compile using `make` and install using `make install`.
 
 
@@ -107,4 +107,4 @@ License along with this library.  If not, see
 * Additional authors
   - Christian Doczkal (2018-), CNRS - LIP, ENS Lyon (UMR 5668), France
   - Insa Stucke (2015-2016), Dpt of CS, University of Kiel, Germany
-  - Coq development team (2013-)
+  - Rocq development team (2013-)

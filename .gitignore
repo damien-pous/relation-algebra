@@ -16,11 +16,12 @@ html
 _build
 .merlin
 .coq-native
+.rocq-native
 *.install
 .*.cache
 
-Makefile.coq
-Makefile.coq.conf
+RocqMakefile
+RocqMakefile.conf
 depgraph.dot
 depgraph.svg
 
