@@ -1,7 +1,8 @@
 Require Import Setoid Morphisms.
 Require Import kat normalisation rewriting kat_tac comparisons rel relalg boolean.
 
-From mathcomp Require Import all_ssreflect.
+
+From mathcomp Require Import ssreflect ssrbool ssrfun ssrnat seq choice eqtype fintype finfun finset fingraph.
 
 Set Implicit Arguments.
 Unset Printing Implicit Defensive.

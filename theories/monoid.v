@@ -59,9 +59,9 @@ Notation "1" := (one _): ra_terms.
 Notation zer n m := (@bot (mor n m)).
 Notation top' n m := (@top (mor n m)) (only parsing).
 Notation "0" := (zer _ _): ra_terms.
-Notation "x °"  := (cnv _ _ x) (left associativity, at level 5, format "x °"): ra_terms.
-Notation "x ^+" := (itr _ x)   (left associativity, at level 5, format "x ^+"): ra_terms.
-Notation "x ^*" := (str _ x)   (left associativity, at level 5, format "x ^*"): ra_terms.
+Notation "x °"  := (cnv _ _ x) (left associativity, at level 1, format "x °"): ra_terms.
+Notation "x ^+" := (itr _ x)   (left associativity, at level 1, format "x ^+"): ra_terms.
+Notation "x ^*" := (str _ x)   (left associativity, at level 1, format "x ^*"): ra_terms.
 Notation "x -o y" := (ldv _ _ _ x y) (right associativity, at level 60): ra_terms. 
 Notation "y o- x" := (rdv _ _ _ x y) (left associativity, at level 61): ra_terms. 
 
