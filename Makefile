@@ -14,18 +14,18 @@ invoke-rocqmakefile: RocqMakefile
 cleanall:: clean
 	rm -f RocqMakefile* *.d *.log */*.glob */.*.aux */*.vo*
 
-# TOFIX
 depgraph.dot::
 	@echo building dependency graph
 	@echo "digraph {" > $@
 	@ls -1 theories/*.v | grep -v theories/all |sed 's#theories/\(.*\)\.v#\1 [URL=".\/html\/RelationAlgebra.\1.html"];#g' >> $@
-	@coqdep -f _RocqProject -dyndep no -m src/META.rocq-relation-algebra \
-	| grep vio \
-	| sed 's#: [^ ]*\.v #->{#g' \
-	| sed 's#src/META.rocq-relation-algebra[ ]*##g' \
-	| sed 's/\.vio//g' \
-	| sed 's/[ ]*$$/};/g' \
-	| sed 's/ /;/g' \
+	@$(ROCQBIN)rocq dep -f _RocqProject theories/fhrel.v theories/rewriting_aac.v -dyndep no \
+	| sed -n 's/\.vo.*:.*\.v /->{/p' \
+	| sed 's/[^ ]*rocqworker//g' \
+	| sed 's/[^ ]*META[^ ]*//g' \
+	| sed 's/\.vo//g' \
+	| sed '/^^ *$$/d' \
+	| sed 's/[ ]$$/};/g' \
+	| sed 's/  */;/g' \
 	| sed 's#theories/##g' \
 	| sed 's#examples/.*##g' \
 	| sed 's#all.*##g' \
@@ -34,11 +34,6 @@ depgraph.dot::
 
 %.svg: %.dot
 	tred $< | dot -Tsvg -o $@
-
-## used to use [coqdep -dumpgraph] as follows
-# 	coqdep theories/*.v -dumpgraph depgraph.dot 1>/dev/null 2>/dev/null
-# 	sed -i 's/\[label=\"\([^"]*\)\"]/[label="\1";URL=".\/html\/RelationAlgebra.\1.html"]/g' depgraph.dot
-# 	dot depgraph.dot -Tsvg -o depgraph.svg
 
 # This should be the last rule, to handle any targets not declared above
 %: invoke-rocqmakefile
