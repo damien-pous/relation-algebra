@@ -24,6 +24,7 @@ Class ops := mk_ops {
 Coercion kar: ops >-> monoid.ops.
 (** we use [[p]] to denote the injection of the test [p] into the Kleene algebra *)
 Notation " [ p ] " := (inj p): ra_terms. 
+Notation " [ ! p ] " := (inj (neg p)): ra_terms.
 
 (* -- failed attempts to declare [inj] as a coercion -- *)
 (* SubClass car' {X} n := @car (@tst X n). *)
