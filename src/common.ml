@@ -81,7 +81,7 @@ let get_fun_13 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 q4 
 let get_fun_14 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 q4 q5 -> force_app v [|x;y;z;t;u;r;w;p;q;q1;q2;q3;q4;q5|]
 
 let ltac_apply ist (f: Tacinterp.value) (arg : constr) =
-  let open Geninterp in
+  let open Ltac_plugin.Tacinterp in
   let f_ = Id.of_string "f" in
   let x_ = Id.of_string "x" in
   let arg = Tacinterp.Value.of_constr arg in
