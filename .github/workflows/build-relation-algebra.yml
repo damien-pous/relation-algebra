@@ -14,17 +14,17 @@ jobs:
     runs-on: ubuntu-latest  # container actions require GNU/Linux
     strategy:
       matrix:
-        image:
-          - 'rocq/rocq-prover:dev'
-          - 'rocq/rocq-prover:9.0.0'
+        rocq_version:
+          - 'dev'
+          - '9.0.1'
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: rocq-community/docker-coq-action@v1
         with:
           opam_file: 'rocq-relation-algebra.opam'
-          custom_image: ${{ matrix.image }}
+          coq_version: ${{ matrix.rocq_version }}
 
 # See also:
 # https://github.com/rocq-community/docker-coq-action#readme
