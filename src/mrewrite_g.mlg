@@ -5,9 +5,11 @@ DECLARE PLUGIN "rocq-relation-algebra.mrewrite"
   open Stdarg
   open Tacarg
   open Mrewrite
+
+let cont k c = Tacinterp.Value.(apply k [of_constr c])
 }
 
 TACTIC EXTEND ra_extend_lr
-  | [ "ra_extend" tactic(k) "->" constr(h) ] -> { extend ist k `LR h } END
+  | [ "ra_extend" tactic(k) "->" constr(h) ] -> { extend (cont k) `LR h } END
 TACTIC EXTEND ra_extend_rl 
-  | [ "ra_extend" tactic(k) "<-" constr(h) ] -> { extend ist k `RL h } END
+  | [ "ra_extend" tactic(k) "<-" constr(h) ] -> { extend (cont k) `RL h } END

@@ -1,7 +1,5 @@
 (** Small library used by all ML plugins we define in the library *)
 
-open Ltac_plugin
-open Tacexpr
 open EConstr
 open Names
 
@@ -79,15 +77,6 @@ let get_fun_11 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 -> for
 let get_fun_12 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 -> force_app v [|x;y;z;t;u;r;w;p;q;q1;q2;q3|]
 let get_fun_13 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 q4 -> force_app v [|x;y;z;t;u;r;w;p;q;q1;q2;q3;q4|]
 let get_fun_14 d s = let v = get_const d s in fun x y z t u r w p q q1 q2 q3 q4 q5 -> force_app v [|x;y;z;t;u;r;w;p;q;q1;q2;q3;q4;q5|]
-
-let ltac_apply ist (f: Tacinterp.value) (arg : constr) =
-  let open Ltac_plugin.Tacinterp in
-  let f_ = Id.of_string "f" in
-  let x_ = Id.of_string "x" in
-  let arg = Tacinterp.Value.of_constr arg in
-  let mkvar id = Locus.ArgVar (CAst.make id) in
-  let ist = { ist with lfun = Id.Map.add f_ f (Id.Map.add x_ arg ist.lfun) } in
-  Tacinterp.eval_tactic_ist ist (CAst.make (TacArg (TacCall (CAst.make (mkvar f_, [Reference (mkvar x_)])))))
 
 (* Rocq constants *)
 module Rocq = struct
