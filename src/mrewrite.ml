@@ -30,7 +30,7 @@ let rec length sigma t =
     | Prod(_,_,t) -> 1+length sigma t
     | _ -> 0
 
-let extend ist k dir h =
+let extend k dir h =
   Proofview.Goal.enter (fun goal ->
   let fst,snd = match dir with `LR -> 2,1 | `RL -> 1,2 in
   let ext_2 rel = match dir,rel with 
@@ -94,5 +94,5 @@ let extend ist k dir h =
   let _,t = Tacmach.pf_type_of goal h in
   let h = ext (Proofview.Goal.env goal) (length !sigma t) h t in
   (* Tacticals.tclTHEN (Proofview.Unsafe.tclEVARS !sigma) *)
-  (ltac_apply ist k h)
+  k h
     )
