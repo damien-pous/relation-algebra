@@ -5,6 +5,7 @@ From Stdlib Require Import Eqdep.
 Require Import monoid.
 Set Implicit Arguments.
 Set Asymmetric Patterns.
+#[warning="-unknown-option"] Set Asymmetric Patterns No Implicits.
 
 (** * Free syntactic model *)
 

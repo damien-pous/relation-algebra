@@ -5,6 +5,8 @@ From Stdlib Require Import Psatz PeanoNat Compare_dec Euclid.
 Require Import ordinal.
 
 Set Asymmetric Patterns.
+#[warning="-unknown-option"] Set Asymmetric Patterns No Implicits.
+
 Set Implicit Arguments.
 Local Open Scope ltb_scope.
 
