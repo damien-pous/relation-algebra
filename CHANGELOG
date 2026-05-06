@@ -1,9 +1,15 @@
 == RelationAlgebra 1.9.0 (2026, May 6th) ==
 
-- needs Rocq 9.2
 - postfix notation ° -> ^° to avoid conflict with infix composition symbol in other libs
 - other postfix notations at level 1
 - get rid of warnings and deprecated symbols
+
+this version needs rocq 9.2 ;
+in case notation changes cause problems, relation-algebra.1.8.1 also compiles with rocq 9.2
+
+== RelationAlgebra 1.8.1 (2026, May 6th) ==
+
+- compatibility with Rocq 9.2
 
 == RelationAlgebra 1.8.0 (2025, September 17th) ==
 
