@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - v9.0
+      - v9.2
   pull_request:
     branches:
       - '**'
@@ -16,7 +16,7 @@ jobs:
       matrix:
         rocq_version:
           - 'dev'
-          - '9.0.1'
+          - '9.2'
       fail-fast: false
 
     steps:
