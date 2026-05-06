@@ -237,7 +237,7 @@ Qed.
 
 (** traces form a residuated Kleene lattice 
    (we do not have an allegory, since the converse operation does not
-   satisfy the law [x ≦x⋅x°⋅x]) *)
+   satisfy the law [x ≦x⋅x^°⋅x]) *)
 (* TODO: include a weak converse? *)
 Global Instance traces_monoid_laws: monoid.laws (BDL+STR+DIV) traces_monoid_ops.
 Proof.

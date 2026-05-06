@@ -112,7 +112,7 @@ Section RepOps.
  Qed. 
 
  Program Definition srel_cnv n m (x: srel n m): srel m n := 
-   {| hrel_of := x° |}.
+   {| hrel_of := x^° |}.
  Next Obligation. unfold hrel_cnv. now rewrite H, H0. Qed.
  
  Program Definition srel_ldv n m p (x: srel n m) (y: srel n p): srel m p := 

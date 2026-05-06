@@ -289,7 +289,7 @@ Proof.
   - exists fst => //= [[x y]]. by rewrite inE oneE /= => /eqP->.
 Qed.
 
-Lemma card_cnv e : #|e°| = #|e|.
+Lemma card_cnv e : #|e^°| = #|e|.
 Proof. 
   rewrite -(on_card_preimset (f := (fun x => (x.2,x.1)))).
   - apply: eq_card => [[x y]]. by rewrite !inE.
@@ -318,7 +318,7 @@ Qed.
 
 End CardinalityBase.
 
-Lemma ran_dom {A B} {e : {fhrel A & B}} : ran e =i dom e°.
+Lemma ran_dom {A B} {e : {fhrel A & B}} : ran e =i dom e^°.
 Proof. move => x. by rewrite !inE. Qed.
 
 Lemma card_ran A B (e : {fhrel A & B}) : 
