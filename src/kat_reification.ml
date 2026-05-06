@@ -206,9 +206,9 @@ end
 
 let reify_kat_goal ?kat check =
   Proofview.Goal.enter begin fun goal ->
-  let env0 = Tacmach.pf_env goal in
-  let sigma = Tacmach.project goal in
-  let concl = Tacmach.pf_concl goal in
+  let env0 = Proofview.Goal.env goal in
+  let sigma = Proofview.Goal.sigma goal in
+  let concl = Proofview.Goal.concl goal in
   let msg = 
     match kat with 
       | Some b when EConstr.eq_constr sigma b (Lazy.force Rocq.true_) -> "KAT"
@@ -384,9 +384,9 @@ let reify_kat_goal ?kat check =
     for Hoare hypotheses elimination ([hkat]) *)
 let get_kat_alphabet =
   Proofview.Goal.enter begin fun goal ->
-  let env0 = Tacmach.pf_env goal in
-  let sigma = Tacmach.project goal in
-  let concl = Tacmach.pf_concl goal in
+  let env0 = Proofview.Goal.env goal in
+  let sigma = Proofview.Goal.sigma goal in
+  let concl = Proofview.Goal.concl goal in
 
   let rec insert x = function
     | [] -> [x]

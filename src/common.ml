@@ -25,7 +25,7 @@ let time f x =
 let ra_path = ["RelationAlgebra"]
 
 (* raise an error in Rocq *)
-let error s = Printf.kprintf (fun s -> CErrors.user_err (Pp.str s)) ("[RelationAlgebra] "^^s)
+let error s = Printf.ksprintf (fun s -> CErrors.user_err (Pp.str s)) ("[RelationAlgebra] "^^s)
 
 (* resolving a typeclass [cls] in a goal [gl] *)
 let tc_find env sigma cls = Class_tactics.resolve_one_typeclass env sigma cls

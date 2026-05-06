@@ -17,7 +17,7 @@ open EConstr
 
 let retype c =
   Proofview.Goal.enter begin fun gl ->
-    let (sigma, _) = Typing.type_of (Tacmach.pf_env gl) (Tacmach.project gl) c in
+    let (sigma, _) = Typing.type_of (Proofview.Goal.env gl) (Proofview.Goal.sigma gl) c in
     Proofview.Unsafe.tclEVARS sigma
   end
 
@@ -71,9 +71,9 @@ end
 
 let reify_goal l =
   Proofview.Goal.enter begin fun goal ->
-  let env0 = Tacmach.pf_env goal in
-  let sigma = Tacmach.project goal in
-  let concl = Tacmach.pf_concl goal in
+  let env0 = Proofview.Goal.env goal in
+  let sigma = Proofview.Goal.sigma goal in
+  let concl = Proofview.Goal.concl goal in
   (* getting the level *)
   let l = read_level env0 sigma l in
 

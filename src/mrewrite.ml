@@ -51,7 +51,7 @@ let extend k dir h =
     | `LR,`Leq -> Ext.leq_4
     | `RL,`Leq -> Ext.leq_4'
   in
-  let sigma = ref (Tacmach.project goal) in
+  let sigma = ref (Proofview.Goal.sigma goal) in
   let rec dots env t =
     match kind !sigma (Termops.strip_outer_cast !sigma t) with
       | App(c,ca) when EConstr.eq_constr !sigma c (Lazy.force Monoid.dot0) ->
@@ -91,8 +91,9 @@ let extend k dir h =
       | Prod(x,s,t) -> mkLambda(x,s,ext (push x s env) (i-1) (mkApp(h,[|mkRel i|])) t)
       | _ -> error "the provided term does not end with a relation algebra (in)equation"
   in
-  let _,t = Tacmach.pf_type_of goal h in
-  let h = ext (Proofview.Goal.env goal) (length !sigma t) h t in
+  let env = Proofview.Goal.env goal in
+  let _,t = Typing.type_of env !sigma h in
+  let h = ext env (length !sigma t) h t in
   (* Tacticals.tclTHEN (Proofview.Unsafe.tclEVARS !sigma) *)
   k h
     )

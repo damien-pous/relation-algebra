@@ -125,16 +125,16 @@ let ra_fold_term env sigma ops ob t =
   t,!sigma
     
 let ra_fold_concl ops ob = Goal.enter (fun goal ->
-  let env = Tacmach.pf_env goal in
-  let f,sigma = ra_fold_term env (Tacmach.project goal) ops ob (Tacmach.pf_concl goal) in
+  let env = Proofview.Goal.env goal in
+  let f,sigma = ra_fold_term env (Proofview.Goal.sigma goal) ops ob (Proofview.Goal.concl goal) in
   Proofview.tclORELSE
     (tclTHEN (Unsafe.tclEVARS sigma) (Tactics.convert_concl ~cast:false ~check:true f DEFAULTcast))
     (fun (e, info) -> Feedback.msg_warning (Printer.pr_leconstr_env env sigma f); tclZERO ~info e))
 
 let ra_fold_hyp ops ob hyp =
   Proofview.Goal.enter begin fun gl ->
-  let env = Tacmach.pf_env gl in
-  let sigma = Tacmach.project gl in
+  let env = Proofview.Goal.env gl in
+  let sigma = Proofview.Goal.sigma gl in
   let decl = Tacmach.pf_get_hyp hyp gl in
   let id,ddef,dtyp = to_tuple decl in
   let decl,sigma = 
