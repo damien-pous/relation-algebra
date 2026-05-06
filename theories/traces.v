@@ -24,7 +24,7 @@ Set Implicit Arguments.
 Section l.
 
 Variable State: Type.
-Notation Sigma := positive.
+Abbreviation Sigma := positive.
 
 (** * Untyped traces *)
 
@@ -79,7 +79,7 @@ Global Instance traces_lattice_laws:
 
 (** singleton type for the objects of this flat structure *)
 CoInductive traces_unit := traces_tt.
-Notation tt := traces_tt.
+Abbreviation tt := traces_tt.
 
 (** ** traces operations *)
 
@@ -120,7 +120,7 @@ Canonical Structure traces_monoid_ops :=
   traces_dot traces_one traces_itr traces_str traces_cnv traces_ldv traces_rdv.
 
 (** shorthand for [traces], when a morphism is expected *)
-Notation traces' := (traces_monoid_ops tt tt).
+Abbreviation traces' := (traces_monoid_ops tt tt).
 
 
 (** ** traces form a residuated Kleene lattice *)
@@ -496,7 +496,7 @@ Canonical Structure ttraces_monoid_ops :=
   monoid.mk_ops _ ttraces_lattice_ops 
   ttraces_dot ttraces_one ttraces_itr ttraces_str ttraces_cnv ttraces_ldv ttraces_rdv.
 
-Notation ttraces' n m := (ttraces_monoid_ops n m).
+Abbreviation ttraces' n m := (ttraces_monoid_ops n m).
 
 Global Instance ttraces_monoid_laws: monoid.laws (BDL+STR+DIV) ttraces_monoid_ops.
 Proof.
@@ -616,6 +616,6 @@ Arguments tatom {State src tgt} n a.
 Arguments ttsingle {State src tgt} i.
 Arguments tsingle' {State src tgt} a i b.
 
-Notation traces' State := (traces_monoid_ops State traces_tt traces_tt).
+Abbreviation traces' State := (traces_monoid_ops State traces_tt traces_tt).
 
 

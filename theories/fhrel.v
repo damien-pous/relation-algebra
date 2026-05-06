@@ -213,15 +213,15 @@ Definition oneE := (hrel_oneE,fhrel_oneE).
 types to not necessarily live in [Set] *)
 Definition ftop_def (A B : finType) of phant A & phant B := 
   (@top (@mor fhrel_monoid_ops A B)).
-Notation ftop A B := (ftop_def (Phant A) (Phant B)).
+Abbreviation ftop A B := (ftop_def (Phant A) (Phant B)).
 
 Definition fzero_def (A B : finType) of phant A & phant B := 
   (@bot (@mor fhrel_monoid_ops A B)).
-Notation fzero A B := (fzero_def (Phant A) (Phant B)).
+Abbreviation fzero A B := (fzero_def (Phant A) (Phant B)).
 
 Definition fone_def (A : finType) of phant A := 
   (@one fhrel_monoid_ops A).
-Notation fone A := (fone_def (Phant A)).
+Abbreviation fone A := (fone_def (Phant A)).
 
 Arguments ftop_def A B /.
 Arguments fzero_def A B /.
@@ -387,9 +387,9 @@ Proof. move => ?. rewrite -card_cnv. exact: surjective_card. Qed.
 
 End FHRel.
 
-Notation ftop A B := (ftop_def (Phant A) (Phant B)).
-Notation fzero A B := (fzero_def (Phant A) (Phant B)).
-Notation fone A := (fone_def (Phant A)).
+Abbreviation ftop A B := (ftop_def (Phant A) (Phant B)).
+Abbreviation fzero A B := (fzero_def (Phant A) (Phant B)).
+Abbreviation fone A := (fone_def (Phant A)).
 
 Ltac fold_fhrel := ra_fold fhrel_monoid_ops.
 Tactic Notation "fold_fhrel" "in" hyp_list(H) := ra_fold fhrel_monoid_ops in H.

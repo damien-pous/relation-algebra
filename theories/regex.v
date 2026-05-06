@@ -77,7 +77,7 @@ Canonical Structure regex_ops := {|
 |}.
 
 (** shorthand fore [regex], when a morphism is required *)
-Notation regex' := (regex_ops regex_tt regex_tt).
+Abbreviation regex' := (regex_ops regex_tt regex_tt).
 Definition var a: regex' := r_var a.
 
 (** folding regular expressions to expose canonical preojections *)
@@ -150,7 +150,7 @@ Fixpoint epsilon (e: regex') :=
     | r_dot e f => epsilon e && epsilon f
     | _ => false
   end%bool.
-Notation eps e := (@ofbool regex_ops regex_tt (epsilon e)).
+Abbreviation eps e := (@ofbool regex_ops regex_tt (epsilon e)).
 
 (** ** derivatives *)
 Fixpoint deriv a (e: regex'): regex' := 
@@ -413,7 +413,7 @@ Qed.
    inductively, as the unique morphism such that [lang (e_var i)] is
    the language reduced to the letter [i], ([eq [i]]) *)
 
-Notation elang e := (eval (f':=fun _=>lang_tt) (fun i => eq [i]) (to_expr e)).
+Abbreviation elang e := (eval (f':=fun _=>lang_tt) (fun i => eq [i]) (to_expr e)).
 
 (** language characterisation of [epsilon]  *)
 Lemma epsilon_iff_lang_nil e: epsilon e <-> (elang e) []. 

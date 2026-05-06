@@ -20,13 +20,13 @@ Section s.
    assigning a truth value to each variable. *)
 
 Variable pred: nat.
-Notation Sigma := positive.
+Abbreviation Sigma := positive.
 
 (** to avoid extensionality problems, we call "atom" an element of
    [ord (pow2 pred)], relying on the bijection between [ord pred ->
    bool] and that set when needed *)
 
-Notation Atom := (ord (pow2 pred)).
+Abbreviation Atom := (ord (pow2 pred)).
 
 (** Boolean expressions over [pred] variables are injected into
    traces as follows: take all traces reduced to a single atom

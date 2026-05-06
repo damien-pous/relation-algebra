@@ -3,7 +3,7 @@
 Require Import kleene boolean sups matrix.
 Set Implicit Arguments.
 
-Notation bmx := (mx_ops bool_ops bool_tt).
+Abbreviation bmx := (mx_ops bool_ops bool_tt).
 
 (** intermediate alternative definition of the star of a Boolean matrix *)
 

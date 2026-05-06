@@ -200,7 +200,7 @@ Proof. rewrite capC, capxsup. now setoid_rewrite capC at 1. Qed.
 
 (** obtained for free, by duality *)
 
-Notation inf f l := (@sup (dual _) _ f l).
+Abbreviation inf f l := (@sup (dual _) _ f l).
 
 Notation "\inf_ ( i \in l ) f" := (inf (fun i => f) l)
   (at level 41, f at level 41, i, l at level 50,

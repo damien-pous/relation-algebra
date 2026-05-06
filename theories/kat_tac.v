@@ -6,7 +6,7 @@ Require Import boolean ugregex_dec kat_reification kat_untyping kat_completeness
     one can decide typed KAT by reasoning about untyped languages *)
 
 Section j.
-Notation Sigma := positive.
+Abbreviation Sigma := positive.
 Variable Pred: nat.
 Variables src tgt: Sigma -> positive.
 

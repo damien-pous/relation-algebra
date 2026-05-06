@@ -38,7 +38,7 @@ Proof. apply (f_sup_eq (fun x: mx X n m => x i j)); now f_equal. Qed.
 Section d.
 
 Context {X: Type}.
-Notation mx := (mx X).
+Abbreviation mx := (mx X).
 
 (** ** scalar (1,1)-matrices *)
 
@@ -179,8 +179,8 @@ Proof. intros i j. unfold row_mx. simpl. case split; reflexivity. Qed.
 Section m.
 Variable X: ops.
 Variable u: ob X.
-Notation U := (car (@mor X u u)).
-Notation mx := (mx U).
+Abbreviation U := (car (@mor X u u)).
+Abbreviation mx := (mx U).
 
 (** identity matrix  *)
 Definition mx_one n: mx n n := 
@@ -251,8 +251,8 @@ End m.
 
 Section bsl.
 Context `{L: laws} `{Hl: BSL ≪ l} {u: ob X}.
-Notation U := (car (@mor X u u)).
-Notation mx := (mx U).
+Abbreviation U := (car (@mor X u u)).
+Abbreviation mx := (mx U).
 
 (** matrix product is associative *)
 Lemma mx_dotA n m p q (M: mx n m) N (P: mx p q): M⋅(N⋅P) ≡ (M⋅N)⋅P.
@@ -374,8 +374,8 @@ End bsl.
 
 Section cbsl.
 Context `{L: laws} `{Hl: BSL+CNV ≪ l} {u: ob X}.
-Notation U := (car (@mor X u u)).
-Notation mx := (mx U).
+Abbreviation U := (car (@mor X u u)).
+Abbreviation mx := (mx U).
 
 Canonical Structure lset_ops A := lattice.mk_ops (list A)
   (fun h k => forall a, List.In a h -> List.In a k)
@@ -405,8 +405,8 @@ End cbsl.
 
 Section ka.
 Context `{L: laws} `{Hl: BKA ≪ l} {u: ob X}.
-Notation U := (car (@mor X u u)).
-Notation mx := (mx U).
+Abbreviation U := (car (@mor X u u)).
+Abbreviation mx := (mx U).
 
 Existing Instance mx_bsl_laws.
 
@@ -420,7 +420,7 @@ Section build.
    establish properties of Kleene star on arbitrary block matrices *)
 
 Variables (n m: nat) (sn: mx n n -> mx n n) (sm: mx m m -> mx m m).
-Notation s := (mx_str_build X u n m sn sm).
+Abbreviation s := (mx_str_build X u n m sn sm).
 
 (** we want to show that the auxiliary [mx_str_build] functionnal
    preserves some invariants ; this is easier to state with the

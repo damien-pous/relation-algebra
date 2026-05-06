@@ -72,9 +72,9 @@ Arguments pointwise_relation _ {_} _ / _ _.
 Arguments Transitive {_} _ /.
 Arguments Symmetric {_} _ /.
 Arguments Reflexive {_} _ /.
-Notation flip := Basics.flip.
-Notation impl := Basics.impl.
-Notation pwr := (pointwise_relation _).
+Abbreviation flip := Basics.flip.
+Abbreviation impl := Basics.impl.
+Abbreviation pwr := (pointwise_relation _).
 
 
 (** opaque identity, used to document impossible cases *)

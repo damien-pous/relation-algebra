@@ -156,7 +156,7 @@ Inductive prog :=
 (** updating the memory, according to the assignment [x<-e] *)
 Definition update x e m := set x (eval e m) m.
 (** relational counterpart of this function *)
-Notation upd x e := (frel (update x e)).
+Abbreviation upd x e := (frel (update x e)).
 
 (** Bigstep semantics, as a fixpoint *)
 Fixpoint bstep (p: prog): hrel state state :=
@@ -225,8 +225,8 @@ Canonical Structure prog_kat_ops: kat.ops := {|
   inj n := p_tst
 |}.
 
-Notation prog' := (prog_kat_ops tt tt).
-Notation test := (@tst prog_kat_ops tt).
+Abbreviation prog' := (prog_kat_ops tt tt).
+Abbreviation test := (@tst prog_kat_ops tt).
 
 (** proving that the laws of KAT are satisfied is almost trivial,
    since the model faithfully embeds in the relational model *)
@@ -273,7 +273,7 @@ Fixpoint dont_read y (p: prog'): bool :=
 Infix " ;" := (dot _ _ _) (left associativity, at level 40): ra_terms. 
 Definition aff x e: prog' := p_aff x e.
 Notation "x <- e" := (aff x e) (at level 30).
-Notation del y := (y<-O).
+Abbreviation del y := (y<-O).
 
 
 (** * Laws of schematic KAT *)

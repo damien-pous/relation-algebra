@@ -17,12 +17,12 @@ Set Implicit Arguments.
 
 Section l.
 Variable Pred: nat.
-Notation Sigma := positive.
-Notation Atom := (ord (pow2 Pred)).
-Notation tt := ugregex_tt. 
-Notation ugregex := (ugregex_monoid_ops Pred tt tt).
-Notation uglang := (glang_kat_ops Pred Sigma traces_tt traces_tt).
-Notation lang := (@lang Pred).
+Abbreviation Sigma := positive.
+Abbreviation Atom := (ord (pow2 Pred)).
+Abbreviation tt := ugregex_tt. 
+Abbreviation ugregex := (ugregex_monoid_ops Pred tt tt).
+Abbreviation uglang := (glang_kat_ops Pred Sigma traces_tt traces_tt).
+Abbreviation lang := (@lang Pred).
 
 Ltac fold_ugregex_type := change (@ugregex.ugregex Pred) with (@car ugregex) in *.
 Ltac fold_ugregex := ra_fold ugregex_monoid_ops tt; fold_ugregex_type.
@@ -30,7 +30,7 @@ Ltac fold_ugregex := ra_fold ugregex_monoid_ops tt; fold_ugregex_type.
 (** * Partial derivatives *)
 
 (** reversed product *)
-Notation tod e := (fun f => u_dot f e) (only parsing).
+Abbreviation tod e := (fun f => u_dot f e) (only parsing).
 
 (** [pderiv a i e] returns the set of partial derivatives of [e] along
    transition [(a,i)] (since we work with KAT regular expressions,
@@ -138,12 +138,12 @@ Qed.
 (** we need binary relations on sets of expressions, we represent them
    as lists of pairs (this could easily be optimised) *)
 Definition rel_mem (p: list ugregex * list ugregex) := existsb (eqb p).
-Notation rel_insert p rel := (p::rel).
-Notation rel_empty := [].
+Abbreviation rel_insert p rel := (p::rel).
+Abbreviation rel_empty := [].
 (* OPT *)
 (* Definition rel_mem := trees.mem (pair_compare (list_compare compare)).  *)
 (* Definition rel_insert := trees.insert (pair_compare (list_compare compare)).  *)
-(* Notation rel_empty := (@trees.L _) *)
+(* Abbreviation rel_empty := (@trees.L _) *)
 
 Lemma rel_mem_spec p rel: reflect (In p rel) (rel_mem p rel).
 Proof.

@@ -40,7 +40,7 @@ Proof. rewrite <-(capI z) at 1. rewrite capA, capdotx, capxdot. ra. Qed.
 Ltac tc := solve [eauto with typeclass_instances].
 
 Class is_nonempty {X: ops} n m (x: X n m) := nonempty: forall p q, top' p q ≦ top ⋅ x ⋅ top.
-Notation is_nonempty' m := (is_nonempty (one m)).
+Abbreviation is_nonempty' m := (is_nonempty (one m)).
 
 Lemma nonempty_dom `{laws} `{TOP ≪ l} n m {x: X n m} {Hx: is_nonempty x}: is_nonempty' n.
 Proof. intros i j. rewrite nonempty. mrewrite (leq_xt (x⋅top' _ j)). ra. Qed.

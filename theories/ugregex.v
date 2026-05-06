@@ -8,9 +8,9 @@ Set Implicit Arguments.
 
 Section l.
 Variable Pred: nat.
-Notation Sigma := positive.
-Notation Atom := (ord (pow2 Pred)).
-Notation uglang := (traces_monoid_ops Atom traces_tt traces_tt).
+Abbreviation Sigma := positive.
+Abbreviation Atom := (ord (pow2 Pred)).
+Abbreviation uglang := (traces_monoid_ops Atom traces_tt traces_tt).
 
 (** * Syntax *)
 
@@ -63,8 +63,8 @@ Canonical Structure ugregex_monoid_ops :=
 (* Canonical Structure ugregex_kat_ops :=  *)
 (*   kat.mk_ops ugregex_monoid_ops (fun _ => lsyntax.expr_ops _ BL) (fun _ => u_prd). *)
 
-Notation tt := ugregex_tt. 
-Notation ugregex' := (ugregex_monoid_ops tt tt).
+Abbreviation tt := ugregex_tt. 
+Abbreviation ugregex' := (ugregex_monoid_ops tt tt).
 
 Global Instance ugregex_monoid_laws: monoid.laws BKA ugregex_monoid_ops.
 Proof.

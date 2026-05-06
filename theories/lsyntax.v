@@ -136,7 +136,7 @@ Delimit Scope last_scope with last.
    expressions are considered, or to work directly with the
    bare constructors (by opposition with the encapsulated ones, 
    through lattice.ops)*)
-Notation expr_ l := (car (expr_ops _ l)).
+Abbreviation expr_ l := (car (expr_ops _ l)).
 Notation "x <==_[ l ] y" := (@leq (expr_ops _ l) x%last y%last) (at level 79): ra_scope.
 Notation "x ==_[ l ] y" := (@weq (expr_ops _ l) x%last y%last) (at level 79): ra_scope.
 

@@ -15,7 +15,7 @@ Section clean.
 Context {Sigma: cmpType}.
 (* used with Sigma=letter in kat_completeness *)
 Variables (s t: Sigma -> positive).
-Notation expr := (expr s t).
+Abbreviation expr := (expr s t).
 
 (** more aggressive hint for level constraint resolution *)
 Local Hint Extern 0 (_ ≪ _) => solve_lower || solve_lower': typeclass_instances.
@@ -308,8 +308,8 @@ End clean.
 Section e.
 Context {Sigma: cmpType}.
 Variables (s t: Sigma -> positive).
-Notation uexpr := (expr (fun _: Sigma => xH) (fun _: Sigma => xH) xH xH). 
-Notation expr := (expr s t).
+Abbreviation uexpr := (expr (fun _: Sigma => xH) (fun _: Sigma => xH) xH xH). 
+Abbreviation expr := (expr s t).
 
 (** evaluation predicate, to relate untyped expressions [uexpr] to typed ones [expr] 
 

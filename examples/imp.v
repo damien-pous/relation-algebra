@@ -43,7 +43,7 @@ Arguments whl _%_ra _%_imp.
 (** * Big step semantics *)
 
 (** corresponding functional relation *)
-Notation upd x e := (frel (fun s => update x (e s) s)).
+Abbreviation upd x e := (frel (fun s => update x (e s) s)).
 
 
 (** ** using KAT expressions in the model of relations
@@ -203,7 +203,7 @@ Qed.
 
 (** Hoare triples for partial correctness can be expressed really
    easily using KAT: *)
-Notation Hoare A p B := ([A] ⋅ bstep p ⋅ [!B] ≦ 0).
+Abbreviation Hoare A p B := ([A] ⋅ bstep p ⋅ [!B] ≦ 0).
 
 (** ** correspondence w.r.t. the standard interpretation of Hoare triples  *)
 Lemma Hoare_eq A p B: 

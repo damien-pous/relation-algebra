@@ -218,14 +218,14 @@ Variable vars': list sigma.
 Variable nfa: nfa.t.
 Hypothesis Hnfa: is_nfa nfa.
 
-Notation n := (n nfa). 
-Notation u := nfa^u. 
-Notation M := nfa^M.
-Notation v := nfa^v.
+Abbreviation n := (n nfa). 
+Abbreviation u := nfa^u. 
+Abbreviation M := nfa^M.
+Abbreviation v := nfa^v.
 
 (** alphabet of the generated DFA: those appearing in [M], plus the
    imposed ones *)
-Notation vars := (mx_vars M ⊔ vars').
+Abbreviation vars := (mx_vars M ⊔ vars').
 
 (** (unlabelled) transition matrix of the NFA, restricted to [a] *)
 Let T_ a := epsilon_mx (deriv_mx a M).

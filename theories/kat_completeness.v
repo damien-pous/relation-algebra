@@ -44,15 +44,15 @@ Module R := regex.
 Module G := gregex.
 
 Section KatCompleteness.
-Notation Sigma := positive.
+Abbreviation Sigma := positive.
 Variable pred: nat.
 Variables s t: Sigma -> positive.
-Notation gregex := (gregex_kat_ops pred s t).
-Notation Atom := (ord (pow2 pred)).
-Notation gword := (trace Atom).
-Notation glang := (tglang_kat_ops pred s t). 
-Notation g_atom n a := (@g_prd pred s t n (@atom pred a)).
-Notation test := (lsyntax.expr (ord pred)).
+Abbreviation gregex := (gregex_kat_ops pred s t).
+Abbreviation Atom := (ord (pow2 pred)).
+Abbreviation gword := (trace Atom).
+Abbreviation glang := (tglang_kat_ops pred s t). 
+Abbreviation g_atom n a := (@g_prd pred s t n (@atom pred a)).
+Abbreviation test := (lsyntax.expr (ord pred)).
 Local Open Scope list_scope.
 
 (** * 1. Definition of the [hat] function, and correctness *)
@@ -66,7 +66,7 @@ Local Open Scope list_scope.
 Inductive guard: positive -> positive -> Type :=
 | g_pred: forall {n} (a: Atom), guard n n
 | g_elem: forall n m (a: Atom) (e: gregex n m) (b: Atom), guard n m.
-Notation guards n m := (list (guard n m)).
+Abbreviation guards n m := (list (guard n m)).
 
 (** externally guarded terms, and sums of such terms can be converted
    back to [gregex] in the obvious way *)
@@ -75,7 +75,7 @@ Definition geval n m (x: guard n m) :=
     | @g_pred n a => g_atom n a
     | @g_elem n m a e b => g_atom n a ⋅ e ⋅ g_atom m b
   end.
-Notation teval := (sup (@geval _ _)).
+Abbreviation teval := (sup (@geval _ _)).
 
 (** ** inductive cases for the [hat] function *)
 
@@ -408,8 +408,8 @@ Definition tgt' l :=
    - [wvo = uo]                 (allowing us to use the untyping theorem)
 
 *)
-Notation expr3 n m := (expr_ops src' tgt' BKA n m).
-Notation uexpr3 := (expr_ops (fun _ => xH) (fun _ => xH) BKA xH xH). 
+Abbreviation expr3 n m := (expr_ops src' tgt' BKA n m).
+Abbreviation uexpr3 := (expr_ops (fun _ => xH) (fun _ => xH) BKA xH xH). 
 
 
 (** ** [o: gregex n m -> expr3 n m] *)
@@ -548,8 +548,8 @@ Proof. apply f_sup_eq; now f_equal. Qed.
 (** * From guarded string languages to languages on the extended alphabet *)
 (** i.e., we define a coercion from [glang] [lang] *)
 
-Notation word := (list positive).
-Notation lang := (lang_ops positive lang_tt lang_tt).
+Abbreviation word := (list positive).
+Abbreviation lang := (lang_ops positive lang_tt lang_tt).
 
 (** converting an atom into a word of the extended alphabet. 
    this word has length [pred]: each predicate variable appears
@@ -607,10 +607,10 @@ Qed.
 
   *)
 
-Notation R := R.lang.
-Notation G := G.lang.
+Abbreviation R := R.lang.
+Abbreviation G := G.lang.
 
-Notation latom n a := (eq (atom_to_word n a): lang).
+Abbreviation latom n a := (eq (atom_to_word n a): lang).
 
 
 (** regular language corresponding to an atom *)

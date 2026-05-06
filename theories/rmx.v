@@ -6,7 +6,7 @@ Unset Printing Implicit Defensive.
 
 (** [rmx n m] denote the set of [(n,m)]-matrices of regular expressions *)
 
-Notation rmx n m := (mx regex' n m).
+Abbreviation rmx n m := (mx regex' n m).
 
 (** they form a Kleene algebra (with bottom element) *)
 #[export] Instance rmx_lattice_laws n m: 
@@ -64,7 +64,7 @@ Qed.
 
 
 (** * Pointwise extension of derivatives to matrices  *)
-Notation deriv_mx a M := (mx_map (deriv a) M).
+Abbreviation deriv_mx a M := (mx_map (deriv a) M).
 
 Lemma deriv_mx_pls a n m (M N: rmx n m): deriv_mx a (M+N) ≡ deriv_mx a M + deriv_mx a N. 
 Proof. reflexivity. Qed.
@@ -132,12 +132,13 @@ Lemma mx_forall_blk f n1 n2 m1 m2 M11 M12 M21 M22:
   mx_forall f (@blk_mx _ n1 n2 m1 m2 M11 M12 M21 M22).
 Proof. intros. now apply mx_forall_col; apply mx_forall_row. Qed.
 
+Create HintDb mx_predicates.
 #[export] Hint Resolve mx_forall_blk mx_forall_row mx_forall_col: mx_predicates.
 
 (** 01, simple, and pure matrices *)
-Notation is_01_mx := (mx_forall is_01).
-Notation is_simple_mx := (mx_forall is_simple).
-Notation is_pure_mx := (mx_forall is_pure).
+Abbreviation is_01_mx := (mx_forall is_01).
+Abbreviation is_simple_mx := (mx_forall is_simple).
+Abbreviation is_pure_mx := (mx_forall is_pure).
 
 (** taking the pure part of a matrix *)
 Definition pure_part_mx := (mx_map pure_part).

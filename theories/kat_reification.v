@@ -13,9 +13,9 @@ Require Import lsyntax ordinal lset.
 Require Export positives kat gregex syntax.
 
 Section s.
-Notation Idx := positive.       (* type indices *)
-Notation Sigma := positive.     (* Kleene variable indices *)
-Notation Pred := positive.      (* predicate variables indices *)
+Abbreviation Idx := positive.       (* type indices *)
+Abbreviation Sigma := positive.     (* Kleene variable indices *)
+Abbreviation Pred := positive.      (* predicate variables indices *)
 
 Context {X: kat.ops}.
 

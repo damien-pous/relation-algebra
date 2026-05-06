@@ -81,7 +81,7 @@ Canonical Structure bool_ops: monoid.ops := {|
 |}.
 
 (** shorthand for [bool], when a morphism is expected *)
-Notation bool' := (bool_ops bool_tt bool_tt).
+Abbreviation bool' := (bool_ops bool_tt bool_tt).
 
 (** we actually have all laws on [bool] *)
 #[export] Instance bool_laws: laws (BL+STR+CNV+DIV) bool_ops.
@@ -107,7 +107,7 @@ Section ofbool.
 Open Scope bool_scope.
 Implicit Types a b c: bool.
 Context {X: ops} {l} {L: laws l X} {n: ob X}.
-Notation ofbool := (@ofbool X n).
+Abbreviation ofbool := (@ofbool X n).
 
 Lemma andb_dot `{BOT ≪ l} a b: ofbool (a&&b) ≡ ofbool a ⋅ ofbool b.
 Proof. 

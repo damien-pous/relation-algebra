@@ -11,7 +11,7 @@ Set Asymmetric Patterns.
 
 Section s.
 
-Notation I := positive.
+Abbreviation I := positive.
 Variable A : Set.
 (* [A=positive] for normalisation tactics 
    [A=positive+lsyntax.expr (ord n)] for KAT proofs
@@ -229,7 +229,7 @@ Delimit Scope ast_scope with ast.
    bare constructors (by opposition with the encapsulated ones, 
    through monoid.ops) *)
 
-Notation expr_ l s t n m := (expr_ops s t l n m).
+Abbreviation expr_ l s t n m := (expr_ops s t l n m).
 Notation "x <==_[ l ] y" := (@leq (expr_ops _ _ l _ _) x y) (at level 79): ra_scope.
 Notation "x ==_[ l ] y" := (@weq (expr_ops _ _ l _ _) x y) (at level 79): ra_scope.
 
@@ -238,7 +238,7 @@ Infix "∩" := e_cap: ast_scope.
 Infix "⋅" := e_dot: ast_scope.
 Notation "1" := (e_one _): ast_scope.
 Notation "0" := (e_zer _ _): ast_scope.
-Notation top := (e_top _ _).
+Abbreviation top := (e_top _ _).
 Notation "x ^+" := (e_itr x): ast_scope.
 Notation "x °"  := (e_cnv x): ast_scope.
 Notation "x ^*" := (e_str x): ast_scope.
@@ -264,10 +264,10 @@ Proof. intros H X L f' f. eapply @H, lower_laws. Qed.
 (** * comparing expressions syntactically  *)
 Section expr_cmp.
 
-Notation I := positive.
+Abbreviation I := positive.
 Context {A : cmpType}.
 Variables s t: A -> I.
-Notation expr := (expr s t).
+Abbreviation expr := (expr s t).
 
 (** we need to generalise the comparison function to expressions of
    distinct types because of Rocq's dependent types *)

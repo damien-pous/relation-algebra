@@ -13,15 +13,15 @@ Set Implicit Arguments.
 
 Section s.
 Variable Pred: nat.
-Notation Atom := (ord (pow2 Pred)).
-Notation Sigma := positive.
+Abbreviation Atom := (ord (pow2 Pred)).
+Abbreviation Sigma := positive.
 Variables src tgt: Sigma -> positive.
-Notation pred := (ord Pred).
-Notation gregex := (gregex_kat_ops Pred src tgt).
-Notation ugregex := (ugregex_monoid_ops Pred ugregex_tt ugregex_tt).
-Notation glang := (@gregex.lang Pred src tgt).
-Notation uglang := (@ugregex.lang Pred).
-Notation typed := (@typed' Atom src tgt).
+Abbreviation pred := (ord Pred).
+Abbreviation gregex := (gregex_kat_ops Pred src tgt).
+Abbreviation ugregex := (ugregex_monoid_ops Pred ugregex_tt ugregex_tt).
+Abbreviation glang := (@gregex.lang Pred src tgt).
+Abbreviation uglang := (@ugregex.lang Pred).
+Abbreviation typed := (@typed' Atom src tgt).
 
 (** type-erasing function on extended regular expressions *)
 
@@ -69,7 +69,7 @@ Qed.
 
 (** we can thus recover the typed language out of the untyped one *)
 
-Notation restrict := (restrict src tgt).
+Abbreviation restrict := (restrict src tgt).
 
 Theorem untype_glang n m (e: gregex n m): glang e ≡ restrict n m (uglang (gerase e)).
 Proof.

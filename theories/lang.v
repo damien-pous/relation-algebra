@@ -15,7 +15,7 @@ Variable X: Type.
 Definition lang := list X -> Prop.
 Implicit Types x y z: lang.
 Implicit Types n m p q: lang_unit.
-Notation tt := lang_tt.
+Abbreviation tt := lang_tt.
 
 (** * Languages as a lattice *)
 
@@ -60,7 +60,7 @@ Canonical Structure lang_ops :=
   mk_ops lang_unit _ lang_dot lang_one lang_itr lang_str lang_cnv lang_ldv lang_rdv.
 
 (** shorthand for [lang], when a morphism is expected *)
-Notation lang' := (lang_ops tt tt).
+Abbreviation lang' := (lang_ops tt tt).
 
 
 (** ** languages form a residuated Kleene lattice *)
@@ -182,6 +182,6 @@ Qed.
 End l.
 
 Arguments lang_deriv {X}.
-Notation lang' X := ((lang_ops X) lang_tt lang_tt).
+Abbreviation lang' X := ((lang_ops X) lang_tt lang_tt).
 
 Ltac fold_lang := ra_fold lang_ops lang_tt.

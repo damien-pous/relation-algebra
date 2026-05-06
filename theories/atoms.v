@@ -77,7 +77,7 @@ Qed.
 
 Section atom_props.
 Variable n: nat.
-Notation Atom := (ord (pow2 n)).
+Abbreviation Atom := (ord (pow2 n)).
 
 (** auxiliary lemmas *)
 Lemma cap_var_atom (a: Atom) b: 

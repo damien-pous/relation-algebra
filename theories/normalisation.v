@@ -6,7 +6,7 @@ Set Implicit Arguments.
 
 Section n.
 Variables (s t: positive -> positive).
-Notation expr := (expr s t).
+Abbreviation expr := (expr s t).
 Local Arguments weq {_} _ _: simpl never.
 Local Arguments leq {_} _ _: simpl never.
 Local Hint Extern 0 (_ ≪ _) => solve_lower || solve_lower': typeclass_instances.

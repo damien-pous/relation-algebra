@@ -30,7 +30,7 @@ Lemma eqb_of_compare_spec A f:
 Proof. unfold eqb_of_compare. intros H a b. now case H; constructor. Qed.
 
 (** lexicographic ternary comparison *)
-Notation lex a b := match a with Eq => b | Lt => Lt | Gt => Gt end.
+Abbreviation lex a b := match a with Eq => b | Lt => Lt | Gt => Gt end.
 
 Lemma lex_spec P Q R a b (H: R<->P/\Q):
   compare_spec P a -> compare_spec Q b -> compare_spec R (lex a b).

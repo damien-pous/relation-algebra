@@ -14,7 +14,7 @@ Set Implicit Arguments.
 Section powerfix.
 
 Variables A B: Type.
-Notation Fun := (A -> B).
+Abbreviation Fun := (A -> B).
 
 (** the three following functions "iterate" their [f] argument lazily: 
    iteration stops whenever [f] no longer makes recursive calls.

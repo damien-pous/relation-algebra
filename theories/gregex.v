@@ -14,9 +14,9 @@ Set Implicit Arguments.
 Section s.
 
 (** [I] is the set of objects of the category (or types, or indices) *)
-Notation I := positive.
+Abbreviation I := positive.
 (** [Sigma] is the set of (Kleene) variables, those interpreted as relations, for instance *)
-Notation Sigma := positive.
+Abbreviation Sigma := positive.
 (** [pred] is the number of predicate variables (elementary tests), so
    that tests are just expressions with variables in [ord pred] *)
 Variable pred: nat.
@@ -171,12 +171,12 @@ Proof. apply f_sup_weq. apply inj_bot. apply inj_cup. Qed.
 (** * Interpretation in the guarded strings model *)
 
 (** atoms are functions from predicate variables to [bool] *)
-Notation Atom := (ord (pow2 pred)).
+Abbreviation Atom := (ord (pow2 pred)).
 (** guarded string languages, typed according to the [src] and [tgt] functions *)
-Notation glang n m := (tglang_kat_ops pred src tgt n m). 
+Abbreviation glang n m := (tglang_kat_ops pred src tgt n m). 
 
 (** injection of atoms *)
-Notation g_atom n a := (@g_prd n (atom a)).
+Abbreviation g_atom n a := (@g_prd n (atom a)).
 
 (** (guarded string) language of a generalised regular expression.
    unlike for regular expressions, we define it inductively *)
