@@ -1,3 +1,7 @@
+== RelationAlgebra 1.9.1 (2026, Spet 21st) ==
+
+- compatibility with mathcomp-ssreflect 2.6
+
 == RelationAlgebra 1.9.0 (2026, May 6th) ==
 
 - postfix notation ° -> ^° to avoid conflict with infix composition symbol in other libs

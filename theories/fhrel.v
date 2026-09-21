@@ -285,15 +285,15 @@ Proof. exact: eq_card_prod. Qed.
 Lemma fhrel_card1 : #|fone aT| = #|aT|.
 Proof.
   rewrite -(on_card_preimset (f := (fun x => (x,x)))).
-  - rewrite eq_cardT ?cardT //= => x. by rewrite !inE oneE eqxx.
   - exists fst => //= [[x y]]. by rewrite inE oneE /= => /eqP->.
+  - rewrite eq_cardT ?cardT //= => x. by rewrite !inE oneE eqxx.
 Qed.
 
 Lemma card_cnv e : #|e^°| = #|e|.
 Proof. 
   rewrite -(on_card_preimset (f := (fun x => (x.2,x.1)))).
-  - apply: eq_card => [[x y]]. by rewrite !inE.
   - apply: onW_bij. apply: (Bijective (g := fun x => (x.2,x.1))); by case.
+  - apply: eq_card => [[x y]]. by rewrite !inE.
 Qed.
 
 Lemma card_cup e1 e2 : #|e1 + e2| = #|e1| + #|e2| - #|e1 ∩ e2|.
@@ -311,9 +311,9 @@ Definition ran e := [pred y | [exists x, e x y]].
 Lemma card_dom e : #|dom e| = #|e ⋅ ftop rT unit|.
 Proof.
   rewrite -[in RHS](on_card_preimset (f := (fun x : aT => (x,tt)))).
+  - apply: onW_bij. by apply: (Bijective (g := fst)) => [|[? []]].
   - apply: eq_card => x. rewrite !inE /dot /=. 
     by apply/eq_bool_iff;to_prop; firstorder.
-  - apply: onW_bij. by apply: (Bijective (g := fst)) => [|[? []]].
 Qed.
 
 End CardinalityBase.
