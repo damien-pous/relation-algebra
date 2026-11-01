@@ -61,9 +61,10 @@ Definition mk_ord n (x: ord n) := mk_nat x.
 (** get_ord returns an option since [n] could be 0, 
    this is not problematic in practice *)
 Definition get_ord n (x: positive): option (ord n).
- set (y:=get_nat x). case (lt_ge_dec y n).
- intro Hy. exact (Some (Ord y Hy)).
- intros _. exact None.
+Proof.
+  set (y:=get_nat x). case (lt_ge_dec y n).
+  intro Hy. exact (Some (Ord y Hy)).
+  intros _. exact None.
 Defined.
 Lemma get_mk_ord n x: get_ord n (mk_ord x) = Some x.  
 Proof. 

@@ -1,3 +1,5 @@
+--rocq-package rocq-relation-algebra --legacy-support
+
 # Suppress harmless compiler warnings we can't do anything about.
 -arg -w -arg -notation-overridden
 -arg -w -arg -redundant-canonical-projection

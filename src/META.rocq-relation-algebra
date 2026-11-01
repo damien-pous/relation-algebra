@@ -1,3 +1,6 @@
+rocqpath = "RelationAlgebra"
+requires = "rocq-relation-algebra.plugin"
+
 package "common" (
   requires = "rocq-runtime.plugins.ltac"
   description = "shared utilities for relation algebra plugins"

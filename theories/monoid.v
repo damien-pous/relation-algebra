@@ -473,6 +473,7 @@ Lemma laws_of_faithful_functor {h l X Y} {L: laws h Y} {Hl: l ≪ h} f' f:
   (forall n m x y, f n m x ≦ f n m y -> x ≦ y) ->
   (forall n m x y, f n m x ≡ f n m y -> x ≡ y) ->
   laws l X.
+Proof.
   intros Hf Hleq Hweq.
   assert (Hleq_iff: forall n m x y, f n m x ≦ f n m y <-> x ≦ y).
    split. apply Hleq. apply fn_leq.

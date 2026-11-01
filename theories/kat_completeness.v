@@ -236,7 +236,8 @@ Proof.
 Qed.
 
 Definition dirac n m: gregex n m.
-case (eqb_pos_spec n m). intros <-. exact 1. intros _. exact 0. 
+Proof.
+  case (eqb_pos_spec n m). intros <-. exact 1. intros _. exact 0. 
 Defined.
 
 Lemma dirac_refl n: dirac n n = 1.

@@ -15,11 +15,11 @@ Set Bullet Behavior "Strict Subproofs".
 followed by [firstoder]. This needs explicit calls to setoid_rewrite
 do work under binders *)
 
-#[export] Instance: Proper (iff ==> iff ==> iff ==> iff) and3. firstorder. Qed.
-#[export] Instance: Proper (iff ==> iff ==> iff ==> iff ==> iff) and4. firstorder. Qed.
-#[export] Instance: Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff) and5. firstorder. Qed.
-#[export] Instance: Proper (iff ==> iff ==> iff ==> iff) or3. firstorder. Qed.
-#[export] Instance: Proper (iff ==> iff ==> iff ==> iff ==> iff) or4. firstorder. Qed.
+#[export] Instance: Proper (iff ==> iff ==> iff ==> iff) and3. Proof. firstorder. Qed.
+#[export] Instance: Proper (iff ==> iff ==> iff ==> iff ==> iff) and4. Proof. firstorder. Qed.
+#[export] Instance: Proper (iff ==> iff ==> iff ==> iff ==> iff ==> iff) and5. Proof. firstorder. Qed.
+#[export] Instance: Proper (iff ==> iff ==> iff ==> iff) or3. Proof. firstorder. Qed.
+#[export] Instance: Proper (iff ==> iff ==> iff ==> iff ==> iff) or4. Proof. firstorder. Qed.
 
 Ltac to_prop := 
   repeat first 
@@ -36,7 +36,7 @@ Ltac to_prop :=
 Section FHRelType.
   Variables A B : finType.
   Definition fhrel_type := A -> B -> bool.
-  Definition fhrel_of of phant A & phant B := fhrel_type.
+  Definition fhrel_of & phant A & phant B := fhrel_type.
 End FHRelType.
 
 Notation "{ 'fhrel' A & B }" := (fhrel_of (Phant A) (Phant B))
@@ -159,7 +159,7 @@ Qed.
 
 (** We obtain the monoid laws using a faithful functor to the hrel model *)
 Definition hrel_of (A B : finType) (e : {fhrel A & B}) : hrel A B := fun x y => e x y.
-Ltac hrel_prop := do ! move => ?; rewrite /hrel_of /=; to_prop; by firstorder.
+Ltac hrel_prop := do ! move => ?; rw /hrel_of /=; to_prop; by firstorder.
 
 Lemma hrel_of_morphism (A B : finType) : morphism (BDL+STR+CNV+DIV) (@hrel_of A B).
 Proof.
@@ -172,7 +172,7 @@ Proof.
   apply (@Build_functor (BDL+STR+CNV+DIV) fhrel_monoid_ops hrel_monoid_ops id hrel_of).
   all: try done. all: try hrel_prop.
   - apply: hrel_of_morphism.
-  - move => _ A e x y. rewrite /hrel_of/= /fhrel_itr /hrel_itr /=. to_prop. 
+  - move => _ A e x y. rw /hrel_of/= /fhrel_itr /hrel_itr /=. to_prop. 
     setoid_rewrite connect_iter. by firstorder.
   - move => _ A e x y. exact: connect_iter.
 Qed.
@@ -191,7 +191,7 @@ Qed.
 
 (** In ssreflect /= is used pervasively, so we block the
 simplification of relation operators. Unfold selectively by using
-[rewrite /dot/=] *)
+[rw /dot/=] *)
 Arguments dot : simpl never.
 Arguments cnv : simpl never.
 Arguments str : simpl never.
@@ -211,15 +211,15 @@ Definition oneE := (hrel_oneE,fhrel_oneE).
 (** The following is required since [top' x y] tries to infer an
 [hrel] instance and then fails with a universe inconsistency as finite
 types to not necessarily live in [Set] *)
-Definition ftop_def (A B : finType) of phant A & phant B := 
+Definition ftop_def (A B : finType) & phant A & phant B := 
   (@top (@mor fhrel_monoid_ops A B)).
 Abbreviation ftop A B := (ftop_def (Phant A) (Phant B)).
 
-Definition fzero_def (A B : finType) of phant A & phant B := 
+Definition fzero_def (A B : finType) & phant A & phant B := 
   (@bot (@mor fhrel_monoid_ops A B)).
 Abbreviation fzero A B := (fzero_def (Phant A) (Phant B)).
 
-Definition fone_def (A : finType) of phant A := 
+Definition fone_def (A : finType) & phant A := 
   (@one fhrel_monoid_ops A).
 Abbreviation fone A := (fone_def (Phant A)).
 
@@ -244,11 +244,11 @@ Proof.
     have H : Proper (lattice.leq ==> lattice.leq) (@fhrel_inj A).
     { move => e1 e2 H x y /=. by case: (_ == _) => //=. }
     split => //=.
-    + move => x y. rewrite !weq_spec. by intuition.
+    + move => x y. rw !weq_spec. by intuition.
     + move => _ f g x y /=. by case: (_ == _); case (f x); case (g x).
-    + move => _ x y /=. by rewrite andbF.
-  - move => A x y /=. by rewrite andbT.
-  - move => A p q x y /=. rewrite /dot/=.
+    + move => _ x y /=. by rw andbF.
+  - move => A x y /=. by rw andbT.
+  - move => A p q x y /=. rw /dot/=.
     apply/eq_bool_iff. to_prop. by firstorder;subst.
 Qed.
 
@@ -274,7 +274,7 @@ Lemma leq_card e e': e ≦ e' -> #|e| <= #|e'|.
 Proof. move => A. apply: subset_leq_card. apply/subsetP => x. exact: A. Qed.
 
 Lemma weq_card e e' : e ≡ e' -> #|e| = #|e'|.
-Proof. rewrite weq_spec (rwP eqP) eqn_leq => [[A B]]. by rewrite !leq_card. Qed.
+Proof. rw weq_spec (rwP eqP) eqn_leq => [[A B]]. by rw !leq_card. Qed.
 
 Lemma fhrel_card0 : #|fzero aT rT| = 0%N.
 Proof. exact: card0. Qed.
@@ -284,20 +284,20 @@ Proof. exact: eq_card_prod. Qed.
 
 Lemma fhrel_card1 : #|fone aT| = #|aT|.
 Proof.
-  rewrite -(on_card_preimset (f := (fun x => (x,x)))).
-  - exists fst => //= [[x y]]. by rewrite inE oneE /= => /eqP->.
-  - rewrite eq_cardT ?cardT //= => x. by rewrite !inE oneE eqxx.
+  rw -(on_card_preimset (f := (fun x => (x,x)))).
+  - exists fst => //= [[x y]]. by rw inE oneE /= => /eqP->.
+  - rw eq_cardT ?cardT //= => x. by rw !inE oneE eqxx.
 Qed.
 
 Lemma card_cnv e : #|e^°| = #|e|.
 Proof. 
-  rewrite -(on_card_preimset (f := (fun x => (x.2,x.1)))).
+  rw -(on_card_preimset (f := (fun x => (x.2,x.1)))).
   - apply: onW_bij. apply: (Bijective (g := fun x => (x.2,x.1))); by case.
-  - apply: eq_card => [[x y]]. by rewrite !inE.
+  - apply: eq_card => [[x y]]. by rw !inE.
 Qed.
 
 Lemma card_cup e1 e2 : #|e1 + e2| = #|e1| + #|e2| - #|e1 ∩ e2|.
-Proof. by rewrite (rwP eqP) -cardUI -addnBA // subnn addn0. Qed.
+Proof. by rw (rwP eqP) -cardUI -addnBA // subnn addn0. Qed.
 
 Lemma card_capL e1 e2 : #|e1 ∩ e2| <= #|e1|.
 Proof. apply: leq_card. by lattice. Qed.
@@ -310,24 +310,24 @@ Definition ran e := [pred y | [exists x, e x y]].
 
 Lemma card_dom e : #|dom e| = #|e ⋅ ftop rT unit|.
 Proof.
-  rewrite -[in RHS](on_card_preimset (f := (fun x : aT => (x,tt)))).
+  rw -[in RHS](on_card_preimset (f := (fun x : aT => (x,tt)))).
   - apply: onW_bij. by apply: (Bijective (g := fst)) => [|[? []]].
-  - apply: eq_card => x. rewrite !inE /dot /=. 
+  - apply: eq_card => x. rw !inE /dot /=. 
     by apply/eq_bool_iff;to_prop; firstorder.
 Qed.
 
 End CardinalityBase.
 
 Lemma ran_dom {A B} {e : {fhrel A & B}} : ran e =i dom e^°.
-Proof. move => x. by rewrite !inE. Qed.
+Proof. move => x. by rw !inE. Qed.
 
 Lemma card_ran A B (e : {fhrel A & B}) : 
   #|ran e| = #|ftop unit _⋅e|.
 Proof. 
-  rewrite (eq_card ran_dom) card_dom -card_cnv. 
-  apply: weq_card. rewrite /ftop_def. 
+  rw (eq_card ran_dom) card_dom -card_cnv. 
+  apply: weq_card. rw /ftop_def. 
   (* Why does ra. fail here? -- se below *)
-  by rewrite cnvdot cnvtop cnv_invol.
+  by rw cnvdot cnvtop cnv_invol.
 Qed.
 
 (* TOTHINK: This is actually a theorem of hrel, but there is no easy
@@ -346,15 +346,15 @@ Proof.
   move/fhrel_surjective => E. 
   pose f y := (xchoose (E y),y).
   have inj_f : injective f by move => x y [].
-  rewrite -(card_codom inj_f). 
+  rw -(card_codom inj_f). 
   apply: subset_leq_card. apply/subsetP => [[x y]] /codomP => [[y'] [-> <-]]. 
-  rewrite inE /=. exact: (xchooseP (E y)).
+  rw inE /=. exact: (xchooseP (E y)).
 Qed.
 
 Lemma fhrel_injective A B (e : {fhrel A & B}) : 
   is_injective e <-> forall x x' y, e x y -> e x' y -> x = x'.
 Proof.
-  rewrite /is_injective; split => [H x x' y E1 E2|H x x' E].
+  rw /is_injective; split => [H x x' y E1 E2|H x x' E].
   - apply/eqP. apply: (H x x'). by apply/exists_inP;exists y.
   - apply/eqP. case/exists_inP : E. exact: H.
 Qed.
@@ -363,27 +363,27 @@ Lemma injective_card A B (e : {fhrel A & B}) :
   is_injective e -> #|e| <= #|B|.
 Proof. 
   move/fhrel_injective => inj_e.
-  rewrite -(card_in_imset (f := @snd A B)) ?max_card //.
-  move => [x y] [x' y']. rewrite !inE /= => E1 E2 ?; subst. 
-  by rewrite (inj_e _ _ _ E1 E2).
+  rw -(card_in_imset (f := @snd A B)) ?max_card //.
+  move => [x y] [x' y']. rw !inE /= => E1 E2 ?; subst. 
+  by rw (inj_e _ _ _ E1 E2).
 Qed.
 
 Lemma fhrel_univalent A B (e : {fhrel A & B}) : 
   is_univalent e <-> forall x y y', e x y -> e x y' -> y = y'.
 Proof. 
   split => [/@injective_cnv/fhrel_injective|H]. 
-  - rewrite /cnv/= => H ? ? ?; exact: H.
-  - rewrite /is_univalent. cnv_switch. rewrite cnv1 cnvdot. 
-    rewrite -/(is_injective _) fhrel_injective => ? ? ?. exact: H.
+  - rw /cnv/= => H ? ? ?; exact: H.
+  - rw /is_univalent. cnv_switch. rw cnv1 cnvdot. 
+    rw -/(is_injective _) fhrel_injective => ? ? ?. exact: H.
 Qed.
 
 Lemma univalent_card A B (e : {fhrel A & B}) : 
   is_univalent e -> #|e| <= #|A|.
-Proof. move => ?. rewrite -card_cnv. exact: injective_card. Qed.
+Proof. move => ?. rw -card_cnv. exact: injective_card. Qed.
 
 Lemma total_card A B (e : {fhrel A & B}) : 
   is_total e -> #|A| <= #|e|.
-Proof. move => ?. rewrite -card_cnv. exact: surjective_card. Qed.
+Proof. move => ?. rw -card_cnv. exact: surjective_card. Qed.
 
 End FHRel.
 
@@ -404,8 +404,8 @@ below for an examle: *)
 
 (** This is [connect_sub] *)
 Goal forall (T : finType) (e e' : rel T), subrel e (connect e') -> subrel (connect e) (connect e'). 
-move => T e e'. fold_fhrel. move => H. rewrite H. ka. Abort.
+Proof. move => T e e'. fold_fhrel. move => H. rw H. ka. Abort.
 
 (** This is [connect_eq] *)
 Goal forall (T : finType) (e e' : rel T), e =2 e' -> connect e =2 connect e'.
-move => T e e'. fold_fhrel. move => H. by rewrite H. Abort.
+Proof. move => T e e'. fold_fhrel. move => H. by rw H. Abort.

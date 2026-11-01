@@ -5,7 +5,6 @@ From Stdlib Require Import Eqdep.
 Require Import monoid.
 Set Implicit Arguments.
 Set Asymmetric Patterns.
-#[warning="-unknown-option"] Set Asymmetric Patterns No Implicits.
 
 (** * Free syntactic model *)
 
@@ -55,17 +54,17 @@ Fixpoint e_level n m (x: expr n m): level :=
     | e_zer _ _ => BOT
     | e_top _ _ => TOP
     | e_one _ => MIN
-    | e_pls _ _ x y => CUP + e_level x + e_level y
-    | e_cap _ _ x y => CAP + e_level x + e_level y
-    | e_neg _ _ x => BL + e_level x 
+    | e_pls x y => CUP + e_level x + e_level y
+    | e_cap x y => CAP + e_level x + e_level y
+    | e_neg x => BL + e_level x 
       (* negation is ill-defined without the other Boolean operations, 
          whence the [BL] rather than [NEG] *)
-    | e_dot _ _ _ x y => e_level x + e_level y
-    | e_itr _ x => STR + e_level x
-    | e_str _ x => STR + e_level x
-    | e_cnv _ _ x => CNV + e_level x
-    | e_ldv _ _ _ x y 
-    | e_rdv _ _ _ x y => DIV + e_level x + e_level y
+    | e_dot x y => e_level x + e_level y
+    | e_itr x => STR + e_level x
+    | e_str x => STR + e_level x
+    | e_cnv x => CNV + e_level x
+    | e_ldv x y 
+    | e_rdv x y => DIV + e_level x + e_level y
     | e_var a => MIN
   end%level.
 
@@ -82,16 +81,16 @@ Fixpoint eval n m (x: expr n m): X (f' n) (f' m) :=
     | e_zer _ _ => 0
     | e_top _ _ => top
     | e_one _ => 1
-    | e_pls _ _ x y => eval x + eval y
-    | e_cap _ _ x y => eval x ∩ eval y
-    | e_neg _ _ x => ! eval x
+    | e_pls x y => eval x + eval y
+    | e_cap x y => eval x ∩ eval y
+    | e_neg x => ! eval x
     (* | e_not _ x => eval x ^~ *)
-    | e_dot _ _ _ x y => eval x ⋅ eval y
-    | e_itr _ x => (eval x)^+
-    | e_str _ x => (eval x)^*
-    | e_cnv _ _ x => (eval x)^°
-    | e_ldv _ _ _ x y => eval x -o eval y
-    | e_rdv _ _ _ x y => eval y o- eval x
+    | e_dot x y => eval x ⋅ eval y
+    | e_itr x => (eval x)^+
+    | e_str x => (eval x)^*
+    | e_cnv x => (eval x)^°
+    | e_ldv x y => eval x -o eval y
+    | e_rdv x y => eval y o- eval x
     | e_var a => f a
   end.
 End e.
@@ -277,41 +276,41 @@ Fixpoint expr_compare n m (x: expr n m) p q (y: expr p q) :=
     | e_top _ _, e_top _ _  
     | e_one _, e_one _ => Eq
     | e_var a, e_var b => cmp a b
-    | e_pls _ _ x x', e_pls _ _ y y' 
-    | e_cap _ _ x x', e_cap _ _ y y' => 
+    | e_pls x x', e_pls y y' 
+    | e_cap x x', e_cap y y' => 
          lex (expr_compare x y) (expr_compare x' y')
-    | e_dot _ u _ x x', e_dot _ v _ y y' 
-    | e_ldv u _ _ x x', e_ldv v _ _ y y' 
-    | e_rdv u _ _ x x', e_rdv v _ _ y y' => 
+    | @e_dot _ _ _ _ u _ x x', @e_dot _ _ _ _ v _ y y' 
+    | @e_ldv _ _ _ u _ _ x x', @e_ldv _ _ _ v _ _ y y' 
+    | @e_rdv _ _ _ u _ _ x x', @e_rdv _ _ _ v _ _ y y' => 
          lex (cmp u v) (lex (expr_compare x y) (expr_compare x' y'))
-    | e_neg _ _ x, e_neg _ _ y
-    | e_itr _ x, e_itr _ y
-    | e_str _ x, e_str _ y
-    | e_cnv _ _ x, e_cnv _ _ y => expr_compare x y
-    | e_zer _ _, _       => Lt
-    | _, e_zer _ _       => Gt
-    | e_one _, _         => Lt
-    | _, e_one _         => Gt
-    | e_top _ _, _       => Lt
-    | _, e_top _ _       => Gt
-    | e_var _, _         => Lt
-    | _, e_var _         => Gt
-    | e_itr _ _, _       => Lt
-    | _, e_itr _ _       => Gt
-    | e_str _ _, _       => Lt
-    | _, e_str _ _       => Gt
-    | e_cnv _ _ _, _     => Lt
-    | _, e_cnv _ _ _     => Gt
-    | e_ldv _ _ _ _ _, _ => Lt
-    | _, e_ldv _ _ _ _ _ => Gt
-    | e_rdv _ _ _ _ _, _ => Lt
-    | _, e_rdv _ _ _ _ _ => Gt
-    | e_pls _ _ _ _, _   => Lt
-    | _, e_pls _ _ _ _   => Gt
-    | e_cap _ _ _ _, _   => Lt
-    | _, e_cap _ _ _ _   => Gt
-    | e_neg _ _ _, _     => Lt
-    | _, e_neg _ _ _     => Gt
+    | e_neg x, e_neg y
+    | e_itr x, e_itr y
+    | e_str x, e_str y
+    | e_cnv x, e_cnv y => expr_compare x y
+    | e_zer _ _, _ => Lt
+    | _, e_zer _ _ => Gt
+    | e_one _, _   => Lt
+    | _, e_one _   => Gt
+    | e_top _ _, _ => Lt
+    | _, e_top _ _ => Gt
+    | e_var _, _   => Lt
+    | _, e_var _   => Gt
+    | e_itr _, _   => Lt
+    | _, e_itr _   => Gt
+    | e_str _, _   => Lt
+    | _, e_str _   => Gt
+    | e_cnv _, _   => Lt
+    | _, e_cnv _   => Gt
+    | e_ldv _ _, _ => Lt
+    | _, e_ldv _ _ => Gt
+    | e_rdv _ _, _ => Lt
+    | _, e_rdv _ _ => Gt
+    | e_pls _ _, _ => Lt
+    | _, e_pls _ _ => Gt
+    | e_cap _ _, _ => Lt
+    | _, e_cap _ _ => Gt
+    | e_neg _, _   => Lt
+    | _, e_neg _   => Gt
   end.
 
 (** since [A] is decidable, [cast] provably acts as an identity  *)

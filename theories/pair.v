@@ -5,8 +5,6 @@ From Stdlib Require Import Psatz PeanoNat Compare_dec Euclid.
 Require Import ordinal.
 
 Set Asymmetric Patterns.
-#[warning="-unknown-option"] Set Asymmetric Patterns No Implicits.
-
 Set Implicit Arguments.
 Local Open Scope ltb_scope.
 
@@ -27,9 +25,10 @@ Proof. setoid_rewrite ltb_lt. nia. Qed.
 
 (** since [x] is bounded by [n], we encode the pair [(x,y)] as [y*n+x] *)
 Definition mk n m (x: ord n) (y: ord m): ord (n*m).
-destruct x as [x Hx]; destruct y as [y Hy].
-apply Ord with (y*n+x). 
-now apply mk_lt. 
+Proof.
+  destruct x as [x Hx]; destruct y as [y Hy].
+  apply Ord with (y*n+x). 
+  now apply mk_lt. 
 Defined. 
 
 Lemma ord_nm_lt_O_n {n m} (x: ord (n*m)): lt 0 n. 
@@ -41,12 +40,13 @@ Definition pi1 {n m} (p: ord (n*m)): ord n :=
 
 (** second projection, by division *)
 Definition pi2 {n m} (p: ord (n*m)): ord m. 
-destruct (eucl_dev n (ord_nm_lt_O_n p) p) as [y x Hx Hy]. 
-apply Ord with y. 
-unfold gt in *.
-destruct p as [p Hp]. simpl in Hy. rewrite Hy in Hp. clear p Hy.  
-destruct (le_lt_dec m y) as [Hy|Hy]. 2: now apply ltb_lt. exfalso.
-apply ltb_lt in Hp. abstract nia.
+Proof.
+  destruct (eucl_dev n (ord_nm_lt_O_n p) p) as [y x Hx Hy]. 
+  apply Ord with y. 
+  unfold gt in *.
+  destruct p as [p Hp]. simpl in Hy. rewrite Hy in Hp. clear p Hy.  
+  destruct (le_lt_dec m y) as [Hy|Hy]. 2: now apply ltb_lt. exfalso.
+  apply ltb_lt in Hp. abstract nia.
 Defined.
 
 Lemma euclid_unique n: lt 0 n -> 
